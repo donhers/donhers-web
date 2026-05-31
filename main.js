@@ -1,0 +1,1049 @@
+/* ============================================================
+   DONHERS — main.js
+   ============================================================ */
+
+/* ===========================
+   HERO PARALLAX
+   =========================== */
+const hero = document.querySelector('.hero');
+const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ===========================
+   NAVBAR: show after 80px scroll
+   =========================== */
+const navbar = document.getElementById('navbar');
+
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+
+  if (scrollY > 80) {
+    navbar.classList.add('visible');
+  } else {
+    navbar.classList.remove('visible');
+  }
+
+  // Parallax solo en desktop con cursor (no táctil), respeta motion preference
+  if (hero && !prefersReducedMotion && window.innerWidth > 1024 && window.matchMedia('(hover: hover)').matches) {
+    hero.style.backgroundPositionY = `calc(50% + ${scrollY * 0.3}px)`;
+  }
+}, { passive: true });
+
+/* ===========================
+   COLLECTION FILTER
+   =========================== */
+const filterBtns = document.querySelectorAll('.filter-btn');
+const productCards = document.querySelectorAll('.product-card');
+
+filterBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const filter = btn.dataset.filter;
+    let visibleIndex = 0;
+
+    productCards.forEach(card => {
+      const matches = filter === 'all' || card.dataset.collection === filter;
+
+      if (matches) {
+        card.classList.remove('hidden');
+        // Reset then fade in with stagger
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(14px)';
+        card.style.transition = 'none';
+
+        const delay = visibleIndex * 65;
+        visibleIndex++;
+
+        setTimeout(() => {
+          card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+          card.style.opacity = '1';
+          card.style.transform = 'translateY(0)';
+        }, delay + 16);
+      } else {
+        card.classList.add('hidden');
+        card.style.opacity = '';
+        card.style.transform = '';
+        card.style.transition = '';
+      }
+    });
+  });
+});
+
+/* ===========================
+   ENTRANCE ANIMATION — IntersectionObserver
+   =========================== */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('in-view');
+      observer.unobserve(entry.target);
+    }
+  });
+}, {
+  threshold: 0.12,
+  rootMargin: '0px 0px -32px 0px'
+});
+
+document.querySelectorAll('[data-animate]').forEach(el => {
+  observer.observe(el);
+});
+
+/* ===========================
+   SMOOTH SCROLL for internal links
+   (also handled by CSS scroll-behavior: smooth, but this
+    ensures compatibility and handles navbar offset)
+   =========================== */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', e => {
+    const target = document.querySelector(anchor.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+/* ============================================================
+   E-COMMERCE SYSTEM
+   ============================================================ */
+
+/* ===========================
+   SHIPPING ZONES & OPTIONS
+   =========================== */
+const ZONE_A = ['Montevideo'];
+const ZONE_B = ['Canelones', 'San José'];
+// Todo lo demás → Zona C (interior)
+
+const SHIP_ICONS = {
+  bike:    `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6a1 1 0 0 0 0-2h-1l-5 8H4"/><path d="m6 17 3.5-7 2 4h5l-2-6"/></svg>`,
+  package: `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`,
+  mail:    `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>`,
+  store:   `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+};
+
+const SHIPPING_OPTIONS = {
+  A: {
+    tag:  '📍 Montevideo — envío en tu ciudad',
+    hint: 'Elegí cómo recibir tu reloj:',
+    list: [
+      { id: 'domicilio', icon: 'bike',    name: 'Envío a domicilio',  desc: '24–48 hs hábiles · Ciudad de Montevideo', price: 'A coordinar' },
+      { id: 'oca',       icon: 'package', name: 'OCA',                desc: '1–2 días hábiles · Sucursal o domicilio',  price: 'A coordinar' },
+      { id: 'correo',    icon: 'mail',    name: 'Correo Uruguayo',    desc: '2–3 días hábiles',                         price: 'A coordinar' },
+    ]
+  },
+  B: {
+    tag:  '🗺️ Área metropolitana — 2 a 4 días',
+    hint: 'Elegí tu agencia de envío:',
+    list: [
+      { id: 'oca',       icon: 'package', name: 'OCA',             desc: '2–4 días hábiles · Sucursal o domicilio', price: 'A coordinar' },
+      { id: 'correo',    icon: 'mail',    name: 'Correo Uruguayo', desc: '3–5 días hábiles',                        price: 'A coordinar' },
+      { id: 'domicilio', icon: 'bike',    name: 'Envío a domicilio', desc: 'Disponibilidad a confirmar por WhatsApp', price: 'Consultar' },
+    ]
+  },
+  C: {
+    tag:  '📦 Interior del país — envío por agencia',
+    hint: 'Seleccioná la agencia más conveniente:',
+    list: [
+      { id: 'oca',    icon: 'package', name: 'OCA',             desc: '3–5 días hábiles · Retiro en sucursal más cercana', price: 'A coordinar' },
+      { id: 'correo', icon: 'mail',    name: 'Correo Uruguayo', desc: '4–7 días hábiles',                                  price: 'A coordinar' },
+      { id: 'abitab', icon: 'store',   name: 'Abitab',          desc: 'Retiro en sucursal · Coordinar con Donher\'s',      price: 'A coordinar' },
+    ]
+  }
+};
+
+function getZone(dept) {
+  if (ZONE_A.includes(dept)) return 'A';
+  if (ZONE_B.includes(dept)) return 'B';
+  return dept ? 'C' : null;
+}
+
+function getShippingLabel(id) {
+  const names = { domicilio: 'Envío a domicilio', oca: 'OCA', correo: 'Correo Uruguayo', abitab: 'Abitab' };
+  return names[id] || id;
+}
+
+function renderShippingOptions(dept) {
+  const container = document.getElementById('shipping-method-container');
+  if (!container) return;
+
+  const zone = getZone(dept);
+  if (!zone) {
+    container.classList.add('hidden');
+    container.innerHTML = '';
+    return;
+  }
+
+  const { tag, hint, list } = SHIPPING_OPTIONS[zone];
+  container.classList.remove('hidden');
+  container.innerHTML = `
+    <div class="shipping-zone-tag">
+      ${tag}
+    </div>
+    <p class="shipping-options-hint">${hint}</p>
+    <div class="shipping-options-list" role="radiogroup">
+      ${list.map(opt => `
+        <div class="shipping-option" data-ship-id="${opt.id}" data-ship-name="${opt.name}"
+             role="radio" aria-checked="false" tabindex="0">
+          <div class="so-radio"><div class="so-radio-dot"></div></div>
+          <div class="so-icon">${SHIP_ICONS[opt.icon]}</div>
+          <div class="so-info">
+            <strong class="so-name">${opt.name}</strong>
+            <span class="so-desc">${opt.desc}</span>
+          </div>
+          <span class="so-price">${opt.price}</span>
+        </div>`).join('')}
+    </div>`;
+
+  container.querySelectorAll('.shipping-option').forEach(opt => {
+    opt.addEventListener('click',   () => selectShippingOption(opt));
+    opt.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectShippingOption(opt); }
+    });
+  });
+
+  // Si hay solo una zona y ya estaba seleccionado algo del mismo tipo, re-seleccionar
+  const prev = Checkout._shippingData && Checkout._shippingData.shippingMethodId;
+  if (prev) {
+    const match = container.querySelector(`[data-ship-id="${prev}"]`);
+    if (match) selectShippingOption(match);
+  }
+}
+
+function selectShippingOption(el) {
+  const container = document.getElementById('shipping-method-container');
+  container.querySelectorAll('.shipping-option').forEach(o => {
+    o.classList.remove('selected');
+    o.setAttribute('aria-checked', 'false');
+  });
+  el.classList.add('selected');
+  el.setAttribute('aria-checked', 'true');
+  const errEl = document.getElementById('shipping-error-global');
+  if (errEl) errEl.classList.add('hidden');
+}
+
+function getSelectedShipping() {
+  const sel = document.querySelector('.shipping-option.selected');
+  if (!sel) return null;
+  return { id: sel.dataset.shipId, name: sel.dataset.shipName };
+}
+
+/* ===========================
+   UTILS
+   =========================== */
+function formatPrice(num) {
+  return '$' + num.toLocaleString('es-UY');
+}
+
+function parsePrice(str) {
+  // "$2.490" → 2490
+  return parseInt(str.replace(/[$.]/g, ''), 10);
+}
+
+function slugify(str) {
+  return str.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function genOrderId() {
+  return 'DH-' + Date.now().toString(36).toUpperCase() + '-' +
+    Math.random().toString(36).substring(2, 5).toUpperCase();
+}
+
+/* ===========================
+   TOAST
+   =========================== */
+function showToast(msg, type = 'success') {
+  const container = document.getElementById('toast-container');
+  const toast = document.createElement('div');
+  toast.className = 'toast toast--' + type;
+
+  const icon = type === 'success'
+    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>'
+    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+  toast.innerHTML = `<span class="toast-icon">${icon}</span><span class="toast-msg">${msg}</span>`;
+  container.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => toast.classList.add('toast--visible'));
+  });
+
+  setTimeout(() => {
+    toast.classList.remove('toast--visible');
+    toast.addEventListener('transitionend', () => toast.remove(), { once: true });
+  }, 3200);
+}
+
+/* ===========================
+   AUTH
+   =========================== */
+const Auth = {
+  _key: 'dh_user',
+
+  get() {
+    try { return JSON.parse(localStorage.getItem(this._key)); }
+    catch { return null; }
+  },
+
+  isLoggedIn() { return !!this.get(); },
+
+  login(email, password) {
+    if (!email || !password) return false;
+    const name = email.split('@')[0].replace(/[._]/g, ' ')
+      .replace(/\b\w/g, c => c.toUpperCase());
+    const user = { email, name, createdAt: Date.now() };
+    localStorage.setItem(this._key, JSON.stringify(user));
+    this._updateUI();
+    return true;
+  },
+
+  register(name, email, password) {
+    if (!name || !email || password.length < 6) return false;
+    const user = { email, name, createdAt: Date.now() };
+    localStorage.setItem(this._key, JSON.stringify(user));
+    this._updateUI();
+    return true;
+  },
+
+  logout() {
+    localStorage.removeItem(this._key);
+    this._updateUI();
+  },
+
+  _updateUI() {
+    const user = this.get();
+    const loggedOut = document.getElementById('ud-logged-out');
+    const loggedIn  = document.getElementById('ud-logged-in');
+    const nameNav   = document.getElementById('user-name-nav');
+    const udName    = document.getElementById('ud-name');
+
+    if (user) {
+      loggedOut.classList.add('hidden');
+      loggedIn.classList.remove('hidden');
+      const firstName = user.name.split(' ')[0];
+      if (udName) udName.textContent = firstName;
+      if (nameNav) nameNav.textContent = firstName;
+    } else {
+      loggedOut.classList.remove('hidden');
+      loggedIn.classList.add('hidden');
+      if (nameNav) nameNav.textContent = '';
+    }
+  }
+};
+
+/* ===========================
+   ORDERS
+   =========================== */
+const Orders = {
+  _key: 'dh_orders',
+
+  getAll() {
+    try { return JSON.parse(localStorage.getItem(this._key)) || []; }
+    catch { return []; }
+  },
+
+  save(order) {
+    const all = this.getAll();
+    all.unshift(order);
+    localStorage.setItem(this._key, JSON.stringify(all));
+  },
+
+  render() {
+    const list = document.getElementById('orders-list');
+    const orders = this.getAll();
+    if (!orders.length) {
+      list.innerHTML = '<p class="orders-empty">Todavía no tenés pedidos.</p>';
+      return;
+    }
+    const trackSteps = ['Confirmado', 'En preparación', 'Enviado', 'Entregado'];
+
+    list.innerHTML = orders.map(o => {
+      const date = new Date(o.date).toLocaleDateString('es-UY', {
+        day: '2-digit', month: '2-digit', year: 'numeric'
+      });
+      const itemsSummary = o.items.map(i => `${i.name} × ${i.qty}`).join(', ');
+      const statusIndex  = trackSteps.findIndex(s => s.toLowerCase() === (o.status || 'confirmado'));
+
+      const trackHtml = trackSteps.map((s, i) => {
+        const done = i <= statusIndex;
+        return `
+          <div class="order-track-step ${done ? 'order-track-step--done' : ''}">
+            <div class="order-track-dot"></div>
+            <span class="order-track-label">${s}</span>
+          </div>
+          ${i < trackSteps.length - 1 ? '<div class="order-track-line"></div>' : ''}`;
+      }).join('');
+
+      const methodLabel = o.paymentMethod === 'transfer'
+        ? '🏦 Transferencia bancaria'
+        : '💳 Mercado Pago / Tarjeta';
+
+      // Datos de envío y zona
+      let shipInfo = '';
+      if (o.shipping) {
+        const s = o.shipping;
+        const addr = [s.address, s.apt].filter(Boolean).join(', ');
+        const loc  = [s.city, s.dept, s.zip].filter(Boolean).join(' · ');
+        const zoneLabels = { A: 'Montevideo', B: 'Área metropolitana', C: 'Interior del país' };
+        const zoneText   = s.zone ? ` (${zoneLabels[s.zone] || s.zone})` : '';
+        const shipMethod = s.shippingMethodName ? `📦 ${s.shippingMethodName}${zoneText}` : '';
+        shipInfo = `
+          <p class="order-ship-addr">${addr}</p>
+          <p class="order-ship-loc">${loc}</p>
+          ${shipMethod ? `<p class="order-ship-method">${shipMethod}</p>` : ''}`;
+      }
+
+      return `
+        <div class="order-card">
+          <div class="order-card-header">
+            <span class="order-id">${o.id}</span>
+            <span class="order-date">${date}</span>
+          </div>
+          <p class="order-items-text">${itemsSummary}</p>
+          ${shipInfo}
+          <div class="order-track">${trackHtml}</div>
+          <div class="order-card-footer-row">
+            <p class="order-card-total">Total: <strong>${formatPrice(o.total)}</strong></p>
+            <p class="order-method">${methodLabel}</p>
+          </div>
+        </div>`;
+    }).join('');
+  }
+};
+
+/* ===========================
+   CART
+   =========================== */
+const Cart = {
+  _key: 'dh_cart',
+  items: [],
+
+  init() {
+    try {
+      this.items = JSON.parse(localStorage.getItem(this._key)) || [];
+    } catch {
+      this.items = [];
+    }
+    this._render();
+  },
+
+  _save() {
+    localStorage.setItem(this._key, JSON.stringify(this.items));
+  },
+
+  add(id, name, price, waLink) {
+    const existing = this.items.find(i => i.id === id);
+    if (existing) {
+      existing.qty++;
+    } else {
+      this.items.push({ id, name, price, waLink, qty: 1 });
+    }
+    this._save();
+    this._render();
+    showToast(`${name} agregado al carrito`);
+  },
+
+  remove(id) {
+    this.items = this.items.filter(i => i.id !== id);
+    this._save();
+    this._render();
+  },
+
+  updateQty(id, delta) {
+    const item = this.items.find(i => i.id === id);
+    if (!item) return;
+    item.qty = Math.max(1, item.qty + delta);
+    this._save();
+    this._render();
+  },
+
+  clear() {
+    this.items = [];
+    this._save();
+    this._render();
+  },
+
+  total() {
+    return this.items.reduce((sum, i) => sum + i.price * i.qty, 0);
+  },
+
+  count() {
+    return this.items.reduce((sum, i) => sum + i.qty, 0);
+  },
+
+  _render() {
+    const badge     = document.getElementById('cart-badge');
+    const empty     = document.getElementById('cart-empty');
+    const list      = document.getElementById('cart-items-list');
+    const footer    = document.getElementById('cart-footer');
+    const subtotal  = document.getElementById('cart-subtotal');
+
+    const n = this.count();
+    if (badge) {
+      badge.textContent = n || '';
+      badge.style.display = n ? 'flex' : 'none';
+    }
+
+    if (!this.items.length) {
+      empty.classList.remove('hidden');
+      list.classList.add('hidden');
+      footer.classList.add('hidden');
+      return;
+    }
+
+    empty.classList.add('hidden');
+    list.classList.remove('hidden');
+    footer.classList.remove('hidden');
+
+    list.innerHTML = this.items.map(item => `
+      <li class="cart-item" data-id="${item.id}">
+        <div class="cart-item-img"><span class="cart-item-dh">DH</span></div>
+        <div class="cart-item-info">
+          <span class="cart-item-name">${item.name}</span>
+          <span class="cart-item-price">${formatPrice(item.price)}</span>
+        </div>
+        <div class="qty-controls">
+          <button class="qty-btn" data-action="dec" data-id="${item.id}" aria-label="Reducir">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" data-action="inc" data-id="${item.id}" aria-label="Aumentar">+</button>
+        </div>
+        <button class="cart-item-remove" data-id="${item.id}" aria-label="Eliminar">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </li>`).join('');
+
+    if (subtotal) subtotal.textContent = formatPrice(this.total());
+  }
+};
+
+/* ===========================
+   CHECKOUT
+   =========================== */
+const Checkout = {
+  _shippingData: null,
+  _orderId: null,
+  _paymentMethod: 'card', // 'card' | 'transfer'
+
+  goToStep(n) {
+    document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
+    document.getElementById('step-' + n).classList.add('active');
+    document.querySelectorAll('.cp-step').forEach(s => {
+      const sn = parseInt(s.dataset.step);
+      s.classList.toggle('active', sn === n);
+      s.classList.toggle('done', sn < n);
+    });
+    // Al llegar al paso 2: generar orden ID y poner referencia bancaria
+    if (n === 2) {
+      if (!this._orderId) this._orderId = genOrderId();
+      const bankRef = document.getElementById('bank-ref-val');
+      if (bankRef) bankRef.textContent = this._orderId;
+      // Actualizar ambos totales
+      const t1 = document.getElementById('checkout-total-val');
+      const t2 = document.getElementById('checkout-total-val-t');
+      const total = formatPrice(Cart.total());
+      if (t1) t1.textContent = total;
+      if (t2) t2.textContent = total;
+    }
+  },
+
+  renderSummary() {
+    const el = document.getElementById('checkout-summary');
+    if (!el) return;
+
+    const shipLine = this._shippingData
+      ? `<div class="co-item-row"><span>Envío · ${this._shippingData.shippingMethodName || 'A coordinar'}</span><span style="color:var(--text-muted)">A coordinar</span></div>`
+      : '';
+
+    el.innerHTML = Cart.items.map(i => `
+      <div class="co-item-row">
+        <span>${i.name} × ${i.qty}</span>
+        <span>${formatPrice(i.price * i.qty)}</span>
+      </div>`).join('') +
+      shipLine +
+      `<div class="co-total-row">
+        <strong>Total productos</strong><strong>${formatPrice(Cart.total())}</strong>
+       </div>`;
+  },
+
+  open() {
+    if (!Cart.items.length) {
+      showToast('Tu carrito está vacío', 'error');
+      return;
+    }
+    if (!Auth.isLoggedIn()) {
+      openModal('login-overlay');
+      showToast('Ingresá para continuar con tu compra', 'error');
+      return;
+    }
+    // Reset para nueva sesión de checkout
+    this._orderId = null;
+    this._paymentMethod = 'card';
+    this.goToStep(1);
+    this.renderSummary();
+
+    // Pre-fill datos de envío con datos del usuario
+    const user = Auth.get();
+    if (user) {
+      const shipEmail = document.getElementById('ship-email');
+      const shipName  = document.getElementById('ship-name');
+      if (shipEmail && !shipEmail.value) shipEmail.value = user.email;
+      if (shipName  && !shipName.value)  shipName.value  = user.name;
+    }
+
+    closeCart();
+    openModal('checkout-overlay');
+  },
+
+  _confirmOrder(paymentMethod) {
+    const user  = Auth.get();
+    const email = user ? user.email : (this._shippingData && this._shippingData.email) || '';
+    const order = {
+      id:            this._orderId,
+      date:          Date.now(),
+      items:         Cart.items.map(i => ({ ...i })),
+      total:         Cart.total(),
+      shipping:      this._shippingData,
+      email,
+      paymentMethod, // 'card' | 'transfer'
+      status:        'confirmado'
+    };
+
+    Orders.save(order);
+
+    const numEl   = document.getElementById('order-num-display');
+    const emailEl = document.getElementById('order-email-display');
+    if (numEl)   numEl.textContent   = this._orderId;
+    if (emailEl) emailEl.textContent = email;
+
+    Cart.clear();
+    this.goToStep(3);
+  },
+
+  processPayment() {
+    const btn = document.getElementById('btn-pay');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.textContent = 'PROCESANDO...';
+    setTimeout(() => {
+      this._confirmOrder('card');
+      btn.disabled = false;
+      btn.textContent = 'PAGAR AHORA';
+    }, 2200);
+  },
+
+  processBankTransfer() {
+    const btn = document.getElementById('btn-bank-pay');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.textContent = 'CONFIRMANDO...';
+    setTimeout(() => {
+      this._confirmOrder('transfer');
+      btn.disabled = false;
+      btn.textContent = 'CONFIRMAR PEDIDO';
+    }, 800);
+  }
+};
+
+/* ===========================
+   MODAL HELPERS
+   =========================== */
+function openModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('active');
+  // Solo restaurar scroll si no hay otro modal activo
+  const anyOpen = document.querySelector('.modal-overlay.active, .cart-sidebar.open');
+  if (!anyOpen) document.body.style.overflow = '';
+}
+
+function openCart() {
+  const sidebar  = document.getElementById('cart-sidebar');
+  const backdrop = document.getElementById('cart-backdrop');
+  sidebar.classList.add('open');
+  backdrop.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCart() {
+  const sidebar  = document.getElementById('cart-sidebar');
+  const backdrop = document.getElementById('cart-backdrop');
+  sidebar.classList.remove('open');
+  backdrop.classList.remove('active');
+  const anyOpen = document.querySelector('.modal-overlay.active');
+  if (!anyOpen) document.body.style.overflow = '';
+}
+
+/* ===========================
+   CARD TRANSFORMATION
+   — reemplaza .card-btn por dos botones:
+     [Agregar al carrito] [icono WA]
+   =========================== */
+function transformCards() {
+  document.querySelectorAll('.product-card').forEach(card => {
+    const nameEl  = card.querySelector('.card-name');
+    const priceEl = card.querySelector('.card-price');
+    const waLink  = card.querySelector('.card-btn');
+    if (!nameEl || !priceEl || !waLink) return;
+
+    const name  = nameEl.textContent.trim();
+    const price = parsePrice(priceEl.textContent);
+    const id    = slugify(name);
+    const href  = waLink.href;
+
+    // Crear estructura de acciones
+    // Marcar la card con su id de producto para poder linkearla
+    card.dataset.productId = id;
+
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
+
+    const cartBtn = document.createElement('button');
+    cartBtn.className = 'card-btn-cart btn-shimmer';
+    cartBtn.setAttribute('aria-label', `Agregar ${name} al carrito`);
+    cartBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> AGREGAR`;
+    cartBtn.addEventListener('click', () => Cart.add(id, name, price, href));
+
+    const waBtn = document.createElement('a');
+    waBtn.href   = href;
+    waBtn.target = '_blank';
+    waBtn.rel    = 'noopener noreferrer';
+    waBtn.className = 'card-btn-wa';
+    waBtn.setAttribute('aria-label', `Consultar ${name} por WhatsApp`);
+    waBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>`;
+
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'card-share-btn';
+    shareBtn.setAttribute('aria-label', `Compartir ${name}`);
+    shareBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>`;
+    shareBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const url = `${window.location.origin}${window.location.pathname}?producto=${id}`;
+      if (navigator.share) {
+        navigator.share({ title: `Donher's — ${name}`, text: `Mirá este reloj: ${name}`, url })
+          .catch(() => {}); // ignorar si el usuario cancela
+      } else {
+        navigator.clipboard.writeText(url)
+          .then(() => showToast('Link copiado al portapapeles'))
+          .catch(() => showToast('No se pudo copiar el link', 'error'));
+      }
+    });
+
+    actions.appendChild(cartBtn);
+    actions.appendChild(waBtn);
+    actions.appendChild(shareBtn);
+    waLink.replaceWith(actions);
+  });
+}
+
+/* ===========================
+   CARD MASK — formateo de tarjeta
+   =========================== */
+function initCardMasks() {
+  const num = document.getElementById('card-number');
+  const exp = document.getElementById('card-expiry');
+  if (num) {
+    num.addEventListener('input', () => {
+      let v = num.value.replace(/\D/g, '').substring(0, 16);
+      num.value = v.replace(/(.{4})/g, '$1 ').trim();
+    });
+  }
+  if (exp) {
+    exp.addEventListener('input', () => {
+      let v = exp.value.replace(/\D/g, '').substring(0, 4);
+      if (v.length >= 2) v = v.substring(0, 2) + '/' + v.substring(2);
+      exp.value = v;
+    });
+  }
+}
+
+/* ===========================
+   EVENT LISTENERS
+   =========================== */
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Inicializar
+  Cart.init();
+  Auth._updateUI();
+  transformCards();
+  initCardMasks();
+
+  /* -- Carrito -- */
+  const cartToggle   = document.getElementById('cart-toggle');
+  const cartClose    = document.getElementById('cart-close');
+  const cartBackdrop = document.getElementById('cart-backdrop');
+  const cartEmptyCta = document.getElementById('cart-empty-cta');
+
+  if (cartToggle)   cartToggle.addEventListener('click', openCart);
+  if (cartClose)    cartClose.addEventListener('click', closeCart);
+  if (cartBackdrop) cartBackdrop.addEventListener('click', closeCart);
+  if (cartEmptyCta) cartEmptyCta.addEventListener('click', () => {
+    closeCart();
+    document.getElementById('colecciones').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  // Qty + remove (delegación en la lista)
+  const cartList = document.getElementById('cart-items-list');
+  if (cartList) {
+    cartList.addEventListener('click', e => {
+      const qtyBtn    = e.target.closest('.qty-btn');
+      const removeBtn = e.target.closest('.cart-item-remove');
+      if (qtyBtn) {
+        const id     = qtyBtn.dataset.id;
+        const action = qtyBtn.dataset.action;
+        Cart.updateQty(id, action === 'inc' ? 1 : -1);
+      }
+      if (removeBtn) {
+        Cart.remove(removeBtn.dataset.id);
+      }
+    });
+  }
+
+  // Checkout CTA desde carrito
+  const checkoutBtn = document.getElementById('cart-checkout-btn');
+  if (checkoutBtn) checkoutBtn.addEventListener('click', () => Checkout.open());
+
+  /* -- User dropdown -- */
+  const userToggle   = document.getElementById('user-toggle');
+  const userDropdown = document.getElementById('user-dropdown');
+
+  if (userToggle) {
+    userToggle.addEventListener('click', e => {
+      e.stopPropagation();
+      userDropdown.classList.toggle('active');
+    });
+  }
+  document.addEventListener('click', e => {
+    if (userDropdown && !userDropdown.contains(e.target) && e.target !== userToggle) {
+      userDropdown.classList.remove('active');
+    }
+  });
+
+  /* -- Login / Register -- */
+  const openLoginBtn = document.getElementById('open-login-btn');
+  const loginClose   = document.getElementById('login-close');
+  const loginOverlay = document.getElementById('login-overlay');
+
+  if (openLoginBtn) openLoginBtn.addEventListener('click', () => {
+    userDropdown.classList.remove('active');
+    openModal('login-overlay');
+  });
+  if (loginClose) loginClose.addEventListener('click', () => closeModal('login-overlay'));
+  if (loginOverlay) loginOverlay.addEventListener('click', e => {
+    if (e.target === loginOverlay) closeModal('login-overlay');
+  });
+
+  // Auth tabs
+  document.querySelectorAll('.auth-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab + '-form').classList.add('active');
+    });
+  });
+
+  // Login form submit
+  const loginForm = document.getElementById('login-form');
+  if (loginForm) {
+    loginForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const email    = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const err      = document.getElementById('login-error');
+      if (!email || !password) {
+        err.classList.remove('hidden'); return;
+      }
+      err.classList.add('hidden');
+      Auth.login(email, password);
+      closeModal('login-overlay');
+      userDropdown.classList.remove('active');
+      showToast(`Bienvenido/a, ${Auth.get().name.split(' ')[0]}!`);
+    });
+  }
+
+  // Register form submit
+  const regForm = document.getElementById('register-form');
+  if (regForm) {
+    regForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const name     = document.getElementById('reg-name').value.trim();
+      const email    = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      const err      = document.getElementById('reg-error');
+      if (!name || !email || password.length < 6) {
+        err.classList.remove('hidden'); return;
+      }
+      err.classList.add('hidden');
+      Auth.register(name, email, password);
+      closeModal('login-overlay');
+      showToast(`Cuenta creada. Bienvenido/a, ${name.split(' ')[0]}!`);
+    });
+  }
+
+  /* -- Logout -- */
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      Auth.logout();
+      userDropdown.classList.remove('active');
+      showToast('Sesión cerrada');
+    });
+  }
+
+  /* -- Mis pedidos -- */
+  const viewOrdersBtn = document.getElementById('view-orders-btn');
+  const ordersClose   = document.getElementById('orders-close');
+  const ordersOverlay = document.getElementById('orders-overlay');
+
+  if (viewOrdersBtn) {
+    viewOrdersBtn.addEventListener('click', () => {
+      userDropdown.classList.remove('active');
+      Orders.render();
+      openModal('orders-overlay');
+    });
+  }
+  if (ordersClose)   ordersClose.addEventListener('click', () => closeModal('orders-overlay'));
+  if (ordersOverlay) ordersOverlay.addEventListener('click', e => {
+    if (e.target === ordersOverlay) closeModal('orders-overlay');
+  });
+
+  /* -- Checkout -- */
+  const checkoutClose   = document.getElementById('checkout-close');
+  const checkoutOverlay = document.getElementById('checkout-overlay');
+  const shippingForm    = document.getElementById('shipping-form');
+  const paymentForm     = document.getElementById('payment-form');
+  const backToStep1Btn  = document.getElementById('back-to-step1');
+
+  if (checkoutClose) checkoutClose.addEventListener('click', () => closeModal('checkout-overlay'));
+  if (checkoutOverlay) checkoutOverlay.addEventListener('click', e => {
+    if (e.target === checkoutOverlay) closeModal('checkout-overlay');
+  });
+
+  // Listener: departamento → actualizar opciones de envío
+  const shipDeptEl = document.getElementById('ship-dept');
+  if (shipDeptEl) {
+    // Renderizar al cargar si ya hay un valor (ej: viene pre-seleccionado Montevideo)
+    if (shipDeptEl.value) renderShippingOptions(shipDeptEl.value);
+    shipDeptEl.addEventListener('change', () => renderShippingOptions(shipDeptEl.value));
+  }
+
+  // Step 1 → 2
+  if (shippingForm) {
+    shippingForm.addEventListener('submit', e => {
+      e.preventDefault();
+
+      // Validar que se eligió método de envío
+      const selectedShip = getSelectedShipping();
+      if (!selectedShip) {
+        const errEl = document.getElementById('shipping-error-global');
+        if (errEl) errEl.classList.remove('hidden');
+        document.getElementById('shipping-method-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        return;
+      }
+
+      const dept = document.getElementById('ship-dept').value;
+      Checkout._shippingData = {
+        name:             document.getElementById('ship-name').value,
+        phone:            document.getElementById('ship-phone').value,
+        email:            document.getElementById('ship-email').value,
+        address:          document.getElementById('ship-address').value,
+        apt:              (document.getElementById('ship-apt')  || {}).value  || '',
+        zip:              (document.getElementById('ship-zip')  || {}).value  || '',
+        dept,
+        city:             document.getElementById('ship-city').value,
+        notes:            (document.getElementById('ship-notes') || {}).value || '',
+        zone:             getZone(dept),
+        shippingMethodId: selectedShip.id,
+        shippingMethodName: selectedShip.name,
+      };
+      Checkout.goToStep(2);
+    });
+  }
+
+  // Tabs método de pago
+  document.querySelectorAll('.pm-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.pm-tab').forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      const method = tab.dataset.method;
+      Checkout._paymentMethod = method;
+      const cardPanel     = document.getElementById('pm-card-panel');
+      const transferPanel = document.getElementById('pm-transfer-panel');
+      if (cardPanel)     cardPanel.classList.toggle('hidden', method !== 'card');
+      if (transferPanel) transferPanel.classList.toggle('hidden', method !== 'transfer');
+    });
+  });
+
+  // Step 2 → back
+  if (backToStep1Btn) backToStep1Btn.addEventListener('click', () => Checkout.goToStep(1));
+
+  // Step 2 → pagar con tarjeta
+  if (paymentForm) {
+    paymentForm.addEventListener('submit', e => {
+      e.preventDefault();
+      Checkout.processPayment();
+    });
+  }
+
+  // Step 2 → confirmar transferencia bancaria
+  const bankPayBtn = document.getElementById('btn-bank-pay');
+  if (bankPayBtn) {
+    bankPayBtn.addEventListener('click', () => Checkout.processBankTransfer());
+  }
+
+  // Step 3 botones post-confirmación
+  const btnViewOrders = document.getElementById('btn-view-my-orders');
+  const btnKeepShop   = document.getElementById('btn-keep-shopping');
+
+  if (btnViewOrders) {
+    btnViewOrders.addEventListener('click', () => {
+      closeModal('checkout-overlay');
+      Orders.render();
+      openModal('orders-overlay');
+    });
+  }
+  if (btnKeepShop) {
+    btnKeepShop.addEventListener('click', () => {
+      closeModal('checkout-overlay');
+      document.getElementById('colecciones').scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  /* -- Escape key cierra modales -- */
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    ['login-overlay', 'checkout-overlay', 'orders-overlay'].forEach(id => closeModal(id));
+    closeCart();
+    const ud = document.getElementById('user-dropdown');
+    if (ud) ud.classList.remove('active');
+  });
+
+  /* -- Highlight producto si viene por link compartido -- */
+  const urlParams   = new URLSearchParams(window.location.search);
+  const productoId  = urlParams.get('producto');
+  if (productoId) {
+    const targetCard = document.querySelector(`[data-product-id="${productoId}"]`);
+    if (targetCard) {
+      setTimeout(() => {
+        document.getElementById('colecciones').scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => {
+          targetCard.classList.add('card-highlight');
+          setTimeout(() => targetCard.classList.remove('card-highlight'), 3200);
+        }, 600);
+      }, 400);
+    }
+  }
+
+});

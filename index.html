@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Donher´s — Relojería Clásica Uruguay</title>
+  <meta name="description" content="Relojes de acero para quienes eligen destacar. Envío a todo Uruguay. Consultá por WhatsApp.">
+  <meta property="og:title" content="Donher´s — Relojería Clásica">
+  <meta property="og:description" content="Relojes de acero para quienes eligen destacar. Envío a todo Uruguay.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- ========================
+       NAVBAR
+       ======================== -->
+  <nav class="navbar" id="navbar" aria-label="Navegación principal">
+    <a href="#hero" class="navbar-brand-link" aria-label="Donher´s — Inicio">
+      <div class="navbar-monogram" aria-hidden="true">DH</div>
+      <span class="navbar-brand-text">DONHER´S</span>
+    </a>
+    <div class="navbar-right">
+      <button class="navbar-icon-btn" id="user-toggle" aria-label="Mi cuenta">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span class="user-name-nav" id="user-name-nav"></span>
+      </button>
+      <button class="navbar-icon-btn" id="cart-toggle" aria-label="Ver carrito">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="cart-badge" id="cart-badge" aria-hidden="true"></span>
+      </button>
+      <a href="https://wa.me/59898199059?text=Hola%20Donher%27s!%20Quiero%20consultar%20sobre%20sus%20relojes."
+         class="navbar-cta" target="_blank" rel="noopener noreferrer">CONSULTAR</a>
+    </div>
+  </nav>
+
+  <!-- User dropdown -->
+  <div class="user-dropdown" id="user-dropdown" role="dialog" aria-label="Menú de usuario">
+    <div id="ud-logged-out">
+      <p class="ud-hint">Accedé para ver tus pedidos y guardar tu carrito.</p>
+      <button class="btn-ud-login btn-shimmer" id="open-login-btn">INGRESAR / REGISTRARSE</button>
+    </div>
+    <div class="hidden" id="ud-logged-in">
+      <p class="ud-greeting">Hola, <strong id="ud-name"></strong></p>
+      <button class="ud-menu-item" id="view-orders-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Mis pedidos
+      </button>
+      <button class="ud-menu-item ud-menu-item--danger" id="logout-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+
+  <!-- ========================
+       HERO
+       ======================== -->
+  <section class="hero" id="hero" aria-label="Portada">
+    <div class="hero-content">
+      <div class="hero-eyebrow" data-animate>
+        <span class="hero-line"></span>
+        <span class="hero-label">RELOJERÍA CLÁSICA</span>
+      </div>
+      <h1 class="hero-brand" data-animate>DONHER´S</h1>
+      <p class="hero-tagline" data-animate>El tiempo que te define.</p>
+      <p class="hero-subtext" data-animate>Relojes de acero para quienes eligen destacar.<br>Envío a todo el país.</p>
+      <a href="#colecciones" class="hero-cta btn-shimmer" data-animate>VER COLECCIÓN</a>
+    </div>
+    <a href="#colecciones" class="hero-scroll-hint" aria-label="Ver colección">↓ Descubrí los modelos</a>
+  </section>
+
+  <!-- ========================
+       MARQUEE STRIP
+       ======================== -->
+  <div class="marquee-strip" aria-hidden="true">
+    <div class="marquee-track">
+      <span>RELOJES ORIGINALES</span><span class="m-sep">◆</span>
+      <span>ENVÍO A TODO EL PAÍS</span><span class="m-sep">◆</span>
+      <span>ATENCIÓN POR WHATSAPP</span><span class="m-sep">◆</span>
+      <span>ACERO INOXIDABLE 316L</span><span class="m-sep">◆</span>
+      <span>MONTEVIDEO, URUGUAY</span><span class="m-sep">◆</span>
+      <span>100% ORIGINALES</span><span class="m-sep">◆</span>
+      <span>RELOJES ORIGINALES</span><span class="m-sep">◆</span>
+      <span>ENVÍO A TODO EL PAÍS</span><span class="m-sep">◆</span>
+      <span>ATENCIÓN POR WHATSAPP</span><span class="m-sep">◆</span>
+      <span>ACERO INOXIDABLE 316L</span><span class="m-sep">◆</span>
+      <span>MONTEVIDEO, URUGUAY</span><span class="m-sep">◆</span>
+      <span>100% ORIGINALES</span><span class="m-sep">◆</span>
+    </div>
+  </div>
+
+  <!-- ========================
+       COLECCIONES
+       ======================== -->
+  <section class="colecciones" id="colecciones" aria-label="Colecciones">
+    <div class="section-header" data-animate>
+      <p class="section-accent">nuestra selección</p>
+      <h2 class="section-heading">COLECCIONES</h2>
+      <p class="section-sub">Cada modelo elegido por diseño, durabilidad y presencia.</p>
+    </div>
+
+    <div class="filters" role="group" aria-label="Filtrar por colección" data-animate>
+      <button class="filter-btn active" data-filter="all">Todos</button>
+      <button class="filter-btn" data-filter="sport">Sport</button>
+      <button class="filter-btn" data-filter="clasica">Clásica</button>
+      <button class="filter-btn" data-filter="ella">Para Ella</button>
+    </div>
+
+    <div class="products-grid" id="products-grid">
+
+      <!-- Cronógrafo Octagonal -->
+      <article class="product-card product-card--featured" data-collection="sport" data-animate>
+        <div class="card-image">
+          <div class="img-placeholder">
+            <div class="ph-content">
+              <span class="ph-dh">DH</span>
+              <span class="ph-label">Donher´s</span>
+            </div>
+          </div>
+          <div class="card-overlay" aria-hidden="true">
+            <span class="card-overlay-text">VER MODELO →</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">Sport</span>
+          <h3 class="card-name">Cronógrafo Octagonal</h3>
+          <p class="card-desc">Esfera blanca con subdiales azules. Acero inoxidable. Presencia imponente.</p>
+          <p class="card-price">$2.490</p>
+          <a href="https://wa.me/59898199059?text=Hola!%20Vi%20el%20Cron%C3%B3grafo%20Octagonal%20en%20la%20web%20de%20Donher%27s%20y%20quiero%20saber%20si%20est%C3%A1%20disponible."
+             class="card-btn btn-shimmer" target="_blank" rel="noopener noreferrer">CONSULTAR</a>
+        </div>
+      </article>
+
+      <!-- Clásico Esfera Blanca -->
+      <article class="product-card" data-collection="clasica" data-animate>
+        <div class="card-image">
+          <div class="img-placeholder">
+            <div class="ph-content">
+              <span class="ph-dh">DH</span>
+              <span class="ph-label">Donher´s</span>
+            </div>
+          </div>
+          <div class="card-overlay" aria-hidden="true">
+            <span class="card-overlay-text">VER MODELO →</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">Clásica</span>
+          <h3 class="card-name">Clásico Esfera Blanca</h3>
+          <p class="card-desc">Diseño atemporal con esfera texturizada. Acero inoxidable 316L.</p>
+          <p class="card-price">$2.100</p>
+          <a href="https://wa.me/59898199059?text=Hola!%20Vi%20el%20Cl%C3%A1sico%20Esfera%20Blanca%20en%20la%20web%20de%20Donher%27s%20y%20quiero%20saber%20si%20est%C3%A1%20disponible."
+             class="card-btn btn-shimmer" target="_blank" rel="noopener noreferrer">CONSULTAR</a>
+        </div>
+      </article>
+
+      <!-- Clásico Esfera Negra -->
+      <article class="product-card" data-collection="clasica" data-animate>
+        <div class="card-image">
+          <div class="img-placeholder">
+            <div class="ph-content">
+              <span class="ph-dh">DH</span>
+              <span class="ph-label">Donher´s</span>
+            </div>
+          </div>
+          <div class="card-overlay" aria-hidden="true">
+            <span class="card-overlay-text">VER MODELO →</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">Clásica</span>
+          <h3 class="card-name">Clásico Esfera Negra</h3>
+          <p class="card-desc">Sobrio y contundente. Para quien no necesita llamar la atención pero igual lo hace.</p>
+          <p class="card-price">$1.990</p>
+          <a href="https://wa.me/59898199059?text=Hola!%20Vi%20el%20Cl%C3%A1sico%20Esfera%20Negra%20en%20la%20web%20de%20Donher%27s%20y%20quiero%20saber%20si%20est%C3%A1%20disponible."
+             class="card-btn btn-shimmer" target="_blank" rel="noopener noreferrer">CONSULTAR</a>
+        </div>
+      </article>
+
+      <!-- Lady Azul -->
+      <article class="product-card" data-collection="ella" data-animate>
+        <div class="card-image">
+          <div class="img-placeholder">
+            <div class="ph-content">
+              <span class="ph-dh">DH</span>
+              <span class="ph-label">Donher´s</span>
+            </div>
+          </div>
+          <div class="card-overlay" aria-hidden="true">
+            <span class="card-overlay-text">VER MODELO →</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">Para Ella</span>
+          <h3 class="card-name">Lady Azul</h3>
+          <p class="card-desc">Esfera azul, caja cuadrada elegante. Casual o formal, siempre preciso.</p>
+          <p class="card-price">$1.990</p>
+          <a href="https://wa.me/59898199059?text=Hola!%20Vi%20el%20Lady%20Azul%20en%20la%20web%20de%20Donher%27s%20y%20quiero%20saber%20si%20est%C3%A1%20disponible."
+             class="card-btn btn-shimmer" target="_blank" rel="noopener noreferrer">CONSULTAR</a>
+        </div>
+      </article>
+
+      <!-- Lady Classic -->
+      <article class="product-card" data-collection="ella" data-animate>
+        <div class="card-image">
+          <div class="img-placeholder">
+            <div class="ph-content">
+              <span class="ph-dh">DH</span>
+              <span class="ph-label">Donher´s</span>
+            </div>
+          </div>
+          <div class="card-overlay" aria-hidden="true">
+            <span class="card-overlay-text">VER MODELO →</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">Para Ella</span>
+          <h3 class="card-name">Lady Classic</h3>
+          <p class="card-desc">Delicado y refinado. Acero plateado con esfera clara para el día a día.</p>
+          <p class="card-price">$1.990</p>
+          <a href="https://wa.me/59898199059?text=Hola!%20Vi%20el%20Lady%20Classic%20en%20la%20web%20de%20Donher%27s%20y%20quiero%20saber%20si%20est%C3%A1%20disponible."
+             class="card-btn btn-shimmer" target="_blank" rel="noopener noreferrer">CONSULTAR</a>
+        </div>
+      </article>
+
+      <!-- Sport Azul -->
+      <article class="product-card" data-collection="sport" data-animate>
+        <div class="card-image">
+          <div class="img-placeholder">
+            <div class="ph-content">
+              <span class="ph-dh">DH</span>
+              <span class="ph-label">Donher´s</span>
+            </div>
+          </div>
+          <div class="card-overlay" aria-hidden="true">
+            <span class="card-overlay-text">VER MODELO →</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <span class="card-tag">Sport</span>
+          <h3 class="card-name">Sport Azul</h3>
+          <p class="card-desc">Esfera azul con correa de acero. Estilo casual-elegante para cualquier ocasión.</p>
+          <p class="card-price">$2.200</p>
+          <a href="https://wa.me/59898199059?text=Hola!%20Vi%20el%20Sport%20Azul%20en%20la%20web%20de%20Donher%27s%20y%20quiero%20saber%20si%20est%C3%A1%20disponible."
+             class="card-btn btn-shimmer" target="_blank" rel="noopener noreferrer">CONSULTAR</a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ========================
+       POR QUÉ DONHERS
+       ======================== -->
+  <section class="porque" id="porque" aria-label="Por qué elegirnos">
+    <div class="section-header" data-animate>
+      <p class="section-accent">nuestra promesa</p>
+      <h2 class="section-heading">ELEGIDOS POR QUIENES SABEN</h2>
+    </div>
+
+    <div class="porque-grid">
+
+      <div class="porque-col" data-animate>
+        <div class="porque-top-line"></div>
+        <div class="porque-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <polyline points="9 12 11 14 15 10"/>
+          </svg>
+        </div>
+        <h3 class="porque-title">100% Originales</h3>
+        <p class="porque-text">Todos nuestros relojes son productos auténticos. Lo que ves en la foto es exactamente lo que recibís.</p>
+      </div>
+
+      <div class="porque-col" data-animate>
+        <div class="porque-top-line"></div>
+        <div class="porque-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13" rx="1"/>
+            <path d="M16 8h4l3 5v3h-7V8z"/>
+            <circle cx="5.5" cy="18.5" r="2.5"/>
+            <circle cx="18.5" cy="18.5" r="2.5"/>
+          </svg>
+        </div>
+        <h3 class="porque-title">Envío a Todo el País</h3>
+        <p class="porque-text">Despachamos a cualquier punto del Uruguay. Rápido, seguro y con seguimiento.</p>
+      </div>
+
+      <div class="porque-col" data-animate>
+        <div class="porque-top-line"></div>
+        <div class="porque-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <h3 class="porque-title">Atención Personalizada</h3>
+        <p class="porque-text">Te asesoramos por WhatsApp para que elijas el modelo ideal. Sin bots, sin formularios.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================
+       FOOTER
+       ======================== -->
+  <footer class="footer" aria-label="Pie de página">
+    <div class="footer-row-1">
+      <div class="footer-brand">
+        <div class="footer-dh-mark" aria-hidden="true">DH</div>
+        <div class="footer-brand-words">
+          <span class="footer-brand-name">Donher´s</span>
+          <span class="footer-brand-sub">Relojería Clásica</span>
+        </div>
+      </div>
+      <div class="footer-social">
+        <a href="https://instagram.com/donhers.uy" target="_blank" rel="noopener noreferrer"
+           class="footer-social-link" aria-label="Instagram de Donher´s">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <circle cx="12" cy="12" r="3"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+        </a>
+        <a href="https://wa.me/59898199059" target="_blank" rel="noopener noreferrer"
+           class="footer-social-link" aria-label="WhatsApp de Donhers">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-row-2">
+      <span class="footer-copy">© 2026 Donher´s. Todos los derechos reservados.</span>
+      <span class="footer-location">Montevideo, Uruguay</span>
+    </div>
+  </footer>
+
+  <!-- ========================
+       WHATSAPP FLOATING BUTTON
+       ======================== -->
+  <a href="https://wa.me/59898199059?text=Hola%20Donher%27s!%20Quiero%20consultar%20sobre%20sus%20relojes."
+     class="wa-float" target="_blank" rel="noopener noreferrer" aria-label="Consultá por WhatsApp">
+    <span class="wa-pulse-ring" aria-hidden="true"></span>
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+    <span class="wa-tooltip">Consultá por WhatsApp</span>
+  </a>
+
+  <!-- ======================== CART SIDEBAR ======================== -->
+  <div class="cart-backdrop" id="cart-backdrop" aria-hidden="true"></div>
+  <aside class="cart-sidebar" id="cart-sidebar" aria-label="Carrito de compras">
+    <div class="cart-header">
+      <h2 class="cart-title">Tu carrito</h2>
+      <button class="cart-close-btn" id="cart-close" aria-label="Cerrar carrito">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="cart-body">
+      <div class="cart-empty" id="cart-empty">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" style="color:var(--text-muted);margin-bottom:16px"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <p class="cart-empty-text">Tu carrito está vacío</p>
+        <button class="cart-empty-cta" id="cart-empty-cta">VER COLECCIÓN</button>
+      </div>
+      <ul class="cart-items-list hidden" id="cart-items-list"></ul>
+    </div>
+    <div class="cart-footer hidden" id="cart-footer">
+      <div class="cart-summary">
+        <div class="cart-summary-row">
+          <span>Subtotal</span>
+          <span id="cart-subtotal">$0</span>
+        </div>
+        <div class="cart-summary-row cart-summary-small">
+          <span>Envío</span>
+          <span>A coordinar</span>
+        </div>
+      </div>
+      <button class="cart-checkout-cta btn-shimmer" id="cart-checkout-btn">PROCEDER AL PAGO</button>
+    </div>
+  </aside>
+
+  <!-- ======================== LOGIN MODAL ======================== -->
+  <div class="modal-overlay" id="login-overlay" role="dialog" aria-modal="true" aria-label="Iniciar sesión">
+    <div class="modal login-modal">
+      <button class="modal-close" id="login-close" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal-brand"><div class="modal-monogram">DH</div></div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Ingresar</button>
+        <button class="auth-tab" data-tab="register">Crear cuenta</button>
+      </div>
+      <form class="auth-form active" id="login-form">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" id="login-email" placeholder="tu@email.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input class="form-input" type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <p class="form-error hidden" id="login-error">Revisá tu email o contraseña.</p>
+        <button type="submit" class="btn-auth btn-shimmer">INGRESAR</button>
+        <p class="demo-hint">Modo demo — cualquier email y contraseña funcionan</p>
+      </form>
+      <form class="auth-form" id="register-form">
+        <div class="form-group">
+          <label class="form-label">Nombre</label>
+          <input class="form-input" type="text" id="reg-name" placeholder="Tu nombre completo" required autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" id="reg-email" placeholder="tu@email.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Contraseña</label>
+          <input class="form-input" type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+        </div>
+        <p class="form-error hidden" id="reg-error">Completá todos los campos.</p>
+        <button type="submit" class="btn-auth btn-shimmer">CREAR CUENTA</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ======================== CHECKOUT MODAL ======================== -->
+  <div class="modal-overlay" id="checkout-overlay" role="dialog" aria-modal="true" aria-label="Checkout">
+    <div class="modal checkout-modal">
+      <button class="modal-close" id="checkout-close" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="checkout-progress">
+        <div class="cp-step active" data-step="1"><span class="cp-num">1</span><span class="cp-label">Datos</span></div>
+        <div class="cp-line"></div>
+        <div class="cp-step" data-step="2"><span class="cp-num">2</span><span class="cp-label">Pago</span></div>
+        <div class="cp-line"></div>
+        <div class="cp-step" data-step="3"><span class="cp-num">3</span><span class="cp-label">Listo</span></div>
+      </div>
+
+      <!-- STEP 1: DATOS + RESUMEN -->
+      <div class="checkout-step active" id="step-1">
+        <h3 class="step-title">Resumen del pedido</h3>
+        <div class="checkout-order-summary" id="checkout-summary"></div>
+        <h3 class="step-title">Datos de envío</h3>
+        <form id="shipping-form" class="checkout-form">
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Nombre completo</label>
+              <input class="form-input" type="text" id="ship-name" placeholder="Juan García" required autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Teléfono</label>
+              <input class="form-input" type="tel" id="ship-phone" placeholder="09X XXX XXX" required autocomplete="tel">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email" id="ship-email" placeholder="tu@email.com" required autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Dirección</label>
+            <input class="form-input" type="text" id="ship-address" placeholder="Calle, número, apartamento" required autocomplete="street-address">
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Departamento</label>
+              <select class="form-input form-select" id="ship-dept" required>
+                <option value="">Seleccioná...</option>
+                <option>Artigas</option><option>Canelones</option><option>Cerro Largo</option>
+                <option>Colonia</option><option>Durazno</option><option>Flores</option>
+                <option>Florida</option><option>Lavalleja</option><option>Maldonado</option>
+                <option selected>Montevideo</option><option>Paysandú</option><option>Río Negro</option>
+                <option>Rivera</option><option>Rocha</option><option>Salto</option>
+                <option>San José</option><option>Soriano</option><option>Tacuarembó</option>
+                <option>Treinta y Tres</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Ciudad / Localidad</label>
+              <input class="form-input" type="text" id="ship-city" placeholder="Ciudad" required autocomplete="address-level2">
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label class="form-label">Apto / Piso / Oficina <span class="form-optional">(opcional)</span></label>
+              <input class="form-input" type="text" id="ship-apt" placeholder="Apto 3B, piso 2..." autocomplete="address-line2">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Código Postal <span class="form-optional">(opcional)</span></label>
+              <input class="form-input" type="text" id="ship-zip" placeholder="11300" maxlength="5" inputmode="numeric" autocomplete="postal-code">
+            </div>
+          </div>
+          <!-- Selector de método de envío — se puebla por JS según departamento -->
+          <div id="shipping-method-container" class="hidden" role="group" aria-label="Método de envío"></div>
+
+          <div class="form-group">
+            <label class="form-label">Observaciones <span class="form-optional">(opcional)</span></label>
+            <textarea class="form-input form-textarea" id="ship-notes" rows="3" placeholder="Instrucciones para el repartidor, horario de entrega, referencias del lugar..."></textarea>
+          </div>
+          <p class="shipping-error hidden" id="shipping-error-global">Seleccioná un método de envío para continuar.</p>
+          <button type="submit" class="btn-checkout-next btn-shimmer">CONTINUAR AL PAGO →</button>
+        </form>
+      </div>
+
+      <!-- STEP 2: PAGO -->
+      <div class="checkout-step" id="step-2">
+
+        <!-- Selector método de pago -->
+        <div class="pm-tabs" role="tablist">
+          <button type="button" class="pm-tab active" data-method="card" role="tab" aria-selected="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Mercado Pago / Tarjeta
+          </button>
+          <button type="button" class="pm-tab" data-method="transfer" role="tab" aria-selected="false">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            Transferencia bancaria
+          </button>
+        </div>
+
+        <!-- Panel: Tarjeta / MP -->
+        <div id="pm-card-panel">
+          <div class="mp-header">
+            <div class="mp-secure">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              Pago seguro
+            </div>
+            <span class="mp-logo">Mercado<strong>Pago</strong></span>
+            <span class="demo-badge">DEMO</span>
+          </div>
+          <form id="payment-form" class="checkout-form">
+            <div class="form-group">
+              <label class="form-label">Número de tarjeta</label>
+              <div class="card-input-wrap">
+                <input class="form-input" type="text" id="card-number" placeholder="0000 0000 0000 0000" maxlength="19" inputmode="numeric" autocomplete="cc-number">
+                <div class="card-icons" id="card-icons">
+                  <svg width="32" height="20" viewBox="0 0 32 20" aria-label="Visa"><rect width="32" height="20" rx="3" fill="#1A1F71"/><text x="5" y="15" font-family="Arial" font-size="11" font-weight="bold" fill="white">VISA</text></svg>
+                </div>
+              </div>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label class="form-label">Vencimiento</label>
+                <input class="form-input" type="text" id="card-expiry" placeholder="MM/AA" maxlength="5" inputmode="numeric" autocomplete="cc-exp">
+              </div>
+              <div class="form-group">
+                <label class="form-label">CVV</label>
+                <input class="form-input" type="text" id="card-cvv" placeholder="123" maxlength="4" inputmode="numeric" autocomplete="cc-csc">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Titular de la tarjeta</label>
+              <input class="form-input" type="text" id="card-holder" placeholder="Como figura en la tarjeta" autocomplete="cc-name">
+            </div>
+            <div class="demo-card-hint">
+              <span class="demo-card-label">Tarjeta de prueba:</span>
+              4539 1488 0343 6467 &nbsp;/&nbsp; 11/25 &nbsp;/&nbsp; 123
+            </div>
+            <div class="checkout-total-bar">
+              <span>Total a pagar</span>
+              <span class="checkout-total-val" id="checkout-total-val">$0</span>
+            </div>
+            <button type="submit" class="btn-pay btn-shimmer" id="btn-pay">PAGAR AHORA</button>
+          </form>
+        </div>
+
+        <!-- Panel: Transferencia bancaria -->
+        <div id="pm-transfer-panel" class="hidden">
+          <div class="bank-details-card">
+            <p class="bank-intro">Realizá tu depósito o transferencia a la siguiente cuenta:</p>
+            <div class="bank-info-grid">
+              <div class="bank-row">
+                <span class="bank-label">Banco</span>
+                <strong class="bank-val">BROU</strong>
+              </div>
+              <div class="bank-row">
+                <span class="bank-label">Titular</span>
+                <strong class="bank-val">Donher's Relojería Clásica</strong>
+              </div>
+              <div class="bank-row">
+                <span class="bank-label">Cuenta corriente</span>
+                <strong class="bank-val bank-val--demo">001-0000000/0 <span class="demo-badge">DEMO</span></strong>
+              </div>
+              <div class="bank-row">
+                <span class="bank-label">RUT</span>
+                <strong class="bank-val bank-val--demo">21 000000 0 <span class="demo-badge">DEMO</span></strong>
+              </div>
+            </div>
+            <div class="bank-ref-box">
+              <p class="bank-ref-label">Referencia (indicar en la transferencia):</p>
+              <p class="bank-ref-val" id="bank-ref-val">—</p>
+            </div>
+            <div class="checkout-total-bar">
+              <span>Total a transferir</span>
+              <span class="checkout-total-val" id="checkout-total-val-t">$0</span>
+            </div>
+            <p class="bank-note">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="vertical-align:-2px;margin-right:5px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Una vez realizado el pago, envianos el comprobante por WhatsApp. Procesamos el pedido en 24–48 h hábiles.
+            </p>
+            <button type="button" class="btn-pay btn-shimmer" id="btn-bank-pay">CONFIRMAR PEDIDO</button>
+          </div>
+        </div>
+
+        <button type="button" class="btn-back-step" id="back-to-step1">← Volver</button>
+      </div>
+
+      <!-- STEP 3: CONFIRMACIÓN -->
+      <div class="checkout-step" id="step-3">
+        <div class="order-success">
+          <div class="success-checkmark">
+            <svg viewBox="0 0 52 52" class="checkmark-svg"><circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
+          </div>
+          <h3 class="success-title">¡Pedido confirmado!</h3>
+          <p class="success-order-num">Pedido <strong id="order-num-display"></strong></p>
+          <p class="success-message">Recibirás actualizaciones del estado a <strong id="order-email-display"></strong></p>
+          <div class="success-track">
+            <div class="success-track-step success-track-step--done"><span class="st-dot"></span><span class="st-label">Confirmado</span></div>
+            <div class="success-track-line"></div>
+            <div class="success-track-step"><span class="st-dot"></span><span class="st-label">En preparación</span></div>
+            <div class="success-track-line"></div>
+            <div class="success-track-step"><span class="st-dot"></span><span class="st-label">Enviado</span></div>
+            <div class="success-track-line"></div>
+            <div class="success-track-step"><span class="st-dot"></span><span class="st-label">Entregado</span></div>
+          </div>
+          <div class="success-actions">
+            <button class="btn-success-orders btn-shimmer" id="btn-view-my-orders">MIS PEDIDOS</button>
+            <button class="btn-success-shop" id="btn-keep-shopping">SEGUIR COMPRANDO</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== ORDERS MODAL ======================== -->
+  <div class="modal-overlay" id="orders-overlay" role="dialog" aria-modal="true" aria-label="Mis pedidos">
+    <div class="modal orders-modal">
+      <button class="modal-close" id="orders-close" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <h2 class="modal-title">Mis pedidos</h2>
+      <div class="orders-list" id="orders-list"></div>
+    </div>
+  </div>
+
+  <!-- ======================== TOAST ======================== -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <script src="main.js"></script>
+</body>
+</html>
