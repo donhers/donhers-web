@@ -235,8 +235,9 @@ function formatPrice(num) {
 }
 
 function parsePrice(str) {
-  // "$2.490" → 2490
-  return parseInt(str.replace(/[$.]/g, ''), 10);
+  // "$900 — $1.200" → toma el primer número; "$2.490" → 2490
+  const clean = str.replace(/[$.]/g, '').split('—')[0].trim();
+  return parseInt(clean, 10);
 }
 
 function slugify(str) {
@@ -432,12 +433,12 @@ const Cart = {
     localStorage.setItem(this._key, JSON.stringify(this.items));
   },
 
-  add(id, name, price, waLink) {
+  add(id, name, price, waLink, imgSrc = '') {
     const existing = this.items.find(i => i.id === id);
     if (existing) {
       existing.qty++;
     } else {
-      this.items.push({ id, name, price, waLink, qty: 1 });
+      this.items.push({ id, name, price, waLink, imgSrc, qty: 1 });
     }
     this._save();
     this._render();
@@ -498,7 +499,7 @@ const Cart = {
 
     list.innerHTML = this.items.map(item => `
       <li class="cart-item" data-id="${item.id}">
-        <div class="cart-item-img"><span class="cart-item-dh">DH</span></div>
+        <div class="cart-item-img">${item.imgSrc ? `<img src="${item.imgSrc}" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;border-radius:2px;">` : '<span class="cart-item-dh">DH</span>'}</div>
         <div class="cart-item-info">
           <span class="cart-item-name">${item.name}</span>
           <span class="cart-item-price">${formatPrice(item.price)}</span>
@@ -693,10 +694,12 @@ function transformCards() {
     const waLink  = card.querySelector('.card-btn');
     if (!nameEl || !priceEl || !waLink) return;
 
-    const name  = nameEl.textContent.trim();
-    const price = parsePrice(priceEl.textContent);
-    const id    = slugify(name);
-    const href  = waLink.href;
+    const name   = nameEl.textContent.trim();
+    const price  = parsePrice(priceEl.textContent);
+    const id     = slugify(name);
+    const href   = waLink.href;
+    const imgEl  = card.querySelector('.card-image img');
+    const imgSrc = imgEl ? imgEl.src : '';
 
     // Crear estructura de acciones
     // Marcar la card con su id de producto para poder linkearla
@@ -709,7 +712,7 @@ function transformCards() {
     cartBtn.className = 'card-btn-cart btn-shimmer';
     cartBtn.setAttribute('aria-label', `Agregar ${name} al carrito`);
     cartBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg> AGREGAR`;
-    cartBtn.addEventListener('click', () => Cart.add(id, name, price, href));
+    cartBtn.addEventListener('click', () => Cart.add(id, name, price, href, imgSrc));
 
     const waBtn = document.createElement('a');
     waBtn.href   = href;
