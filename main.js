@@ -304,6 +304,7 @@ const Auth = {
     const user = { email, name, createdAt: Date.now() };
     localStorage.setItem(this._key, JSON.stringify(user));
     this._updateUI();
+    sendToSheet('registro', { nombre: name, email, fecha: new Date().toISOString() });
     return true;
   },
 
@@ -611,6 +612,15 @@ const Checkout = {
     };
 
     Orders.save(order);
+    sendToSheet('pedido', {
+      id: order.id,
+      items: order.items.map(i => `${i.name} x${i.qty}`).join(' | '),
+      total: order.total,
+      email: order.email,
+      metodo_pago: paymentMethod,
+      envio: order.shipping ? order.shipping.shippingMethodName : '',
+      direccion: order.shipping ? `${order.shipping.address}, ${order.shipping.city}, ${order.shipping.dept}` : ''
+    });
 
     const numEl   = document.getElementById('order-num-display');
     const emailEl = document.getElementById('order-email-display');
@@ -668,18 +678,81 @@ function closeModal(id) {
 function openCart() {
   const sidebar  = document.getElementById('cart-sidebar');
   const backdrop = document.getElementById('cart-backdrop');
+  const waFloat  = document.querySelector('.wa-float');
   sidebar.classList.add('open');
   backdrop.classList.add('active');
   document.body.style.overflow = 'hidden';
+  if (waFloat) waFloat.style.display = 'none';
 }
 
 function closeCart() {
   const sidebar  = document.getElementById('cart-sidebar');
   const backdrop = document.getElementById('cart-backdrop');
+  const waFloat  = document.querySelector('.wa-float');
   sidebar.classList.remove('open');
   backdrop.classList.remove('active');
+  if (waFloat) waFloat.style.display = '';
   const anyOpen = document.querySelector('.modal-overlay.active');
   if (!anyOpen) document.body.style.overflow = '';
+}
+
+/* ===========================
+   WEBHOOK — Google Sheets via n8n
+   Enviá datos de registro y pedidos a un webhook externo
+   =========================== */
+const WEBHOOK_URL = ''; // Pegar acá la URL del webhook de n8n cuando esté configurado
+
+async function sendToSheet(type, data) {
+  if (!WEBHOOK_URL) return; // No hacer nada si no hay webhook configurado
+  try {
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, ...data, timestamp: new Date().toISOString() })
+    });
+  } catch (e) {
+    console.warn('Webhook no disponible:', e.message);
+  }
+}
+
+/* ===========================
+   EXPORT — descarga datos como CSV
+   =========================== */
+function exportToCSV() {
+  const orders = Orders.getAll();
+  if (!orders.length) {
+    showToast('No hay pedidos para exportar', 'error');
+    return;
+  }
+
+  const rows = [
+    ['ID Pedido', 'Fecha', 'Cliente', 'Email', 'Teléfono', 'Productos', 'Total', 'Método de pago', 'Envío', 'Dirección', 'Ciudad', 'Departamento', 'Estado']
+  ];
+
+  orders.forEach(o => {
+    const fecha    = new Date(o.date).toLocaleDateString('es-UY');
+    const productos = o.items.map(i => `${i.name} x${i.qty}`).join(' | ');
+    const s        = o.shipping || {};
+    rows.push([
+      o.id, fecha,
+      s.name || '', s.email || '', s.phone || '',
+      productos, o.total,
+      o.paymentMethod === 'transfer' ? 'Transferencia' : 'Tarjeta/MP',
+      s.shippingMethodName || '',
+      [s.address, s.apt].filter(Boolean).join(', '),
+      s.city || '', s.dept || '', o.status || 'confirmado'
+    ]);
+  });
+
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `donhers-pedidos-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Archivo descargado ✓');
 }
 
 /* ===========================
@@ -917,6 +990,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (ordersOverlay) ordersOverlay.addEventListener('click', e => {
     if (e.target === ordersOverlay) closeModal('orders-overlay');
   });
+  const exportBtn = document.getElementById('btn-export-csv');
+  if (exportBtn) exportBtn.addEventListener('click', exportToCSV);
 
   /* -- Checkout -- */
   const checkoutClose   = document.getElementById('checkout-close');

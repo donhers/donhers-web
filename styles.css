@@ -1711,6 +1711,29 @@ img {
 
 .modal-close:hover { color: var(--text-primary); }
 
+.modal-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+.btn-export-csv {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--border-gold);
+  color: var(--gold);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding: 7px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-export-csv:hover { background: var(--gold-muted); color: var(--text-primary); }
+
 .modal-title {
   font-family: var(--font-serif);
   font-weight: 600;
