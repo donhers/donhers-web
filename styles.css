@@ -198,36 +198,18 @@ img {
   text-decoration: none;
 }
 
-/* DH circle monogram in navbar */
-.navbar-monogram {
-  font-family: var(--font-serif);
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--gold);
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--border-gold);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: 0.04em;
-  flex-shrink: 0;
-  animation: breathe-border 4s ease-in-out infinite;
+/* Logo oficial en navbar */
+.navbar-logo {
+  height: 38px;
+  width: auto;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.90;
   transition: opacity 0.25s;
 }
 
-.navbar-brand-link:hover .navbar-monogram {
-  opacity: 0.75;
-}
-
-.navbar-brand-text {
-  font-family: var(--font-serif);
-  font-weight: 700;
-  font-size: 1.2rem;
-  letter-spacing: 0.14em;
-  color: var(--text-primary);
-  user-select: none;
+.navbar-brand-link:hover .navbar-logo {
+  opacity: 0.65;
 }
 
 .navbar-cta {
@@ -344,6 +326,15 @@ img {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   animation: text-shimmer 7s linear infinite;
+}
+
+/* Delay para que el texto aparezca después del branding del video */
+.hero-tagline--delayed,
+.hero-subtext--delayed,
+.hero-cta--delayed {
+  animation-delay: 2.8s !important;
+  opacity: 0;
+  animation-fill-mode: forwards;
 }
 
 /* Tagline */
