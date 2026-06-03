@@ -100,11 +100,40 @@ if (galleryNext) galleryNext.addEventListener('click', () => {
   scrollToCard(current + 1);
 });
 
+/* Auto-scroll: avanza cada 3.5s, pausa al hover o toque */
+let autoScrollTimer = null;
+let userInteracting = false;
+
+function startAutoScroll() {
+  clearInterval(autoScrollTimer);
+  autoScrollTimer = setInterval(() => {
+    if (userInteracting || !galleryTrack) return;
+    const cards = getGalleryCards();
+    const cw = getCardWidth();
+    const current = Math.round(galleryTrack.scrollLeft / cw);
+    const next = current >= cards.length - 1 ? 0 : current + 1;
+    galleryTrack.scrollTo({ left: next * cw, behavior: 'smooth' });
+  }, 3500);
+}
+
+function pauseAutoScroll() {
+  userInteracting = true;
+  clearTimeout(autoScrollTimer);
+  // Retoma después de 6s sin interacción
+  setTimeout(() => { userInteracting = false; startAutoScroll(); }, 6000);
+}
+
 if (galleryTrack) {
   galleryTrack.addEventListener('scroll', updateDots, { passive: true });
+  galleryTrack.addEventListener('pointerdown', pauseAutoScroll);
+  galleryTrack.addEventListener('touchstart', pauseAutoScroll, { passive: true });
   buildDots();
   updateDots();
+  startAutoScroll();
 }
+
+if (galleryPrev) galleryPrev.addEventListener('click', pauseAutoScroll);
+if (galleryNext) galleryNext.addEventListener('click', pauseAutoScroll);
 
 /* ===========================
    COLLECTION FILTER
