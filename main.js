@@ -39,44 +39,93 @@ window.addEventListener('scroll', () => {
 }, { passive: true });
 
 /* ===========================
+   GALLERY CAROUSEL
+   =========================== */
+const galleryTrack   = document.getElementById('gallery-track');
+const galleryPrev    = document.getElementById('gallery-prev');
+const galleryNext    = document.getElementById('gallery-next');
+const galleryDotsEl  = document.getElementById('gallery-dots');
+
+function getGalleryCards() {
+  return Array.from(galleryTrack.querySelectorAll('.gallery-card:not(.hidden)'));
+}
+
+function getCardWidth() {
+  const card = getGalleryCards()[0];
+  if (!card) return 276;
+  return card.offsetWidth + 16; // card + gap
+}
+
+function buildDots() {
+  if (!galleryDotsEl) return;
+  const cards = getGalleryCards();
+  galleryDotsEl.innerHTML = '';
+  cards.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'gallery-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Modelo ${i + 1}`);
+    dot.addEventListener('click', () => scrollToCard(i));
+    galleryDotsEl.appendChild(dot);
+  });
+}
+
+function updateDots() {
+  if (!galleryDotsEl || !galleryTrack) return;
+  const cards = getGalleryCards();
+  const scrollLeft = galleryTrack.scrollLeft;
+  const cw = getCardWidth();
+  const activeIndex = Math.round(scrollLeft / cw);
+  galleryDotsEl.querySelectorAll('.gallery-dot').forEach((d, i) => {
+    d.classList.toggle('active', i === activeIndex);
+  });
+  if (galleryPrev) galleryPrev.disabled = activeIndex === 0;
+  if (galleryNext) galleryNext.disabled = activeIndex >= cards.length - 1;
+}
+
+function scrollToCard(index) {
+  if (!galleryTrack) return;
+  const cw = getCardWidth();
+  galleryTrack.scrollTo({ left: index * cw, behavior: 'smooth' });
+}
+
+if (galleryPrev) galleryPrev.addEventListener('click', () => {
+  const cw = getCardWidth();
+  const current = Math.round(galleryTrack.scrollLeft / cw);
+  scrollToCard(Math.max(0, current - 1));
+});
+
+if (galleryNext) galleryNext.addEventListener('click', () => {
+  const cw = getCardWidth();
+  const current = Math.round(galleryTrack.scrollLeft / cw);
+  scrollToCard(current + 1);
+});
+
+if (galleryTrack) {
+  galleryTrack.addEventListener('scroll', updateDots, { passive: true });
+  buildDots();
+  updateDots();
+}
+
+/* ===========================
    COLLECTION FILTER
    =========================== */
 const filterBtns = document.querySelectorAll('.filter-btn');
-const productCards = document.querySelectorAll('.product-card');
 
 filterBtns.forEach(btn => {
   btn.addEventListener('click', () => {
     filterBtns.forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-
     const filter = btn.dataset.filter;
-    let visibleIndex = 0;
 
-    productCards.forEach(card => {
+    document.querySelectorAll('.gallery-card').forEach(card => {
       const matches = filter === 'all' || card.dataset.collection === filter;
-
-      if (matches) {
-        card.classList.remove('hidden');
-        // Reset then fade in with stagger
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(14px)';
-        card.style.transition = 'none';
-
-        const delay = visibleIndex * 65;
-        visibleIndex++;
-
-        setTimeout(() => {
-          card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-          card.style.opacity = '1';
-          card.style.transform = 'translateY(0)';
-        }, delay + 16);
-      } else {
-        card.classList.add('hidden');
-        card.style.opacity = '';
-        card.style.transform = '';
-        card.style.transition = '';
-      }
+      card.classList.toggle('hidden', !matches);
     });
+
+    // Reset scroll y reconstruir dots
+    if (galleryTrack) galleryTrack.scrollTo({ left: 0, behavior: 'instant' });
+    buildDots();
+    updateDots();
   });
 });
 
