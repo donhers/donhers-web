@@ -3,6 +3,16 @@
    ============================================================ */
 
 /* ===========================
+   HERO INTRO SCREEN
+   =========================== */
+const heroIntro = document.getElementById('hero-intro');
+if (heroIntro) {
+  heroIntro.addEventListener('animationend', () => {
+    heroIntro.remove();
+  });
+}
+
+/* ===========================
    HERO PARALLAX
    =========================== */
 const hero = document.querySelector('.hero');
