@@ -62,10 +62,7 @@
     <div class="hero-intro" id="hero-intro" aria-hidden="true">
       <img src="images/logo-nuevo.jpeg" alt="" class="hero-intro-logo">
     </div>
-    <video class="hero-video" autoplay muted loop playsinline poster="images/hero-bg.jpg">
-      <source src="images/hero-video.mp4" type="video/mp4">
-      <source src="images/hero-video.mov" type="video/quicktime">
-    </video>
+    <canvas class="hero-video" id="watch-canvas" aria-hidden="true"></canvas>
     <div class="hero-content">
       <p class="hero-tagline hero-tagline--delayed" data-animate>El tiempo que te define.</p>
       <p class="hero-subtext hero-subtext--delayed" data-animate>Relojes de acero para quienes eligen destacar.<br>Envío a todo el país.</p>
@@ -728,5 +725,6 @@
   <div class="toast-container" id="toast-container" aria-live="polite"></div>
 
   <script src="main.js"></script>
+  <script src="watch-animation.js"></script>
 </body>
 </html>
