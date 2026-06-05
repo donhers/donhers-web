@@ -570,20 +570,22 @@
     min-height: 100svh;
   }
 
-  /* Watch: absoluto top-right, más pequeño */
+  /* Watch: centrado arriba, escalado para que el despiece quepa */
   .watch-animation {
     position: absolute !important;
-    right: -6%;
-    top: 48px;
-    transform: none;
-    width: min(68vw, 320px);
+    left: 50%;
+    top: 7%;
+    right: auto;
+    width: min(78vw, 360px);
     margin: 0;
+    transform: translateX(-50%) scale(0.62);
+    transform-origin: center center;
   }
-  .watch-layer:not(.watch-complete) { display: none; }
+  /* Despiece activo en mobile: el scale del contenedor reduce los offsets */
+  .watch-layer { display: block; }
   .part-label { display: none; }
   .watch-complete {
-    animation: mobileWatchFloat 6s ease-in-out infinite !important;
-    opacity: 1 !important;
+    animation: watchComplete 14s ease-in-out infinite !important;
   }
 
   /* Contenido: full width, left-aligned */

@@ -1271,31 +1271,25 @@ img {
     animation-duration: 22s;
   }
 
-  /* Hero: texto abajo, reloj visible arriba */
+  /* Hero: fondo negro puro, texto abajo, reloj arriba */
   .hero {
     align-items: flex-end;
     min-height: 100svh; /* safe viewport height en mobile */
     background-image:
-      linear-gradient(
-        to top,
-        rgba(10, 10, 10, 0.97) 0%,
-        rgba(10, 10, 10, 0.55) 45%,
-        rgba(10, 10, 10, 0.10) 100%
-      ),
-      url('images/hero-bg.jpg');
-    background-position: 68% 20%; /* centra el reloj en la parte superior */
+      radial-gradient(ellipse at 70% 30%, rgba(185,154,82,0.06) 0%, transparent 60%),
+      linear-gradient(135deg, #0d0c09 0%, #030303 60%, #080706 100%);
     background-size: cover;
   }
 
   .hero-content {
     padding: 0 6% 72px;
     max-width: 100%;
-    align-items: center;
-    text-align: center;
+    align-items: flex-start;
+    text-align: left;
   }
 
   .hero-eyebrow {
-    justify-content: center;
+    justify-content: flex-start;
   }
 
   .hero-brand {
@@ -1304,11 +1298,11 @@ img {
 
   .hero-subtext {
     max-width: 100%;
-    text-align: center;
+    text-align: left;
   }
 
   .hero-cta {
-    align-self: center;
+    align-self: flex-start;
   }
 
   /* 1-column grid */
