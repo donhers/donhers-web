@@ -480,49 +480,67 @@
 .layer-crystal      { animation: crystalExplode 14s ease-in-out infinite; }
 
 @keyframes watchComplete {
-  0%, 22%   { opacity: 1; transform: translateY(0) scale(1); filter: drop-shadow(0 32px 64px rgba(0,0,0,.70)); }
-  34%, 74%  { opacity: 0; transform: translateY(-6px) scale(.97); filter: none; }
-  88%, 100% { opacity: 1; transform: translateY(0) scale(1); filter: drop-shadow(0 32px 64px rgba(0,0,0,.70)); }
+  0%       { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: drop-shadow(0 32px 64px rgba(0,0,0,.70)); }
+  11%      { opacity: 1; transform: translateY(-8px) scale(1.012) rotate(.6deg); filter: drop-shadow(0 42px 72px rgba(0,0,0,.78)); }
+  22%      { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: drop-shadow(0 32px 64px rgba(0,0,0,.70)); }
+  34%, 74% { opacity: 0; transform: translateY(-6px) scale(.97); filter: none; }
+  88%, 100%{ opacity: 1; transform: translateY(0) scale(1) rotate(0deg); filter: drop-shadow(0 32px 64px rgba(0,0,0,.70)); }
 }
 @keyframes crystalExplode {
   0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.92); }
-  36%, 62% { opacity: .7;  transform: translate3d(-150px,-8px,0) scale(.68) rotate(-4deg); }
-  74%      { opacity: .55; transform: translate3d(-230px,-4px,0) scale(.64) rotate(-8deg); }
+  36% { opacity: .7;  transform: translate3d(-150px,-8px,0) scale(.68) rotate(-4deg); }
+  49% { opacity: .7;  transform: translate3d(-162px,-18px,0) scale(.685) rotate(-6.5deg); }
+  62% { opacity: .7;  transform: translate3d(-150px,-2px,0) scale(.68) rotate(-3deg); }
+  74% { opacity: .55; transform: translate3d(-230px,-4px,0) scale(.64) rotate(-8deg); }
 }
 @keyframes bezelExplode {
   0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.9); }
-  36%, 62% { opacity: .9;  transform: translate3d(-90px,0,0) scale(.70) rotate(-5deg); }
-  74%      { opacity: .85; transform: translate3d(-165px,0,0) scale(.68) rotate(-9deg); }
+  36% { opacity: .9;  transform: translate3d(-90px,0,0) scale(.70) rotate(-5deg); }
+  49% { opacity: .9;  transform: translate3d(-98px,-9px,0) scale(.705) rotate(-7deg); }
+  62% { opacity: .9;  transform: translate3d(-90px,5px,0) scale(.70) rotate(-4deg); }
+  74% { opacity: .85; transform: translate3d(-165px,0,0) scale(.68) rotate(-9deg); }
 }
 @keyframes dialExplode {
   0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.74); }
-  36%, 62% { opacity: 1; transform: translate3d(0,0,0) scale(.62); }
-  74%      { opacity: 1; transform: translate3d(-14px,0,0) scale(.58); }
+  36% { opacity: 1; transform: translate3d(0,0,0) scale(.62) rotate(0deg); }
+  49% { opacity: 1; transform: translate3d(0,-7px,0) scale(.625) rotate(1.5deg); }
+  62% { opacity: 1; transform: translate3d(0,2px,0) scale(.62) rotate(0deg); }
+  74% { opacity: 1; transform: translate3d(-14px,0,0) scale(.58); }
 }
 @keyframes handsExplode {
   0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.5); }
-  36%, 62% { opacity: 1;  transform: translate3d(6px,-80px,0) scale(.40) rotate(7deg); }
-  74%      { opacity: .9; transform: translate3d(0,-125px,0) scale(.36) rotate(12deg); }
+  36% { opacity: 1;  transform: translate3d(6px,-80px,0) scale(.40) rotate(7deg); }
+  49% { opacity: 1;  transform: translate3d(10px,-92px,0) scale(.405) rotate(10deg); }
+  62% { opacity: 1;  transform: translate3d(6px,-74px,0) scale(.40) rotate(5deg); }
+  74% { opacity: .9; transform: translate3d(0,-125px,0) scale(.36) rotate(12deg); }
 }
 @keyframes movementExplode {
   0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.55); }
-  36%, 62% { opacity: .95; transform: translate3d(100px,0,0) scale(.50); }
-  74%      { opacity: 1;   transform: translate3d(160px,0,0) scale(.48); }
+  36% { opacity: .95; transform: translate3d(100px,0,0) scale(.50) rotate(0deg); }
+  49% { opacity: .95; transform: translate3d(108px,-8px,0) scale(.505) rotate(8deg); }
+  62% { opacity: .95; transform: translate3d(100px,4px,0) scale(.50) rotate(4deg); }
+  74% { opacity: 1;   transform: translate3d(160px,0,0) scale(.48) rotate(12deg); }
 }
 @keyframes caseExplode {
   0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.7); }
-  36%, 62% { opacity: .92; transform: translate3d(185px,0,0) scale(.60) rotate(3deg); }
-  74%      { opacity: .9;  transform: translate3d(260px,0,0) scale(.58) rotate(5deg); }
+  36% { opacity: .92; transform: translate3d(185px,0,0) scale(.60) rotate(3deg); }
+  49% { opacity: .92; transform: translate3d(196px,-9px,0) scale(.605) rotate(5.5deg); }
+  62% { opacity: .92; transform: translate3d(185px,4px,0) scale(.60) rotate(2deg); }
+  74% { opacity: .9;  transform: translate3d(260px,0,0) scale(.58) rotate(5deg); }
 }
 @keyframes strapTopExplode {
   0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.58); }
-  36%, 62% { opacity: .9;  transform: translate3d(145px,-150px,0) scale(.40) rotate(8deg); }
-  74%      { opacity: .85; transform: translate3d(225px,-185px,0) scale(.38) rotate(12deg); }
+  36% { opacity: .9;  transform: translate3d(145px,-150px,0) scale(.40) rotate(8deg); }
+  49% { opacity: .9;  transform: translate3d(155px,-162px,0) scale(.405) rotate(11deg); }
+  62% { opacity: .9;  transform: translate3d(145px,-144px,0) scale(.40) rotate(6deg); }
+  74% { opacity: .85; transform: translate3d(225px,-185px,0) scale(.38) rotate(12deg); }
 }
 @keyframes strapBottomExplode {
   0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.58); }
-  36%, 62% { opacity: .9;  transform: translate3d(145px,155px,0) scale(.40) rotate(-7deg); }
-  74%      { opacity: .85; transform: translate3d(225px,190px,0) scale(.38) rotate(-12deg); }
+  36% { opacity: .9;  transform: translate3d(145px,155px,0) scale(.40) rotate(-7deg); }
+  49% { opacity: .9;  transform: translate3d(155px,167px,0) scale(.405) rotate(-10deg); }
+  62% { opacity: .9;  transform: translate3d(145px,149px,0) scale(.40) rotate(-5deg); }
+  74% { opacity: .85; transform: translate3d(225px,190px,0) scale(.38) rotate(-12deg); }
 }
 
 /* ── Part labels (desktop only) ─────────────────────────────── */
@@ -720,4 +738,86 @@
   object-fit: contain;
   filter: drop-shadow(0 0 10px rgba(185,154,82,.15));
   opacity: 0.88;
+  animation: footerLogoGlow 6s ease-in-out infinite;
+}
+
+/* ============================================================
+   MOVIMIENTO DE RECURSOS — v2.2
+   Animaciones sutiles para dar vida sin distraer
+   ============================================================ */
+
+/* Hero: watermark DH flotando lento con leve giro */
+.hero-dh-watermark {
+  animation: dhFloat 16s ease-in-out infinite;
+}
+@keyframes dhFloat {
+  0%, 100% { transform: translateY(-52%) rotate(0deg); }
+  50%      { transform: translateY(-49%) rotate(1deg); }
+}
+
+/* Hero: firma con drift horizontal muy lento */
+.hero-signature-watermark {
+  animation: signatureDrift 22s ease-in-out infinite;
+}
+@keyframes signatureDrift {
+  0%, 100% { transform: translateX(0); }
+  50%      { transform: translateX(2.5%); }
+}
+
+/* Hero: divisor dorado con brillo pulsante */
+.hero-gold-divider-img {
+  animation: dividerGlow 5s ease-in-out infinite;
+}
+@keyframes dividerGlow {
+  0%, 100% { opacity: 0.55; filter: drop-shadow(0 0 0 rgba(185,154,82,0)); }
+  50%      { opacity: 0.9;  filter: drop-shadow(0 0 6px rgba(185,154,82,.45)); }
+}
+
+/* Tradición: imagen editorial con zoom lento tipo Ken Burns */
+.tradicion-editorial-img {
+  animation: kenBurns 20s ease-in-out infinite alternate;
+  transform-origin: 60% 40%;
+}
+@keyframes kenBurns {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.07); }
+}
+
+/* Tradición: DH watermark con respiración */
+.story-dh {
+  animation: storyDhBreathe 7s ease-in-out infinite;
+}
+@keyframes storyDhBreathe {
+  0%, 100% { opacity: 0.16; }
+  50%      { opacity: 0.26; }
+}
+
+/* Footer: logo con glow dorado respirando */
+@keyframes footerLogoGlow {
+  0%, 100% { filter: drop-shadow(0 0 8px rgba(185,154,82,.12)); }
+  50%      { filter: drop-shadow(0 0 16px rgba(185,154,82,.30)); }
+}
+
+/* Colecciones: textura ornamental con leve deriva */
+.colecciones::before {
+  animation: ornamentDrift 40s linear infinite;
+}
+@keyframes ornamentDrift {
+  0%   { background-position: 0% 0%; }
+  100% { background-position: 100% 100%; }
+}
+
+/* Accesibilidad: respetar preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .hero-dh-watermark,
+  .hero-signature-watermark,
+  .hero-gold-divider-img,
+  .tradicion-editorial-img,
+  .story-dh,
+  .footer-logo-img,
+  .colecciones::before,
+  .watch-layer,
+  .hero-seal-img {
+    animation: none !important;
+  }
 }
