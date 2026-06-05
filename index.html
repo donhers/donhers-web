@@ -58,16 +58,48 @@
        HERO
        ======================== -->
   <section class="hero" id="hero" aria-label="Portada">
-    <!-- Intro screen: logo splash antes del video -->
+
+    <!-- Background layers: watermarks -->
+    <div class="hero-bg" aria-hidden="true">
+      <div class="hero-watermark">DH</div>
+      <div class="hero-signature">Donher's</div>
+    </div>
+
+    <!-- Intro: logo splash -->
     <div class="hero-intro" id="hero-intro" aria-hidden="true">
       <img src="images/logo-sin fondo.png" alt="" class="hero-intro-logo">
     </div>
+
+    <!-- Canvas watch animation -->
     <canvas class="hero-video" id="watch-canvas" aria-hidden="true"></canvas>
+
+    <!-- Content -->
     <div class="hero-content">
       <p class="hero-tagline hero-tagline--delayed" data-animate>El tiempo que te define.</p>
+      <h1 class="hero-title hero-tagline--delayed" data-animate>Relojes de carácter.<br>Para toda la vida.</h1>
+      <div class="hero-gold-divider hero-tagline--delayed" aria-hidden="true"></div>
       <p class="hero-subtext hero-subtext--delayed" data-animate>Relojes de acero para quienes eligen destacar.<br>Envío a todo el país.</p>
-      <a href="#colecciones" class="hero-cta btn-shimmer hero-cta--delayed" data-animate>VER COLECCIÓN</a>
+      <div class="hero-ctas">
+        <a href="#colecciones" class="hero-cta btn-shimmer hero-cta--delayed" data-animate>VER COLECCIÓN</a>
+        <a href="https://wa.me/59898199059?text=Hola%20Donher%27s!%20Quiero%20consultar%20sobre%20sus%20relojes."
+           class="hero-cta-wa hero-cta--delayed" data-animate
+           target="_blank" rel="noopener noreferrer">Consultar por WhatsApp →</a>
+      </div>
     </div>
+
+    <!-- Circular seal -->
+    <div class="hero-seal" aria-hidden="true">
+      <svg viewBox="0 0 120 120" width="100%" height="100%">
+        <g class="hero-seal-ring">
+          <path id="sealPath" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0" fill="none"/>
+          <text class="seal-text">
+            <textPath href="#sealPath" startOffset="0%">RELOJERÍA CLÁSICA · URUGUAY · DONHER'S ·&nbsp;</textPath>
+          </text>
+        </g>
+        <text x="60" y="67" class="hero-seal-center" text-anchor="middle" font-family="serif" font-size="22" fill="#B99A52">⚜</text>
+      </svg>
+    </div>
+
     <a href="#colecciones" class="hero-scroll-hint" aria-label="Ver colección">↓ Descubrí los modelos</a>
   </section>
 
@@ -324,7 +356,7 @@
   </section>
 
   <!-- ========================
-       POR QUÉ DONHERS
+       ELEGIDOS POR QUIENES SABEN
        ======================== -->
   <section class="porque" id="porque" aria-label="Por qué elegirnos">
     <div class="section-header" data-animate>
@@ -371,6 +403,44 @@
         <p class="porque-text">Te asesoramos por WhatsApp para que elijas el modelo ideal. Sin bots, sin formularios.</p>
       </div>
 
+      <div class="porque-col" data-animate>
+        <div class="porque-top-line"></div>
+        <div class="porque-icon" aria-hidden="true">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <h3 class="porque-title">Garantía y Confianza</h3>
+        <p class="porque-text">Todos nuestros relojes cuentan con garantía oficial y respaldo posventa.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ========================
+       TRADICIÓN QUE TRASCIENDE
+       ======================== -->
+  <section class="tradicion" id="tradicion" aria-label="Sobre Donher's">
+    <div class="tradicion-inner">
+
+      <div class="tradicion-image" data-animate>
+        <div class="tradicion-img-placeholder">
+          <span class="tradicion-dh-bg" aria-hidden="true">DH</span>
+        </div>
+      </div>
+
+      <div class="tradicion-copy" data-animate>
+        <p class="section-accent">Sobre Donher's</p>
+        <h2 class="tradicion-title">Tradición que<br>trasciende</h2>
+        <div class="hero-gold-divider" aria-hidden="true" style="margin-bottom:28px"></div>
+        <p class="tradicion-text">Donher's nace de la pasión por la relojería clásica. Seleccionamos cada pieza con el compromiso de ofrecer elegancia, precisión y carácter atemporal.</p>
+        <a href="https://wa.me/59898199059?text=Hola%20Donher%27s!%20Quiero%20saber%20m%C3%A1s%20sobre%20la%20marca."
+           class="tradicion-cta" target="_blank" rel="noopener noreferrer">
+          Conocé nuestra historia →
+        </a>
+      </div>
+
     </div>
   </section>
 
@@ -378,6 +448,38 @@
        FOOTER
        ======================== -->
   <footer class="footer" aria-label="Pie de página">
+
+    <!-- Mini beneficios -->
+    <div class="footer-benefits">
+      <div class="footer-benefit">
+        <span class="footer-benefit-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </span>
+        <div class="footer-benefit-info">
+          <span class="footer-benefit-label">Pago Seguro</span>
+          <span class="footer-benefit-sub">Protegemos tus datos</span>
+        </div>
+      </div>
+      <div class="footer-benefit">
+        <span class="footer-benefit-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </span>
+        <div class="footer-benefit-info">
+          <span class="footer-benefit-label">Envío a todo Uruguay</span>
+          <span class="footer-benefit-sub">Rápido y con seguimiento</span>
+        </div>
+      </div>
+      <div class="footer-benefit">
+        <span class="footer-benefit-icon" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.82"/></svg>
+        </span>
+        <div class="footer-benefit-info">
+          <span class="footer-benefit-label">Cambio Garantizado</span>
+          <span class="footer-benefit-sub">Hasta 7 días</span>
+        </div>
+      </div>
+    </div>
+
     <div class="footer-row-1">
       <div class="footer-brand">
         <div class="footer-dh-mark" aria-hidden="true">DH</div>
@@ -393,6 +495,12 @@
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
             <circle cx="12" cy="12" r="3"/>
             <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+        </a>
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
+           class="footer-social-link" aria-label="Facebook de Donher´s">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
           </svg>
         </a>
         <a href="https://wa.me/59898199059" target="_blank" rel="noopener noreferrer"

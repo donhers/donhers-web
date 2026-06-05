@@ -343,9 +343,11 @@ img {
 }
 
 .hero-intro-logo {
-  width: min(280px, 55%);
+  width: min(260px, 50%);
   height: auto;
-  filter: drop-shadow(0 0 24px rgba(201,168,76,0.35)) drop-shadow(0 2px 12px rgba(0,0,0,0.6));
+  border-radius: 6px;
+  /* resplandor oscuro detrás del logo para que se lea sobre el video */
+  box-shadow: 0 0 80px 60px rgba(0,0,0,0.75);
   animation: hero-intro-logo-anim 4.5s ease forwards;
 }
 
