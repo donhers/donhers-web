@@ -558,16 +558,26 @@
 .label-movement { left: 56%; top: 6%;  }
 .label-case     { left: 71%; top: 10%; }
 
-/* Mobile: solo watch-complete flotando */
+/* ── Mobile hero layout ─────────────────────────────────────── */
 @media (max-width: 768px) {
+
+  /* Hero: columna, contenido abajo */
+  .hero {
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding-bottom: 72px;
+    min-height: 100svh;
+  }
+
+  /* Watch: absoluto top-right, más pequeño */
   .watch-animation {
-    position: relative;
-    right: auto;
-    top: auto;
+    position: absolute !important;
+    right: -6%;
+    top: 48px;
     transform: none;
-    width: min(86vw, 380px);
-    margin: 32px auto 0;
-    aspect-ratio: 1 / 1;
+    width: min(68vw, 320px);
+    margin: 0;
   }
   .watch-layer:not(.watch-complete) { display: none; }
   .part-label { display: none; }
@@ -575,10 +585,69 @@
     animation: mobileWatchFloat 6s ease-in-out infinite !important;
     opacity: 1 !important;
   }
-  @keyframes mobileWatchFloat {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50%      { transform: translateY(-10px) scale(1.02); }
+
+  /* Contenido: full width, left-aligned */
+  .hero-content {
+    padding: 0 6%;
+    max-width: 100%;
+    width: 100%;
+    position: relative;
+    z-index: 3;
+    align-items: flex-start;
   }
+
+  /* Eyebrow */
+  .hero-tagline {
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* H1 */
+  .hero-title {
+    font-size: clamp(2.6rem, 11vw, 3.6rem) !important;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+  }
+
+  /* Subtext */
+  .hero-subtext {
+    font-size: 0.82rem;
+    max-width: 100%;
+    line-height: 1.7;
+  }
+
+  /* CTAs: izquierda, botón auto */
+  .hero-ctas {
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .hero-cta {
+    padding: 13px 28px;
+    font-size: 0.72rem;
+  }
+
+  .hero-cta-wa {
+    font-size: 0.75rem;
+  }
+
+  /* Gold divider */
+  .hero-gold-divider-img {
+    width: 80px;
+    margin-bottom: 16px;
+  }
+
+  /* Seal: ocultar en mobile */
+  .hero-seal-img { display: none; }
+
+  /* Watermarks: más sutiles */
+  .hero-dh-watermark { opacity: 0.03; }
+  .hero-signature-watermark { opacity: 0.03; }
+}
+
+@keyframes mobileWatchFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%      { transform: translateY(-10px) scale(1.02); }
 }
 
 /* ── Colecciones: textura ornamental ─────────────────────────── */
