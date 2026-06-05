@@ -1,0 +1,375 @@
+/* ============================================================
+   DONHERS — v2 visual overrides
+   Carga después de styles.css — override por cascade
+   ============================================================ */
+
+/* ── Nueva paleta ───────────────────────────────────────────── */
+:root {
+  --bg-deep:        #030303;
+  --bg-section:     #0A0A08;
+  --bg-card:        #0F0F0D;
+  --bg-card-hover:  #161614;
+  --gold:           #B99A52;
+  --gold-soft:      #D6BD73;
+  --gold-aged:      #9F7D35;
+  --gold-muted:     rgba(185, 154, 82, 0.10);
+  --gold-glow:      rgba(185, 154, 82, 0.28);
+  --text-primary:   #F5EFE3;
+  --text-secondary: rgba(245, 239, 227, 0.55);
+  --text-muted:     rgba(245, 239, 227, 0.28);
+  --border:         rgba(245, 239, 227, 0.07);
+  --border-gold:    rgba(185, 154, 82, 0.28);
+}
+
+/* ── Navbar ─────────────────────────────────────────────────── */
+.navbar-logo {
+  height: 48px;
+  filter: brightness(0) invert(1);
+  opacity: 0.92;
+}
+
+/* ── Hero intro logo ────────────────────────────────────────── */
+.hero-intro-logo {
+  width: min(420px, 72%);
+  filter:
+    drop-shadow(0 0 60px rgba(185,154,82,0.50))
+    drop-shadow(0 0 22px rgba(185,154,82,0.28))
+    drop-shadow(0 4px 24px rgba(0,0,0,0.75));
+  animation: hero-intro-logo-anim-v2 5.5s ease forwards;
+}
+
+@keyframes hero-intro-logo-anim-v2 {
+  0%   { opacity: 0; transform: scale(0.88) translateY(12px); }
+  11%  { opacity: 1; transform: scale(1)    translateY(0); }
+  56%  { opacity: 1; transform: scale(1)    translateY(0); }
+  90%  { opacity: 0; transform: scale(1.05) translateY(-8px); }
+  100% { opacity: 0; }
+}
+
+.hero-tagline--delayed,
+.hero-subtext--delayed,
+.hero-cta--delayed {
+  animation-delay: 3.8s !important;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+/* ── Hero background layers ─────────────────────────────────── */
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero-watermark {
+  position: absolute;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(20rem, 38vw, 48rem);
+  color: var(--text-primary);
+  opacity: 0.026;
+  letter-spacing: -0.06em;
+  line-height: 1;
+  left: -3%;
+  top: 50%;
+  transform: translateY(-52%);
+  user-select: none;
+  pointer-events: none;
+}
+
+.hero-signature {
+  position: absolute;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(5rem, 12vw, 14rem);
+  color: var(--text-primary);
+  opacity: 0.038;
+  bottom: 10%;
+  left: 0;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ── Hero content ────────────────────────────────────────────── */
+.hero-tagline {
+  font-size: clamp(1.0rem, 1.8vw, 1.2rem);
+  color: var(--gold);
+  font-style: italic;
+  letter-spacing: 0.02em;
+  margin-bottom: 18px;
+}
+
+.hero-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.4rem, 4.8vw, 4.4rem);
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+  line-height: 1.07;
+  margin-bottom: 26px;
+}
+
+.hero-gold-divider {
+  width: 52px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold) 40%, var(--gold) 60%, transparent);
+  margin-bottom: 22px;
+  opacity: 0.68;
+  flex-shrink: 0;
+}
+
+.hero-ctas {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.hero-cta-wa {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  font-size: 0.80rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.06em;
+  transition: color 0.25s ease;
+}
+.hero-cta-wa:hover { color: var(--gold); }
+
+/* ── Circular seal ───────────────────────────────────────────── */
+.hero-seal {
+  position: absolute;
+  bottom: 52px;
+  right: 5%;
+  width: min(108px, 14vw);
+  height: min(108px, 14vw);
+  z-index: 3;
+  opacity: 0.58;
+  pointer-events: none;
+}
+
+.hero-seal-ring {
+  transform-origin: 60px 60px;
+  animation: seal-spin 28s linear infinite;
+}
+
+@keyframes seal-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.seal-text {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  letter-spacing: 2.4px;
+  fill: var(--gold);
+}
+
+/* ── Gallery cards premium ──────────────────────────────────── */
+.gallery-card {
+  border-color: rgba(185,154,82,0.22);
+}
+
+.gallery-card:hover {
+  border-color: var(--gold);
+  box-shadow: 0 16px 48px rgba(185,154,82,0.12);
+  transform: translateY(-8px);
+}
+
+/* ── Porque section: 4 columns ──────────────────────────────── */
+.porque-grid {
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  max-width: 1100px;
+}
+
+/* ── Tradición section ───────────────────────────────────────── */
+.tradicion {
+  background: var(--bg-deep);
+  padding: 120px 7%;
+  border-top: 1px solid var(--border);
+}
+
+.tradicion-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 88px;
+  align-items: center;
+}
+
+.tradicion-image {
+  position: relative;
+  aspect-ratio: 5/4;
+  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid var(--border-gold);
+}
+
+.tradicion-img-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #0A0A08 0%, #161410 45%, #1C1812 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.tradicion-img-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 60% 40%, rgba(185,154,82,0.06) 0%, transparent 70%);
+}
+
+.tradicion-dh-bg {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(8rem, 18vw, 18rem);
+  color: var(--gold);
+  opacity: 0.07;
+  letter-spacing: -0.06em;
+  user-select: none;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.tradicion-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.tradicion-title {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.4rem, 4vw, 3.8rem);
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+  line-height: 1.08;
+  margin-bottom: 28px;
+}
+
+.tradicion-text {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.85;
+  max-width: 440px;
+}
+
+.tradicion-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-top: 40px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(185,154,82,0.35);
+  transition: color 0.25s, border-color 0.25s, gap 0.25s;
+}
+.tradicion-cta:hover {
+  color: var(--gold-soft);
+  border-color: var(--gold-soft);
+  gap: 14px;
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.footer {
+  background: #000;
+  border-top: 1px solid rgba(185,154,82,0.30);
+  padding: 0 7% 40px;
+}
+
+.footer-benefits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--border);
+  padding: 36px 0;
+  margin-bottom: 40px;
+}
+
+.footer-benefit {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 28px;
+  border-right: 1px solid var(--border);
+}
+.footer-benefit:first-child { padding-left: 0; }
+.footer-benefit:last-child  { border-right: none; }
+
+.footer-benefit-icon {
+  color: var(--gold);
+  flex-shrink: 0;
+  opacity: 0.80;
+}
+
+.footer-benefit-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.footer-benefit-label {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.footer-benefit-sub {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  color: var(--text-muted);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .porque-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 36px;
+  }
+  .tradicion-inner {
+    grid-template-columns: 1fr;
+    gap: 52px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-title { font-size: clamp(2.2rem, 9vw, 3.2rem); }
+  .hero-ctas  { align-items: center; }
+  .hero-seal  { display: none; }
+  .hero-watermark { opacity: 0.016; }
+
+  .porque-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    max-width: 100%;
+  }
+
+  .footer-benefits {
+    grid-template-columns: 1fr;
+    padding: 20px 0;
+  }
+  .footer-benefit {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+  }
+  .footer-benefit:last-child { border-bottom: none; }
+}
