@@ -594,19 +594,22 @@
     position: relative;
     z-index: 3;
     align-items: flex-start;
+    text-align: left;
   }
 
   /* Eyebrow */
   .hero-tagline {
     font-size: 0.78rem;
     letter-spacing: 0.04em;
+    text-align: left;
   }
 
   /* H1 */
   .hero-title {
-    font-size: clamp(2.6rem, 11vw, 3.6rem) !important;
+    font-size: clamp(2.4rem, 10vw, 3.2rem) !important;
     line-height: 1.05;
     letter-spacing: 0.02em;
+    text-align: left;
   }
 
   /* Subtext */
@@ -614,6 +617,7 @@
     font-size: 0.82rem;
     max-width: 100%;
     line-height: 1.7;
+    text-align: left;
   }
 
   /* CTAs: izquierda, botón auto */
@@ -629,12 +633,13 @@
 
   .hero-cta-wa {
     font-size: 0.75rem;
+    text-align: left;
   }
 
   /* Gold divider */
   .hero-gold-divider-img {
-    width: 80px;
-    margin-bottom: 16px;
+    width: 160px;
+    margin-bottom: 18px;
   }
 
   /* Seal: ocultar en mobile */
