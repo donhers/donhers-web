@@ -468,31 +468,65 @@
 }
 
 .watch-complete {
-  animation: watchFloat 8s ease-in-out infinite;
+  animation: watchComplete 14s ease-in-out infinite;
+}
+.layer-strap-bottom { animation: strapBottomExplode 14s ease-in-out infinite; }
+.layer-strap-top    { animation: strapTopExplode 14s ease-in-out infinite; }
+.layer-case         { animation: caseExplode 14s ease-in-out infinite; }
+.layer-movement     { animation: movementExplode 14s ease-in-out infinite; }
+.layer-dial         { animation: dialExplode 14s ease-in-out infinite; }
+.layer-hands        { animation: handsExplode 14s ease-in-out infinite; }
+.layer-bezel        { animation: bezelExplode 14s ease-in-out infinite; }
+.layer-crystal      { animation: crystalExplode 14s ease-in-out infinite; }
+
+@keyframes watchComplete {
+  0%, 22%   { opacity: 1; transform: translateY(0) scale(1); filter: drop-shadow(0 32px 64px rgba(0,0,0,.70)); }
+  34%, 74%  { opacity: 0; transform: translateY(-6px) scale(.97); filter: none; }
+  88%, 100% { opacity: 1; transform: translateY(0) scale(1); filter: drop-shadow(0 32px 64px rgba(0,0,0,.70)); }
+}
+@keyframes crystalExplode {
+  0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.92); }
+  36%, 62% { opacity: .7;  transform: translate3d(-150px,-8px,0) scale(.68) rotate(-4deg); }
+  74%      { opacity: .55; transform: translate3d(-230px,-4px,0) scale(.64) rotate(-8deg); }
+}
+@keyframes bezelExplode {
+  0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.9); }
+  36%, 62% { opacity: .9;  transform: translate3d(-90px,0,0) scale(.70) rotate(-5deg); }
+  74%      { opacity: .85; transform: translate3d(-165px,0,0) scale(.68) rotate(-9deg); }
+}
+@keyframes dialExplode {
+  0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.74); }
+  36%, 62% { opacity: 1; transform: translate3d(0,0,0) scale(.62); }
+  74%      { opacity: 1; transform: translate3d(-14px,0,0) scale(.58); }
+}
+@keyframes handsExplode {
+  0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.5); }
+  36%, 62% { opacity: 1;  transform: translate3d(6px,-80px,0) scale(.40) rotate(7deg); }
+  74%      { opacity: .9; transform: translate3d(0,-125px,0) scale(.36) rotate(12deg); }
+}
+@keyframes movementExplode {
+  0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.55); }
+  36%, 62% { opacity: .95; transform: translate3d(100px,0,0) scale(.50); }
+  74%      { opacity: 1;   transform: translate3d(160px,0,0) scale(.48); }
+}
+@keyframes caseExplode {
+  0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.7); }
+  36%, 62% { opacity: .92; transform: translate3d(185px,0,0) scale(.60) rotate(3deg); }
+  74%      { opacity: .9;  transform: translate3d(260px,0,0) scale(.58) rotate(5deg); }
+}
+@keyframes strapTopExplode {
+  0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.58); }
+  36%, 62% { opacity: .9;  transform: translate3d(145px,-150px,0) scale(.40) rotate(8deg); }
+  74%      { opacity: .85; transform: translate3d(225px,-185px,0) scale(.38) rotate(12deg); }
+}
+@keyframes strapBottomExplode {
+  0%, 22%, 88%, 100% { opacity: 0; transform: translate3d(0,0,0) scale(.58); }
+  36%, 62% { opacity: .9;  transform: translate3d(145px,155px,0) scale(.40) rotate(-7deg); }
+  74%      { opacity: .85; transform: translate3d(225px,190px,0) scale(.38) rotate(-12deg); }
 }
 
-/* capas ocultas — se activan cuando haya imágenes con fondo transparente real */
-.layer-crystal, .layer-bezel, .layer-dial, .layer-hands,
-.layer-case, .layer-movement, .layer-strap-top, .layer-strap-bottom {
-  display: none;
-}
-
-@keyframes watchFloat {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-    filter: drop-shadow(0 32px 64px rgba(0,0,0,.70)) drop-shadow(0 0 40px rgba(185,154,82,.08));
-  }
-  50% {
-    transform: translateY(-14px) scale(1.015);
-    filter: drop-shadow(0 48px 80px rgba(0,0,0,.80)) drop-shadow(0 0 55px rgba(185,154,82,.13));
-  }
-}
-
-/* ── Part labels — ocultas hasta tener capas con alpha correcto */
+/* ── Part labels (desktop only) ─────────────────────────────── */
 .part-label {
-  display: none !important;
-}
-.part-label-hidden {
   position: absolute;
   z-index: 8;
   color: var(--gold);
