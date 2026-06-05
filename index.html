@@ -20,7 +20,7 @@
        ======================== -->
   <nav class="navbar" id="navbar" aria-label="Navegación principal">
     <a href="#hero" class="navbar-brand-link" aria-label="Donher´s — Inicio">
-      <img src="images/Logo.jpeg" alt="Donher´s" class="navbar-logo">
+      <img src="images/Recursos/logo-donhers-gold-navbar.png" alt="Donher´s" class="navbar-logo">
     </a>
     <div class="navbar-right">
       <button class="navbar-icon-btn" id="user-toggle" aria-label="Mi cuenta">
@@ -62,23 +62,39 @@
 
     <!-- Background layers: watermarks -->
     <div class="hero-bg" aria-hidden="true">
-      <div class="hero-watermark">DH</div>
-      <div class="hero-signature">Donher's</div>
+      <div class="hero-noise"></div>
+      <img src="images/Recursos/dh-watermark.svg" class="hero-dh-watermark" alt="">
+      <img src="images/Recursos/donhers-signature-watermark.svg" class="hero-signature-watermark" alt="">
     </div>
 
     <!-- Intro: logo splash -->
     <div class="hero-intro" id="hero-intro" aria-hidden="true">
-      <img src="images/logo-sin fondo.png" alt="" class="hero-intro-logo">
+      <img src="images/Recursos/logo-donhers-gold-transparent-512.png" alt="" class="hero-intro-logo">
     </div>
 
-    <!-- Canvas watch animation -->
-    <canvas class="hero-video" id="watch-canvas" aria-hidden="true"></canvas>
+    <!-- Watch animation: image layers -->
+    <div class="watch-animation" aria-hidden="true">
+      <img class="watch-layer watch-complete" src="images/Recursos/watch-complete.png" alt="">
+      <img class="watch-layer layer-crystal" src="images/Recursos/watch-crystal.png" alt="">
+      <img class="watch-layer layer-bezel" src="images/Recursos/watch-bezel.png" alt="">
+      <img class="watch-layer layer-dial" src="images/Recursos/watch-dial.png" alt="">
+      <img class="watch-layer layer-hands" src="images/Recursos/watch-hands.png" alt="">
+      <img class="watch-layer layer-case" src="images/Recursos/watch-case.png" alt="">
+      <img class="watch-layer layer-movement" src="images/Recursos/watch-movement.png" alt="">
+      <img class="watch-layer layer-strap-top" src="images/Recursos/watch-strap-top.png" alt="">
+      <img class="watch-layer layer-strap-bottom" src="images/Recursos/watch-strap-bottom.png" alt="">
+      <span class="part-label label-crystal">Cristal de zafiro</span>
+      <span class="part-label label-bezel">Bisel pulido</span>
+      <span class="part-label label-dial">Esfera soleil</span>
+      <span class="part-label label-movement">Movimiento automático</span>
+      <span class="part-label label-case">Caja acero 316L</span>
+    </div>
 
     <!-- Content -->
     <div class="hero-content">
       <p class="hero-tagline hero-tagline--delayed" data-animate>El tiempo que te define.</p>
       <h1 class="hero-title hero-tagline--delayed" data-animate>Relojes de carácter.<br>Para toda la vida.</h1>
-      <div class="hero-gold-divider hero-tagline--delayed" aria-hidden="true"></div>
+      <img src="images/Recursos/gold-divider.svg" class="hero-gold-divider-img hero-tagline--delayed" aria-hidden="true" alt="">
       <p class="hero-subtext hero-subtext--delayed" data-animate>Relojes de acero para quienes eligen destacar.<br>Envío a todo el país.</p>
       <div class="hero-ctas">
         <a href="#colecciones" class="hero-cta btn-shimmer hero-cta--delayed" data-animate>VER COLECCIÓN</a>
@@ -89,17 +105,7 @@
     </div>
 
     <!-- Circular seal -->
-    <div class="hero-seal" aria-hidden="true">
-      <svg viewBox="0 0 120 120" width="100%" height="100%">
-        <g class="hero-seal-ring">
-          <path id="sealPath" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0" fill="none"/>
-          <text class="seal-text">
-            <textPath href="#sealPath" startOffset="0%">RELOJERÍA CLÁSICA · URUGUAY · DONHER'S ·&nbsp;</textPath>
-          </text>
-        </g>
-        <text x="60" y="67" class="hero-seal-center" text-anchor="middle" font-family="serif" font-size="22" fill="#B99A52">⚜</text>
-      </svg>
-    </div>
+    <img src="images/Recursos/seal-relojeria-clasica.svg" class="hero-seal-img" aria-hidden="true" alt="">
 
     <a href="#colecciones" class="hero-scroll-hint" aria-label="Ver colección">↓ Descubrí los modelos</a>
   </section>
@@ -426,9 +432,9 @@
     <div class="tradicion-inner">
 
       <div class="tradicion-image" data-animate>
-        <div class="tradicion-img-placeholder">
-          <span class="tradicion-dh-bg" aria-hidden="true">DH</span>
-        </div>
+        <img src="images/Recursos/editorial-watchmaking.png" class="tradicion-editorial-img" alt="Relojería artesanal Donher's">
+        <div class="tradicion-overlay" aria-hidden="true"></div>
+        <img src="images/Recursos/dh-watermark.svg" class="story-dh" aria-hidden="true" alt="">
       </div>
 
       <div class="tradicion-copy" data-animate>
@@ -483,7 +489,7 @@
 
     <div class="footer-row-1">
       <div class="footer-brand">
-        <div class="footer-dh-mark" aria-hidden="true">DH</div>
+        <img src="images/Recursos/logo-donhers-gold-transparent-512.png" class="footer-logo-img" alt="Donher's">
         <div class="footer-brand-words">
           <span class="footer-brand-name">Donher´s</span>
           <span class="footer-brand-sub">Relojería Clásica</span>
@@ -834,6 +840,5 @@
   <div class="toast-container" id="toast-container" aria-live="polite"></div>
 
   <script src="main.js"></script>
-  <script src="watch-animation.js"></script>
 </body>
 </html>

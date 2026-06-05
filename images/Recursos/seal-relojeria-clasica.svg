@@ -1,0 +1,16 @@
+<svg width="220" height="220" viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <path id="donhersSealPath" d="M110,110 m-82,0 a82,82 0 1,1 164,0 a82,82 0 1,1 -164,0"/>
+  </defs>
+  <circle cx="110" cy="110" r="88" stroke="#B99A52" stroke-opacity="0.42" stroke-width="1"/>
+  <circle cx="110" cy="110" r="60" stroke="#B99A52" stroke-opacity="0.18" stroke-width="1"/>
+  <text font-family="Montserrat, Arial, sans-serif" font-size="11" letter-spacing="5" fill="#D6BD73">
+    <textPath href="#donhersSealPath" startOffset="0%">
+      DONHER'S · RELOJERÍA CLÁSICA · URUGUAY ·
+    </textPath>
+  </text>
+  <text x="110" y="119" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="40" fill="#B99A52" fill-opacity="0.9">DH</text>
+  <path d="M110 74L116 86L129 88L119 98L122 112L110 105L98 112L101 98L91 88L104 86L110 74Z" fill="#B99A52" fill-opacity="0.22"/>
+  <line x1="78" y1="142" x2="142" y2="142" stroke="#B99A52" stroke-opacity="0.55"/>
+  <circle cx="110" cy="142" r="3" fill="#B99A52"/>
+</svg>
