@@ -449,6 +449,14 @@
   z-index: 1;
   pointer-events: none;
 }
+.watch-animation::before {
+  content: '';
+  position: absolute;
+  inset: -15%;
+  background: radial-gradient(ellipse at center, rgba(3,3,3,0.96) 30%, rgba(3,3,3,0.82) 55%, transparent 78%);
+  z-index: -1;
+  pointer-events: none;
+}
 
 .watch-layer {
   position: absolute;

@@ -256,9 +256,9 @@ img {
   background-image:
     linear-gradient(
       to right,
-      rgba(10, 10, 10, 0.92) 0%,
-      rgba(10, 10, 10, 0.55) 55%,
-      rgba(10, 10, 10, 0.10) 100%
+      rgba(10, 10, 10, 0.96) 0%,
+      rgba(10, 10, 10, 0.72) 45%,
+      rgba(10, 10, 10, 0.82) 100%
     ),
     url('images/hero-bg.jpg');
   background-size: cover;
