@@ -254,16 +254,9 @@ img {
   overflow: hidden;
   background-color: #0a0a0a;
   background-image:
-    linear-gradient(
-      to right,
-      rgba(10, 10, 10, 0.96) 0%,
-      rgba(10, 10, 10, 0.72) 45%,
-      rgba(10, 10, 10, 0.82) 100%
-    ),
-    url('images/hero-bg.jpg');
+    radial-gradient(ellipse at 70% 50%, rgba(185,154,82,0.06) 0%, transparent 60%),
+    linear-gradient(135deg, #0d0c09 0%, #030303 60%, #080706 100%);
   background-size: cover;
-  background-position: right center;
-  background-repeat: no-repeat;
 }
 
 .hero-content {
