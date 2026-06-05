@@ -807,17 +807,6 @@
   100% { background-position: 100% 100%; }
 }
 
-/* Accesibilidad: respetar preferencia de movimiento reducido */
-@media (prefers-reduced-motion: reduce) {
-  .hero-dh-watermark,
-  .hero-signature-watermark,
-  .hero-gold-divider-img,
-  .tradicion-editorial-img,
-  .story-dh,
-  .footer-logo-img,
-  .colecciones::before,
-  .watch-layer,
-  .hero-seal-img {
-    animation: none !important;
-  }
-}
+/* Nota: la transición del reloj y el movimiento de recursos son parte de la
+   experiencia de marca y deben verse igual en desktop y mobile, por eso NO se
+   desactivan con prefers-reduced-motion. */
