@@ -810,3 +810,114 @@
 /* Nota: la transición del reloj y el movimiento de recursos son parte de la
    experiencia de marca y deben verse igual en desktop y mobile, por eso NO se
    desactivan con prefers-reduced-motion. */
+
+/* ============================================================
+   CHECKOUT — Mercado Pago (link directo) — v2.3
+   ============================================================ */
+.mp-intro {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 18px 0 16px;
+}
+
+.mp-amount-card {
+  border: 1px solid var(--border-gold);
+  border-radius: 4px;
+  padding: 16px 18px;
+  background: rgba(185,154,82,0.04);
+  margin-bottom: 16px;
+}
+.mp-amount-row,
+.mp-ref-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.mp-amount-row { margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.mp-amount-label,
+.mp-ref-label {
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+.mp-amount-val {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--gold-soft);
+}
+.mp-ref-num {
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+}
+
+.mp-warning {
+  font-family: var(--font-sans);
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  background: rgba(185,154,82,0.06);
+  border-left: 2px solid var(--gold);
+  padding: 10px 12px;
+  border-radius: 2px;
+  margin-bottom: 18px;
+}
+.mp-warning strong { color: var(--gold-soft); }
+
+/* Botón pagar (es <a>) */
+#btn-mp-pay {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  margin-bottom: 12px;
+}
+
+.btn-mp-confirm {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border-gold);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  padding: 12px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s;
+}
+.btn-mp-confirm:hover {
+  background: var(--gold-muted);
+  border-color: var(--gold);
+}
+.btn-mp-confirm:disabled { opacity: 0.5; cursor: default; }
+
+.mp-comprobante-hint {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+/* Badge de estado de pago en "Mis pedidos" */
+.order-pay-badge {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin: 2px 0 10px;
+}
+.order-pay-badge--pending {
+  background: rgba(185,154,82,0.12);
+  color: var(--gold-soft);
+  border: 1px solid var(--border-gold);
+}

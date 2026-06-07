@@ -453,7 +453,12 @@ const Orders = {
         day: '2-digit', month: '2-digit', year: 'numeric'
       });
       const itemsSummary = o.items.map(i => `${i.name} × ${i.qty}`).join(', ');
-      const statusIndex  = trackSteps.findIndex(s => s.toLowerCase() === (o.status || 'confirmado'));
+      const isPendingPay = (o.status || '') === 'pendiente_pago';
+      // Pedido pendiente de verificación de pago: el track aún no arrancó
+      const statusIndex  = isPendingPay ? -1 : trackSteps.findIndex(s => s.toLowerCase() === (o.status || 'confirmado'));
+      const payBadge = isPendingPay
+        ? '<span class="order-pay-badge order-pay-badge--pending">⏳ Pago a verificar</span>'
+        : '';
 
       const trackHtml = trackSteps.map((s, i) => {
         const done = i <= statusIndex;
@@ -467,7 +472,7 @@ const Orders = {
 
       const methodLabel = o.paymentMethod === 'transfer'
         ? '🏦 Transferencia bancaria'
-        : '💳 Mercado Pago / Tarjeta';
+        : '💳 Mercado Pago';
 
       // Datos de envío y zona
       let shipInfo = '';
@@ -490,6 +495,7 @@ const Orders = {
             <span class="order-id">${o.id}</span>
             <span class="order-date">${date}</span>
           </div>
+          ${payBadge}
           <p class="order-items-text">${itemsSummary}</p>
           ${shipInfo}
           <div class="order-track">${trackHtml}</div>
@@ -628,6 +634,8 @@ const Checkout = {
       if (!this._orderId) this._orderId = genOrderId();
       const bankRef = document.getElementById('bank-ref-val');
       if (bankRef) bankRef.textContent = this._orderId;
+      const mpRef = document.getElementById('mp-ref-val');
+      if (mpRef) mpRef.textContent = this._orderId;
       // Actualizar ambos totales
       const t1 = document.getElementById('checkout-total-val');
       const t2 = document.getElementById('checkout-total-val-t');
@@ -695,8 +703,8 @@ const Checkout = {
       total:         Cart.total(),
       shipping:      this._shippingData,
       email,
-      paymentMethod, // 'card' | 'transfer'
-      status:        'confirmado'
+      paymentMethod, // 'mercadopago' | 'transfer'
+      status:        'pendiente_pago'
     };
 
     Orders.save(order);
@@ -715,20 +723,29 @@ const Checkout = {
     if (numEl)   numEl.textContent   = this._orderId;
     if (emailEl) emailEl.textContent = email;
 
+    // Mensaje honesto: el pedido queda registrado, el pago se verifica aparte
+    const successTitle = document.querySelector('.success-title');
+    const successMsg   = document.querySelector('.success-message');
+    if (successTitle) successTitle.textContent = '¡Pedido registrado!';
+    if (successMsg) {
+      const metodo = paymentMethod === 'transfer' ? 'tu transferencia' : 'tu pago en Mercado Pago';
+      successMsg.innerHTML = `Confirmamos el envío en cuanto verifiquemos ${metodo}. Envianos el comprobante por WhatsApp para agilizar el despacho.`;
+    }
+
     Cart.clear();
     this.goToStep(3);
   },
 
-  processPayment() {
-    const btn = document.getElementById('btn-pay');
+  confirmMercadoPago() {
+    const btn = document.getElementById('btn-mp-confirm');
     if (!btn) return;
     btn.disabled = true;
-    btn.textContent = 'PROCESANDO...';
+    btn.textContent = 'CONFIRMANDO...';
     setTimeout(() => {
-      this._confirmOrder('card');
+      this._confirmOrder('mercadopago');
       btn.disabled = false;
-      btn.textContent = 'PAGAR AHORA';
-    }, 2200);
+      btn.textContent = 'Ya realicé el pago — confirmar pedido';
+    }, 600);
   },
 
   processBankTransfer() {
@@ -908,27 +925,6 @@ function transformCards() {
 }
 
 /* ===========================
-   CARD MASK — formateo de tarjeta
-   =========================== */
-function initCardMasks() {
-  const num = document.getElementById('card-number');
-  const exp = document.getElementById('card-expiry');
-  if (num) {
-    num.addEventListener('input', () => {
-      let v = num.value.replace(/\D/g, '').substring(0, 16);
-      num.value = v.replace(/(.{4})/g, '$1 ').trim();
-    });
-  }
-  if (exp) {
-    exp.addEventListener('input', () => {
-      let v = exp.value.replace(/\D/g, '').substring(0, 4);
-      if (v.length >= 2) v = v.substring(0, 2) + '/' + v.substring(2);
-      exp.value = v;
-    });
-  }
-}
-
-/* ===========================
    EVENT LISTENERS
    =========================== */
 document.addEventListener('DOMContentLoaded', () => {
@@ -937,7 +933,6 @@ document.addEventListener('DOMContentLoaded', () => {
   Cart.init();
   Auth._updateUI();
   transformCards();
-  initCardMasks();
 
   /* -- Carrito -- */
   const cartToggle   = document.getElementById('cart-toggle');
@@ -1085,7 +1080,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const checkoutClose   = document.getElementById('checkout-close');
   const checkoutOverlay = document.getElementById('checkout-overlay');
   const shippingForm    = document.getElementById('shipping-form');
-  const paymentForm     = document.getElementById('payment-form');
   const backToStep1Btn  = document.getElementById('back-to-step1');
 
   if (checkoutClose) checkoutClose.addEventListener('click', () => closeModal('checkout-overlay'));
@@ -1155,12 +1149,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Step 2 → back
   if (backToStep1Btn) backToStep1Btn.addEventListener('click', () => Checkout.goToStep(1));
 
-  // Step 2 → pagar con tarjeta
-  if (paymentForm) {
-    paymentForm.addEventListener('submit', e => {
-      e.preventDefault();
-      Checkout.processPayment();
-    });
+  // Step 2 → confirmar pago con Mercado Pago
+  const mpConfirmBtn = document.getElementById('btn-mp-confirm');
+  if (mpConfirmBtn) {
+    mpConfirmBtn.addEventListener('click', () => Checkout.confirmMercadoPago());
   }
 
   // Step 2 → confirmar transferencia bancaria
