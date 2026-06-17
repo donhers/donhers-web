@@ -146,7 +146,7 @@
       '<td class="row-actions"><button class="mini guardar">Guardar</button><button class="mini del eliminar">×</button></td></tr>'
     ).join("");
 
-    el.innerHTML = '<div class="card"><div class="card-h">Productos (' + PRODUCTOS.length + ')</div>' +
+    el.innerHTML = '<div class="card"><div class="card-h">Productos (' + PRODUCTOS.length + ') <span style="font-size:12px;color:var(--muted);font-family:\'DM Sans\',sans-serif;font-weight:400">· editá cualquier dato (precio, nombre, categoría) y tocá Guardar</span></div>' +
       '<div class="form-grid" id="nuevo-prod">' +
       '<input class="field" id="np-id" placeholder="Código (DON00XX) *" style="margin:0">' +
       '<input class="field" id="np-nombre" placeholder="Nombre *" style="margin:0">' +
