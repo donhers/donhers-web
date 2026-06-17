@@ -665,6 +665,9 @@
   /* Seal: ocultar en mobile */
   .hero-seal-img { display: none; }
 
+  /* Splash de intro: se saltea en mobile para que no se encime con el título */
+  .hero-intro { display: none !important; }
+
   /* Watermarks: más sutiles */
   .hero-dh-watermark { opacity: 0.03; }
   .hero-signature-watermark { opacity: 0.03; }
