@@ -137,6 +137,8 @@
     const filas = PRODUCTOS.map((p) =>
       '<tr data-id="' + esc(p.id) + '">' +
       '<td>' + esc(p.id) + '</td>' +
+      '<td class="foto-cell">' + (p.img_url ? '<img src="' + esc(p.img_url) + '" alt="" style="width:38px;height:38px;object-fit:cover;border-radius:6px;display:block">' : '<span style="color:var(--muted)">sin foto</span>') +
+        '<label class="mini" style="cursor:pointer;margin-top:5px;display:inline-block">Subir<input type="file" accept="image/*" class="foto-input" style="display:none"></label></td>' +
       '<td><input class="cell" data-f="nombre" value="' + esc(p.nombre) + '" style="width:160px"></td>' +
       '<td><input class="cell" data-f="precio" type="number" value="' + Number(p.precio) + '" style="width:80px"></td>' +
       '<td><select class="cell" data-f="categoria"><option value="caballeros"' + (p.categoria === "caballeros" ? " selected" : "") + '>Caballeros</option><option value="damas"' + (p.categoria === "damas" ? " selected" : "") + '>Damas</option></select></td>' +
@@ -151,7 +153,7 @@
       '<input class="field" id="np-precio" type="number" placeholder="Precio" style="margin:0">' +
       '<select class="field" id="np-cat" style="margin:0"><option value="caballeros">Caballeros</option><option value="damas">Damas</option></select>' +
       '<button class="btn" id="np-add" style="width:auto;padding:11px 16px">Agregar</button></div>' +
-      '<table><thead><tr><th>Código</th><th>Nombre</th><th>Precio</th><th>Categoría</th><th>Activo</th><th></th></tr></thead><tbody>' + filas + '</tbody></table></div>';
+      '<table><thead><tr><th>Código</th><th>Foto</th><th>Nombre</th><th>Precio</th><th>Categoría</th><th>Activo</th><th></th></tr></thead><tbody>' + filas + '</tbody></table></div>';
 
     // guardar fila
     el.querySelectorAll(".guardar").forEach((b) => b.addEventListener("click", async () => {
@@ -173,6 +175,19 @@
       if (!confirm("¿Eliminar el producto " + id + "?")) return;
       await DB.adminEliminarProducto(id); tr.remove();
     }));
+    // subir foto de un producto
+    el.querySelectorAll(".foto-input").forEach((inp) => inp.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const tr = inp.closest("tr"), id = tr.dataset.id, label = inp.closest("label");
+      label.firstChild.textContent = "Subiendo…";
+      const url = await DB.subirImagenProducto(file, id);
+      if (!url) { label.firstChild.textContent = "Error al subir"; return; }
+      const prod = PRODUCTOS.find((x) => x.id === id) || {};
+      await DB.adminUpsertProducto(Object.assign({}, prod, { img_url: url }));
+      renderProductos();
+    }));
+
     // agregar nuevo
     $("np-add").addEventListener("click", async () => {
       const id = $("np-id").value.trim(), nombre = $("np-nombre").value.trim();
