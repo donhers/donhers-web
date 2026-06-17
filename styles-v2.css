@@ -940,3 +940,25 @@
   opacity: 1;
   text-decoration: underline;
 }
+
+/* Cartel de estimación de entrega en el checkout */
+.shipping-estimate {
+  margin-top: 12px;
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  color: var(--gold-soft);
+  background: rgba(185,154,82,0.08);
+  border: 1px solid var(--border-gold);
+  border-radius: 10px;
+  padding: 10px 13px;
+  text-align: center;
+  line-height: 1.45;
+}
+.shipping-estimate:empty { display: none; }
+.ship-est-note {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 3px;
+  opacity: 0.85;
+}

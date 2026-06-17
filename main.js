@@ -209,35 +209,83 @@ const SHIP_ICONS = {
   store:   `<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
 };
 
+// Agencias REALES de Uruguay (OCA en UY es tarjeta de crédito, NO paquetería → se quitó).
+// `dias` = [min, max] días hábiles para la estimación de entrega. A confirmar con Brandon.
 const SHIPPING_OPTIONS = {
   A: {
     tag:  '📍 Montevideo — envío en tu ciudad',
     hint: 'Elegí cómo recibir tu reloj:',
     list: [
-      { id: 'domicilio', icon: 'bike',    name: 'Envío a domicilio',  desc: '24–48 hs hábiles · Ciudad de Montevideo', price: 'A coordinar' },
-      { id: 'oca',       icon: 'package', name: 'OCA',                desc: '1–2 días hábiles · Sucursal o domicilio',  price: 'A coordinar' },
-      { id: 'correo',    icon: 'mail',    name: 'Correo Uruguayo',    desc: '2–3 días hábiles',                         price: 'A coordinar' },
+      { id: 'domicilio', icon: 'bike',    name: 'Envío a domicilio',  desc: 'Hoy o mañana hábil · Ciudad de Montevideo', price: 'A coordinar', dias: [0, 1] },
+      { id: 'dac',       icon: 'package', name: 'DAC',                desc: '24–48 hs hábiles · Sucursal o domicilio',  price: 'A coordinar', dias: [1, 2] },
+      { id: 'correo',    icon: 'mail',    name: 'Correo Uruguayo',    desc: '2–3 días hábiles',                         price: 'A coordinar', dias: [2, 3] },
     ]
   },
   B: {
-    tag:  '🗺️ Área metropolitana — 2 a 4 días',
+    tag:  '🗺️ Área metropolitana — Canelones / San José',
     hint: 'Elegí tu agencia de envío:',
     list: [
-      { id: 'oca',       icon: 'package', name: 'OCA',             desc: '2–4 días hábiles · Sucursal o domicilio', price: 'A coordinar' },
-      { id: 'correo',    icon: 'mail',    name: 'Correo Uruguayo', desc: '3–5 días hábiles',                        price: 'A coordinar' },
-      { id: 'domicilio', icon: 'bike',    name: 'Envío a domicilio', desc: 'Disponibilidad a confirmar por WhatsApp', price: 'Consultar' },
+      { id: 'dac',       icon: 'package', name: 'DAC',             desc: '1–3 días hábiles · Sucursal o domicilio', price: 'A coordinar', dias: [1, 3] },
+      { id: 'correo',    icon: 'mail',    name: 'Correo Uruguayo', desc: '2–4 días hábiles',                        price: 'A coordinar', dias: [2, 4] },
+      { id: 'domicilio', icon: 'bike',    name: 'Envío a domicilio', desc: 'Disponibilidad a confirmar por WhatsApp', price: 'Consultar', dias: [1, 2] },
     ]
   },
   C: {
     tag:  '📦 Interior del país — envío por agencia',
-    hint: 'Seleccioná la agencia más conveniente:',
+    hint: 'Seleccioná la agencia (o indicá tu preferida):',
     list: [
-      { id: 'oca',    icon: 'package', name: 'OCA',             desc: '3–5 días hábiles · Retiro en sucursal más cercana', price: 'A coordinar' },
-      { id: 'correo', icon: 'mail',    name: 'Correo Uruguayo', desc: '4–7 días hábiles',                                  price: 'A coordinar' },
-      { id: 'abitab', icon: 'store',   name: 'Abitab',          desc: 'Retiro en sucursal · Coordinar con Donher\'s',      price: 'A coordinar' },
+      { id: 'dac',    icon: 'package', name: 'DAC',             desc: '1–3 días hábiles · Retiro en sucursal más cercana', price: 'A coordinar', dias: [1, 3] },
+      { id: 'correo', icon: 'mail',    name: 'Correo Uruguayo', desc: '3–5 días hábiles',                                  price: 'A coordinar', dias: [3, 5] },
+      { id: 'otra',   icon: 'store',   name: 'Otra agencia',    desc: 'Indicá cuál preferís (UES, Mirtrans, Nossar…) en Observaciones', price: 'A coordinar', dias: [2, 5] },
     ]
   }
 };
+
+/* Estimación de entrega: días hábiles + corte horario.
+   El despacho arranca hoy si es día hábil y antes del corte; si no, el próximo hábil.
+   CORTE_HORA y feriados se ajustan con la logística real de Brandon. */
+const CORTE_HORA = 16;
+const FERIADOS_UY = []; // formato 'YYYY-MM-DD' — cargar feriados cuando Brandon confirme calendario
+
+function esHabil(d) {
+  const dow = d.getDay();
+  if (dow === 0 || dow === 6) return false;
+  const iso = d.toISOString().slice(0, 10);
+  return !FERIADOS_UY.includes(iso);
+}
+
+function addBusinessDays(date, days) {
+  const d = new Date(date);
+  let added = 0;
+  while (added < days) {
+    d.setDate(d.getDate() + 1);
+    if (esHabil(d)) added++;
+  }
+  return d;
+}
+
+function fechaDespacho() {
+  const now = new Date();
+  // Si hoy no es hábil o ya pasó el corte → despacha el próximo día hábil
+  if (!esHabil(now) || now.getHours() >= CORTE_HORA) return addBusinessDays(now, 1);
+  return now;
+}
+
+function formatFechaEntrega(d) {
+  const txt = d.toLocaleDateString('es-UY', { weekday: 'long', day: 'numeric', month: 'long' });
+  return txt.charAt(0).toUpperCase() + txt.slice(1);
+}
+
+function estimarEntrega(diasArr) {
+  if (!Array.isArray(diasArr)) return '';
+  const base = fechaDespacho();
+  const desde = addBusinessDays(base, diasArr[0]);
+  const hasta = addBusinessDays(base, diasArr[1]);
+  const fDesde = formatFechaEntrega(desde);
+  const fHasta = formatFechaEntrega(hasta);
+  const cuerpo = (fDesde === fHasta) ? fHasta : `${fDesde} — ${fHasta}`;
+  return `📦 Entrega estimada: <strong>${cuerpo}</strong> <span class="ship-est-note">(estimado, se confirma al despachar)</span>`;
+}
 
 function getZone(dept) {
   if (ZONE_A.includes(dept)) return 'A';
@@ -271,6 +319,7 @@ function renderShippingOptions(dept) {
     <div class="shipping-options-list" role="radiogroup">
       ${list.map(opt => `
         <div class="shipping-option" data-ship-id="${opt.id}" data-ship-name="${opt.name}"
+             data-ship-dias='${JSON.stringify(opt.dias || [])}'
              role="radio" aria-checked="false" tabindex="0">
           <div class="so-radio"><div class="so-radio-dot"></div></div>
           <div class="so-icon">${SHIP_ICONS[opt.icon]}</div>
@@ -280,7 +329,8 @@ function renderShippingOptions(dept) {
           </div>
           <span class="so-price">${opt.price}</span>
         </div>`).join('')}
-    </div>`;
+    </div>
+    <p class="shipping-estimate" id="shipping-estimate" aria-live="polite"></p>`;
 
   container.querySelectorAll('.shipping-option').forEach(opt => {
     opt.addEventListener('click',   () => selectShippingOption(opt));
@@ -307,6 +357,14 @@ function selectShippingOption(el) {
   el.setAttribute('aria-checked', 'true');
   const errEl = document.getElementById('shipping-error-global');
   if (errEl) errEl.classList.add('hidden');
+
+  // Estimación de entrega según la opción elegida
+  const estEl = document.getElementById('shipping-estimate');
+  if (estEl) {
+    let dias = [];
+    try { dias = JSON.parse(el.dataset.shipDias || '[]'); } catch (e) { dias = []; }
+    estEl.innerHTML = estimarEntrega(dias);
+  }
 }
 
 function getSelectedShipping() {
