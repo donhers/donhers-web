@@ -497,7 +497,7 @@ const Orders = {
     localStorage.setItem(this._key, JSON.stringify(all));
   },
 
-  render() {
+  async render() {
     const list = document.getElementById('orders-list');
     const orders = this.getAll();
     if (!orders.length) {
@@ -505,20 +505,35 @@ const Orders = {
       return;
     }
     const trackSteps = ['Confirmado', 'En preparación', 'Enviado', 'Entregado'];
+    // Estado de Supabase → posición en el track (lo actualiza Brandon en el panel)
+    const STATUS_INDEX = { pendiente_pago: -1, confirmado: 0, en_preparacion: 1, enviado: 2, entregado: 3, cancelado: -2 };
 
-    list.innerHTML = orders.map(o => {
+    // Traer el estado actual de cada pedido desde Supabase (fallback: el guardado local)
+    const estados = await Promise.all(orders.map(async (o) => {
+      if (window.DB && DB.ok && DB.estadoPedido && o.email) {
+        const r = await DB.estadoPedido(o.id, o.email);
+        if (r && r.estado) return r.estado;
+      }
+      return o.status || 'confirmado';
+    }));
+
+    list.innerHTML = orders.map((o, idx) => {
+      const estado = estados[idx];
       const date = new Date(o.date).toLocaleDateString('es-UY', {
         day: '2-digit', month: '2-digit', year: 'numeric'
       });
       const itemsSummary = o.items.map(i => `${i.name} × ${i.qty}`).join(', ');
-      const isPendingPay = (o.status || '') === 'pendiente_pago';
-      // Pedido pendiente de verificación de pago: el track aún no arrancó
-      const statusIndex  = isPendingPay ? -1 : trackSteps.findIndex(s => s.toLowerCase() === (o.status || 'confirmado'));
-      const payBadge = isPendingPay
-        ? '<span class="order-pay-badge order-pay-badge--pending">⏳ Pago a verificar</span>'
-        : '';
+      const isPendingPay = estado === 'pendiente_pago';
+      const isCancelled  = estado === 'cancelado';
+      const statusIndex  = (STATUS_INDEX[estado] != null) ? STATUS_INDEX[estado]
+        : trackSteps.findIndex(s => s.toLowerCase() === estado);
+      const payBadge = isCancelled
+        ? '<span class="order-pay-badge order-pay-badge--cancelled">✕ Pedido cancelado</span>'
+        : isPendingPay
+          ? '<span class="order-pay-badge order-pay-badge--pending">⏳ Pago a verificar</span>'
+          : '';
 
-      const trackHtml = trackSteps.map((s, i) => {
+      const trackHtml = isCancelled ? '' : trackSteps.map((s, i) => {
         const done = i <= statusIndex;
         return `
           <div class="order-track-step ${done ? 'order-track-step--done' : ''}">

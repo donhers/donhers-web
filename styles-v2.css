@@ -921,6 +921,11 @@
   color: var(--gold-soft);
   border: 1px solid var(--border-gold);
 }
+.order-pay-badge--cancelled {
+  background: rgba(182,81,81,0.12);
+  color: #d98a8a;
+  border: 1px solid rgba(182,81,81,0.4);
+}
 
 /* Link secundario "Consultar por WhatsApp" debajo del botón de cada producto */
 .gallery-card-consultar {

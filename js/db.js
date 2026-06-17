@@ -67,6 +67,17 @@
       return { ok: true };
     },
 
+    // ---------- SEGUIMIENTO DE PEDIDO (comprador, sin login) ----------
+    // Devuelve el estado actual de un pedido si coinciden número + email.
+    // Usa una función segura (RPC) que NO expone la tabla de pedidos.
+    async estadoPedido(id, email) {
+      try {
+        const { data, error } = await sb.rpc("seguimiento_pedido", { p_id: id, p_email: email });
+        if (error || !data || !data.length) return null;
+        return data[0]; // { id, estado, total, creado_en, actualizado_en }
+      } catch (e) { return null; }
+    },
+
     // ---------- EVENTOS (métricas) ----------
     async track(tipo, extra = {}) {
       try {
