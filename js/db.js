@@ -141,6 +141,17 @@
     async adminUpsertProducto(p) {
       return await sb.from("productos").upsert(p);
     },
+    // Sube una foto al bucket "productos" y devuelve la URL pública.
+    async subirImagenProducto(file, id) {
+      try {
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+        const path = id + "-" + Date.now() + "." + ext;
+        const { error } = await sb.storage.from("productos").upload(path, file, { upsert: true, cacheControl: "3600" });
+        if (error) { console.error("[DB] subirImagen", error); return null; }
+        const { data } = sb.storage.from("productos").getPublicUrl(path);
+        return (data && data.publicUrl) || null;
+      } catch (e) { console.error("[DB] subirImagen", e); return null; }
+    },
     async adminEliminarProducto(id) {
       return await sb.from("productos").delete().eq("id", id);
     },
