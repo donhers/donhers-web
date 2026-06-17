@@ -36,7 +36,13 @@
     btn.disabled = true; btn.textContent = "Ingresando..."; msg.textContent = "";
     const { data, error } = await DB.auth.signIn($("email").value.trim(), $("password").value);
     btn.disabled = false; btn.textContent = "Ingresar";
-    if (error) { msg.textContent = "Email o contraseña incorrectos."; msg.className = "msg error"; }
+    if (error) {
+      const m = (error.message || "").toLowerCase();
+      let txt = "No se pudo ingresar: " + (error.message || "error desconocido");
+      if (m.includes("not confirmed") || m.includes("email")) txt = "El usuario existe pero el email NO está confirmado. En Supabase → Authentication → tu usuario → confirmalo (o recrealo tildando 'Auto Confirm User').";
+      else if (m.includes("invalid")) txt = "Email o contraseña incorrectos, o el usuario no existe todavía.";
+      msg.textContent = txt; msg.className = "msg error";
+    }
     else if (data && data.user) mostrarPanel(data.user);
   });
 
