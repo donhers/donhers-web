@@ -427,35 +427,66 @@ function showToast(msg, type = 'success') {
    =========================== */
 const Auth = {
   _key: 'dh_user',
+  _user: null,
 
-  get() {
-    try { return JSON.parse(localStorage.getItem(this._key)); }
-    catch { return null; }
+  _nameFromEmail(email) {
+    return (email || '').split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  },
+  _fromSupabase(u) {
+    if (!u) return null;
+    return { email: u.email, name: (u.user_metadata && u.user_metadata.name) || this._nameFromEmail(u.email), createdAt: Date.now() };
+  },
+  _setLocal(u) {
+    this._user = u;
+    if (u) localStorage.setItem(this._key, JSON.stringify(u));
+    else localStorage.removeItem(this._key);
   },
 
+  // Síncrono: usa el caché en memoria o el respaldo en localStorage.
+  get() {
+    if (this._user) return this._user;
+    try { return JSON.parse(localStorage.getItem(this._key)); } catch { return null; }
+  },
   isLoggedIn() { return !!this.get(); },
 
-  login(email, password) {
-    if (!email || !password) return false;
-    const name = email.split('@')[0].replace(/[._]/g, ' ')
-      .replace(/\b\w/g, c => c.toUpperCase());
-    const user = { email, name, createdAt: Date.now() };
-    localStorage.setItem(this._key, JSON.stringify(user));
+  // Carga la sesión real de Supabase al iniciar y escucha cambios.
+  async init() {
+    if (window.DB && DB.ok) {
+      try {
+        const su = await DB.auth.getUser();
+        if (su) this._setLocal(this._fromSupabase(su));
+        DB.auth.onChange((u) => { this._setLocal(this._fromSupabase(u)); this._updateUI(); });
+      } catch (e) { /* sin sesión */ }
+    }
     this._updateUI();
-    return true;
   },
 
-  register(name, email, password) {
-    if (!name || !email || password.length < 6) return false;
-    const user = { email, name, createdAt: Date.now() };
-    localStorage.setItem(this._key, JSON.stringify(user));
+  async login(email, password) {
+    if (!email || !password) return { ok: false, error: 'Completá email y contraseña.' };
+    if (!window.DB || !DB.ok) return { ok: false, error: 'Sin conexión con el servidor.' };
+    const { data, error } = await DB.auth.signIn(email, password);
+    if (error) return { ok: false, error: 'Email o contraseña incorrectos.' };
+    this._setLocal(this._fromSupabase(data.user));
     this._updateUI();
-    sendToSheet('registro', { nombre: name, email, fecha: new Date().toISOString() });
-    return true;
+    return { ok: true };
   },
 
-  logout() {
-    localStorage.removeItem(this._key);
+  async register(name, email, password) {
+    if (!name || !email || password.length < 6) return { ok: false, error: 'Revisá los datos (la contraseña debe tener al menos 6 caracteres).' };
+    if (!window.DB || !DB.ok) return { ok: false, error: 'Sin conexión con el servidor.' };
+    const { data, error } = await DB.auth.signUp(email, password, { name });
+    if (error) {
+      const m = (error.message || '').toLowerCase();
+      return { ok: false, error: (m.includes('registered') || m.includes('already')) ? 'Ese email ya tiene una cuenta. Ingresá.' : 'No se pudo crear la cuenta.' };
+    }
+    if (DB.crearCliente) DB.crearCliente({ email, nombre: name });
+    if (data.session && data.user) { this._setLocal(this._fromSupabase(data.user)); this._updateUI(); return { ok: true }; }
+    return { ok: true, needsConfirm: true }; // falta confirmar email (si está activado en Supabase)
+  },
+
+  async logout() {
+    if (window.DB && DB.ok) { try { await DB.auth.signOut(); } catch (e) {} }
+    this._setLocal(null);
     this._updateUI();
   },
 
@@ -1021,7 +1052,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Inicializar
   Cart.init();
-  Auth._updateUI();
+  Auth.init();
   transformCards();
 
   /* -- Carrito -- */
@@ -1102,16 +1133,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // Login form submit
   const loginForm = document.getElementById('login-form');
   if (loginForm) {
-    loginForm.addEventListener('submit', e => {
+    loginForm.addEventListener('submit', async e => {
       e.preventDefault();
       const email    = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
       const err      = document.getElementById('login-error');
       if (!email || !password) {
-        err.classList.remove('hidden'); return;
+        err.textContent = 'Completá email y contraseña.'; err.classList.remove('hidden'); return;
       }
       err.classList.add('hidden');
-      Auth.login(email, password);
+      const r = await Auth.login(email, password);
+      if (!r.ok) { err.textContent = r.error; err.classList.remove('hidden'); return; }
       closeModal('login-overlay');
       userDropdown.classList.remove('active');
       showToast(`Bienvenido/a, ${Auth.get().name.split(' ')[0]}!`);
@@ -1121,17 +1153,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // Register form submit
   const regForm = document.getElementById('register-form');
   if (regForm) {
-    regForm.addEventListener('submit', e => {
+    regForm.addEventListener('submit', async e => {
       e.preventDefault();
       const name     = document.getElementById('reg-name').value.trim();
       const email    = document.getElementById('reg-email').value.trim();
       const password = document.getElementById('reg-password').value;
       const err      = document.getElementById('reg-error');
       if (!name || !email || password.length < 6) {
-        err.classList.remove('hidden'); return;
+        err.textContent = 'Completá los datos (contraseña: mínimo 6 caracteres).'; err.classList.remove('hidden'); return;
       }
       err.classList.add('hidden');
-      Auth.register(name, email, password);
+      const r = await Auth.register(name, email, password);
+      if (!r.ok) { err.textContent = r.error; err.classList.remove('hidden'); return; }
+      if (r.needsConfirm) { closeModal('login-overlay'); showToast('Te enviamos un email para confirmar tu cuenta.'); return; }
       closeModal('login-overlay');
       showToast(`Cuenta creada. Bienvenido/a, ${name.split(' ')[0]}!`);
     });

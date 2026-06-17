@@ -96,12 +96,27 @@
       async signIn(email, password) {
         return await sb.auth.signInWithPassword({ email, password });
       },
+      async signUp(email, password, meta) {
+        return await sb.auth.signUp({ email, password, options: { data: meta || {} } });
+      },
       async signOut() { return await sb.auth.signOut(); },
       async getUser() { const { data } = await sb.auth.getUser(); return data?.user || null; },
       onChange(cb) { return sb.auth.onAuthStateChange((_e, session) => cb(session?.user || null)); },
     },
 
-    // ---------- ADMIN (requieren sesión logueada; RLS bloquea a anónimos) ----------
+    // Registrar un comprador en la tabla clientes (insert público por RLS).
+    async crearCliente(c) {
+      try { await sb.from("clientes").insert({ email: c.email, nombre: c.nombre || null, telefono: c.telefono || null }); }
+      catch (e) { /* no rompe el registro */ }
+    },
+
+    // ¿El usuario logueado tiene acceso al panel? (solo emails de la tabla admins)
+    async esAdmin() {
+      try { const { data, error } = await sb.rpc("es_admin"); return !error && data === true; }
+      catch (e) { return false; }
+    },
+
+    // ---------- ADMIN (requieren sesión logueada Y ser admin; RLS lo exige) ----------
     async adminPedidos() {
       const { data, error } = await sb.from("pedidos").select("*").order("creado_en", { ascending: false });
       if (error) { console.error("[DB] adminPedidos", error); return []; }

@@ -23,7 +23,18 @@
   }
 
   function mostrarLogin() { $("panel").classList.add("hidden"); $("login-screen").classList.remove("hidden"); }
-  function mostrarPanel(user) {
+  async function mostrarPanel(user) {
+    // Verificar que la cuenta sea admin (no alcanza con estar logueado)
+    if (DB.esAdmin) {
+      const ok = await DB.esAdmin();
+      if (!ok) {
+        await DB.auth.signOut();
+        $("login-msg").textContent = "Esta cuenta no tiene acceso al panel interno.";
+        $("login-msg").className = "msg error";
+        mostrarLogin();
+        return;
+      }
+    }
     $("login-screen").classList.add("hidden");
     $("panel").classList.remove("hidden");
     $("who").textContent = user.email || "";
