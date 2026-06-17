@@ -1381,6 +1381,7 @@ if (galleryTrack) {
     if (addBtn) {
       Cart.add(addBtn.dataset.id, addBtn.dataset.name, parseInt(addBtn.dataset.price, 10) || 0, addBtn.dataset.wa, addBtn.dataset.img);
       if (window.DB && DB.track) DB.track('add_carrito', { producto_id: addBtn.dataset.id });
+      openCart(); // abre el carrito al agregar para que el cliente vea su producto y el CTA de pago
       return;
     }
     const cons = e.target.closest('.consultar-link');
