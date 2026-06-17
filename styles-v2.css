@@ -930,6 +930,9 @@
   border: 1px solid rgba(182,81,81,0.4);
 }
 
+/* Utilidad global: ocultar (faltaba — por eso el carrito vacío y el menú de usuario se mostraban encimados) */
+.hidden { display: none !important; }
+
 /* Link secundario "Consultar por WhatsApp" debajo del botón de cada producto */
 .gallery-card-consultar {
   display: block;
