@@ -921,3 +921,22 @@
   color: var(--gold-soft);
   border: 1px solid var(--border-gold);
 }
+
+/* Link secundario "Consultar por WhatsApp" debajo del botón de cada producto */
+.gallery-card-consultar {
+  display: block;
+  text-align: center;
+  margin-top: 9px;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gold-soft);
+  text-decoration: none;
+  opacity: 0.72;
+  transition: opacity 0.2s ease;
+}
+.gallery-card-consultar:hover {
+  opacity: 1;
+  text-decoration: underline;
+}

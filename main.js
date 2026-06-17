@@ -708,6 +708,23 @@ const Checkout = {
     };
 
     Orders.save(order);
+
+    // Guardar el pedido en Supabase (si está disponible).
+    // El localStorage (Orders) ya quedó como respaldo: la compra nunca se pierde.
+    if (window.DB && DB.ok) {
+      DB.crearPedido({
+        id:             order.id,
+        cliente_email:  order.email,
+        cliente_nombre: (user && user.name) || (order.shipping && order.shipping.name) || null,
+        total:          order.total,
+        estado:         'pendiente_pago',
+        metodo_pago:    paymentMethod === 'transfer' ? 'transferencia' : 'mercadopago',
+        datos_envio:    order.shipping || null,
+        items:          order.items,
+      });
+      DB.track('checkout', { meta: { id: order.id, total: order.total, metodo: paymentMethod } });
+    }
+
     sendToSheet('pedido', {
       id: order.id,
       items: order.items.map(i => `${i.name} x${i.qty}`).join(' | '),
@@ -1205,3 +1222,69 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 });
+
+/* ============================================================
+   GALERÍA DINÁMICA + CARRITO (Supabase)
+   Reemplaza las cards estáticas por las de la base. Si Supabase
+   no responde, quedan las estáticas como fallback.
+   ============================================================ */
+function escapeAttr(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function renderGalleryFromDB(productos) {
+  if (!galleryTrack || !productos || !productos.length) return;
+  galleryTrack.innerHTML = productos.map((p) => {
+    const cat = (p.categoria || '').toLowerCase();
+    const tag = cat === 'damas' ? 'Damas' : 'Caballeros';
+    const wa = p.wa_link || '#';
+    return '' +
+      '<article class="gallery-card" data-collection="' + cat + '" data-product-id="' + escapeAttr(p.id) + '">' +
+        '<div class="gallery-card-img"><img src="' + escapeAttr(p.img_url) + '" alt="' + escapeAttr(p.nombre) + '" loading="lazy"></div>' +
+        '<div class="gallery-card-info">' +
+          '<span class="gallery-card-tag">' + tag + '</span>' +
+          '<h3 class="gallery-card-name">' + escapeAttr(p.nombre) + '</h3>' +
+          '<p class="gallery-card-price">' + formatPrice(p.precio) + '</p>' +
+          '<button class="gallery-card-cta btn-shimmer add-cart-btn" type="button" ' +
+            'data-id="' + escapeAttr(p.id) + '" data-name="' + escapeAttr(p.nombre) + '" ' +
+            'data-price="' + p.precio + '" data-wa="' + escapeAttr(wa) + '" data-img="' + escapeAttr(p.img_url) + '">' +
+            'AGREGAR AL CARRITO</button>' +
+          '<a href="' + escapeAttr(wa) + '" class="gallery-card-consultar consultar-link" target="_blank" rel="noopener noreferrer" data-id="' + escapeAttr(p.id) + '">Consultar por WhatsApp</a>' +
+        '</div>' +
+      '</article>';
+  }).join('');
+
+  // Re-aplicar el filtro activo (Todos / Caballeros / Damas)
+  const activeBtn = document.querySelector('.filter-btn.active');
+  const activeFilter = activeBtn ? activeBtn.dataset.filter : 'all';
+  galleryTrack.querySelectorAll('.gallery-card').forEach((card) => {
+    const matches = activeFilter === 'all' || card.dataset.collection === activeFilter;
+    card.classList.toggle('hidden', !matches);
+  });
+
+  buildDots();
+  updateDots();
+}
+
+// Delegación de clicks: agregar al carrito + medir "consultar"
+if (galleryTrack) {
+  galleryTrack.addEventListener('click', (e) => {
+    const addBtn = e.target.closest('.add-cart-btn');
+    if (addBtn) {
+      Cart.add(addBtn.dataset.id, addBtn.dataset.name, parseInt(addBtn.dataset.price, 10) || 0, addBtn.dataset.wa, addBtn.dataset.img);
+      if (window.DB && DB.track) DB.track('add_carrito', { producto_id: addBtn.dataset.id });
+      return;
+    }
+    const cons = e.target.closest('.consultar-link');
+    if (cons && window.DB && DB.track) DB.track('click_whatsapp', { producto_id: cons.dataset.id });
+  });
+}
+
+// Cargar productos reales desde Supabase
+if (window.DB && DB.ok) {
+  DB.track('visita');
+  DB.getProductos()
+    .then((prods) => { if (prods && prods.length) renderGalleryFromDB(prods); })
+    .catch((err) => console.warn('[galería] usando fallback estático:', err));
+}
