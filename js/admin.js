@@ -136,7 +136,7 @@
     PRODUCTOS = await DB.adminTodosLosProductos();
     const filas = PRODUCTOS.map((p) =>
       '<tr data-id="' + esc(p.id) + '">' +
-      '<td>' + esc(p.id) + '</td>' +
+      '<td><input class="cell" data-f="id" value="' + esc(p.id) + '" style="width:96px;font-family:monospace"></td>' +
       '<td class="foto-cell">' + (p.img_url ? '<img src="' + esc(p.img_url) + '" alt="" style="width:38px;height:38px;object-fit:cover;border-radius:6px;display:block">' : '<span style="color:var(--muted)">sin foto</span>') +
         '<label class="mini" style="cursor:pointer;margin-top:5px;display:inline-block">Subir<input type="file" accept="image/*" class="foto-input" style="display:none"></label></td>' +
       '<td><input class="cell" data-f="nombre" value="' + esc(p.nombre) + '" style="width:160px"></td>' +
@@ -146,7 +146,7 @@
       '<td class="row-actions"><button class="mini guardar">Guardar</button><button class="mini del eliminar">×</button></td></tr>'
     ).join("");
 
-    el.innerHTML = '<div class="card"><div class="card-h">Productos (' + PRODUCTOS.length + ') <span style="font-size:12px;color:var(--muted);font-family:\'DM Sans\',sans-serif;font-weight:400">· editá cualquier dato (precio, nombre, categoría) y tocá Guardar</span></div>' +
+    el.innerHTML = '<div class="card"><div class="card-h">Productos (' + PRODUCTOS.length + ') <span style="font-size:12px;color:var(--muted);font-family:\'DM Sans\',sans-serif;font-weight:400">· editá cualquier dato (código, precio, nombre, categoría) y tocá Guardar</span></div>' +
       '<div class="form-grid" id="nuevo-prod">' +
       '<input class="field" id="np-id" placeholder="Código (DON00XX) *" style="margin:0">' +
       '<input class="field" id="np-nombre" placeholder="Nombre *" style="margin:0">' +
@@ -157,16 +157,34 @@
 
     // guardar fila
     el.querySelectorAll(".guardar").forEach((b) => b.addEventListener("click", async () => {
-      const tr = b.closest("tr"), id = tr.dataset.id;
-      const orig = PRODUCTOS.find((x) => x.id === id) || {};
+      const tr = b.closest("tr"), idOrig = tr.dataset.id;
+      const orig = PRODUCTOS.find((x) => x.id === idOrig) || {};
+      const idNuevo = tr.querySelector('[data-f="id"]').value.trim();
+      if (!idNuevo) { alert("El código no puede quedar vacío."); return; }
+      b.disabled = true; b.textContent = "…";
+      // si cambió el código (clave primaria), renombrarlo antes de guardar el resto
+      if (idNuevo !== idOrig) {
+        const r = await DB.adminCambiarCodigo(idOrig, idNuevo);
+        if (r && r.error) {
+          b.disabled = false; b.textContent = "Guardar";
+          alert(r.error.code === "23505"
+            ? "Ya existe un producto con el código " + idNuevo + ". Elegí otro."
+            : "No se pudo cambiar el código: " + r.error.message);
+          return;
+        }
+      }
       const upd = Object.assign({}, orig, {
+        id: idNuevo,
         nombre: tr.querySelector('[data-f="nombre"]').value.trim(),
         precio: parseInt(tr.querySelector('[data-f="precio"]').value, 10) || 0,
         categoria: tr.querySelector('[data-f="categoria"]').value,
         activo: tr.querySelector('[data-f="activo"]').checked,
       });
-      b.disabled = true; b.textContent = "…";
       await DB.adminUpsertProducto(upd);
+      // reflejar el código nuevo en la fila y en memoria, para sucesivos guardados
+      tr.dataset.id = idNuevo;
+      const idx = PRODUCTOS.findIndex((x) => x.id === idOrig);
+      if (idx >= 0) PRODUCTOS[idx] = upd;
       b.textContent = "✓"; setTimeout(() => { b.textContent = "Guardar"; b.disabled = false; }, 1200);
     }));
     // eliminar

@@ -141,6 +141,11 @@
     async adminUpsertProducto(p) {
       return await sb.from("productos").upsert(p);
     },
+    // Renombra el código (clave primaria) de un producto ya existente.
+    // No rompe pedidos/eventos: guardan producto_id como texto histórico (sin FK).
+    async adminCambiarCodigo(viejo, nuevo) {
+      return await sb.from("productos").update({ id: nuevo }).eq("id", viejo);
+    },
     // Sube una foto al bucket "productos" y devuelve la URL pública.
     async subirImagenProducto(file, id) {
       try {
