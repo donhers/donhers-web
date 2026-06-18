@@ -74,11 +74,45 @@
     else if (s === "clientes") renderClientes();
   }
 
+  // ---------- COMISIÓN GENIDEIA (15%) ----------
+  // Se calcula solo sobre pedidos con pago confirmado (no pendientes ni cancelados).
+  const COMISION = 0.15;
+  function comisionHTML(pedidos) {
+    const pagados = pedidos.filter((p) => p.estado !== "pendiente_pago" && p.estado !== "cancelado");
+    const ventasTotal = pagados.reduce((s, p) => s + Number(p.total || 0), 0);
+    const comisionTotal = Math.round(ventasTotal * COMISION);
+    // agrupar por mes (YYYY-MM)
+    const porMes = {};
+    pagados.forEach((p) => {
+      const d = new Date(p.creado_en);
+      const k = d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0");
+      if (!porMes[k]) porMes[k] = { ventas: 0, n: 0, label: d.toLocaleDateString("es-UY", { month: "long" }) + " " + d.getFullYear() };
+      porMes[k].ventas += Number(p.total || 0);
+      porMes[k].n += 1;
+    });
+    const meses = Object.entries(porMes).sort((a, b) => b[0].localeCompare(a[0]));
+    const filas = meses.map(([k, m]) =>
+      '<tr><td style="text-transform:capitalize">' + esc(m.label) + '</td><td>' + m.n + '</td><td>' + money(m.ventas) + '</td><td style="color:var(--gold-soft);font-weight:600">' + money(Math.round(m.ventas * COMISION)) + '</td></tr>'
+    ).join("");
+    return '<div class="card" style="border:1px solid var(--gold)">' +
+      '<div class="card-h">Comisión GENIDEIA (15%) <span style="font-size:12px;color:var(--muted);font-family:\'DM Sans\',sans-serif;font-weight:400">· sobre pedidos con pago confirmado</span></div>' +
+      '<div class="cards" style="margin-bottom:14px">' +
+      '<div class="stat"><div class="lbl">Ventas confirmadas</div><div class="num">' + money(ventasTotal) + '</div></div>' +
+      '<div class="stat" style="border-color:var(--gold)"><div class="lbl">Comisión total a transferir</div><div class="num" style="color:var(--gold-soft)">' + money(comisionTotal) + '</div></div>' +
+      '<div class="stat"><div class="lbl">Pedidos pagados</div><div class="num">' + pagados.length + '</div></div>' +
+      '</div>' +
+      (meses.length
+        ? '<table><thead><tr><th>Mes</th><th>Pedidos</th><th>Ventas</th><th>Comisión 15%</th></tr></thead><tbody>' + filas + '</tbody></table>'
+        : '<div class="empty">Todavía no hay pagos confirmados para calcular la comisión.</div>') +
+      '</div>';
+  }
+
   // ---------- ESTADÍSTICAS ----------
   async function renderStats() {
     const el = $("sec-stats");
     el.innerHTML = '<div class="loading">Cargando métricas…</div>';
     const eventos = await DB.adminEventos();
+    const pedidos = await DB.adminPedidos();
     if (!PRODUCTOS.length) PRODUCTOS = await DB.adminTodosLosProductos();
     const nombre = (id) => { const p = PRODUCTOS.find((x) => x.id === id); return p ? p.nombre : id; };
     const cont = (tipo) => eventos.filter((e) => e.tipo === tipo).length;
@@ -90,6 +124,7 @@
     const max = top.length ? top[0][1] : 1;
 
     el.innerHTML =
+      comisionHTML(pedidos) +
       '<div class="cards">' +
       stat("Visitas", cont("visita")) +
       stat("Vistas de producto", cont("ver_producto")) +
