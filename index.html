@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=14">
-  <link rel="stylesheet" href="styles-v2.css?v=13">
+  <link rel="stylesheet" href="styles-v2.css?v=14">
 </head>
 <body>
 
@@ -744,23 +744,30 @@
         <div id="pm-transfer-panel" class="hidden">
           <div class="bank-details-card">
             <p class="bank-intro">Realizá tu depósito o transferencia a la siguiente cuenta:</p>
-            <!-- TODO Brandon: reemplazar estos placeholders por los datos bancarios reales -->
             <div class="bank-info-grid">
               <div class="bank-row">
                 <span class="bank-label">Banco</span>
-                <strong class="bank-val">[Banco]</strong>
+                <strong class="bank-val">Santander</strong>
               </div>
               <div class="bank-row">
                 <span class="bank-label">Titular</span>
-                <strong class="bank-val">[Titular de la cuenta]</strong>
+                <strong class="bank-val">Brandon Hernández</strong>
               </div>
               <div class="bank-row">
-                <span class="bank-label">Tipo de cuenta</span>
-                <strong class="bank-val">[Caja de ahorro / Cuenta corriente]</strong>
+                <span class="bank-label">Moneda</span>
+                <strong class="bank-val">Pesos uruguayos (UYU)</strong>
               </div>
               <div class="bank-row">
-                <span class="bank-label">Número de cuenta</span>
-                <strong class="bank-val">[Número de cuenta]</strong>
+                <span class="bank-label">Cuenta (desde Santander)</span>
+                <strong class="bank-val">1208321362</strong>
+              </div>
+              <div class="bank-row">
+                <span class="bank-label">Cuenta (desde otro banco)</span>
+                <strong class="bank-val">0002001208321362</strong>
+              </div>
+              <div class="bank-row">
+                <span class="bank-label">Sucursal</span>
+                <strong class="bank-val">02 — 18 de Julio</strong>
               </div>
             </div>
             <div class="bank-ref-box">
@@ -826,14 +833,39 @@
     </div>
   </div>
 
+  <!-- ==================== DETALLE DE PRODUCTO ==================== -->
+  <div class="modal-overlay" id="producto-overlay" role="dialog" aria-modal="true" aria-label="Detalle del producto">
+    <div class="modal producto-modal">
+      <button class="modal-close" id="producto-close" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="pm-grid">
+        <div class="pm-gallery">
+          <div class="pm-track" id="pm-track"></div>
+          <button class="pm-arrow pm-prev" id="pm-prev" aria-label="Anterior" type="button">‹</button>
+          <button class="pm-arrow pm-next" id="pm-next" aria-label="Siguiente" type="button">›</button>
+          <div class="pm-dots" id="pm-dots"></div>
+        </div>
+        <div class="pm-info">
+          <span class="pm-tag" id="pm-tag"></span>
+          <h3 class="pm-name" id="pm-name"></h3>
+          <p class="pm-price" id="pm-price"></p>
+          <p class="pm-desc" id="pm-desc"></p>
+          <button class="pm-cta btn-shimmer" id="pm-add" type="button">AGREGAR AL CARRITO</button>
+          <a class="pm-consultar consultar-link" id="pm-wa" target="_blank" rel="noopener noreferrer">Consultar por WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ======================== TOAST ======================== -->
   <div class="toast-container" id="toast-container" aria-live="polite"></div>
 
   <!-- Backend Supabase (claves públicas, protegidas por RLS) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js?v=1"></script>
-  <script src="js/db.js?v=5"></script>
+  <script src="js/db.js?v=7"></script>
 
-  <script src="main.js?v=7"></script>
+  <script src="main.js?v=8"></script>
 </body>
 </html>
