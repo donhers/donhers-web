@@ -66,6 +66,25 @@
     .bar-track{flex:1;height:10px;background:var(--panel2);border-radius:6px;overflow:hidden}
     .bar-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-soft))}
     .bar-row .val{width:42px;text-align:right;color:var(--gold-soft)}
+    /* ---- Galería + detalle de producto ---- */
+    .foto-mini{width:38px;height:38px;object-fit:cover;border-radius:6px;display:block}
+    .foto-cell .det-toggle{margin-top:5px;font-size:11px;white-space:nowrap}
+    .detalle-row td{background:var(--panel2);padding:0}
+    .detalle-row.hidden{display:none}
+    .detalle-box{display:grid;grid-template-columns:1.4fr 1fr;gap:22px;padding:16px 18px;align-items:start}
+    .det-lbl{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px}
+    .det-lbl span{text-transform:none;letter-spacing:0;color:var(--gold-soft)}
+    .galeria-admin{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;min-height:46px}
+    .g-empty{color:var(--muted);font-size:12px;align-self:center}
+    .gthumb{position:relative;width:62px;height:62px;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+    .gthumb.es-portada{border-color:var(--gold)}
+    .gthumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .gthumb-x{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;border:none;background:rgba(0,0,0,.65);color:#fff;font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+    .gthumb-x:hover{background:var(--danger)}
+    .gthumb em{position:absolute;bottom:0;left:0;right:0;font-size:8px;text-align:center;background:var(--gold);color:#1a1407;font-style:normal;letter-spacing:.5px}
+    .mini.up{display:inline-block;cursor:pointer}
+    .det-desc textarea{width:100%;resize:vertical;line-height:1.45}
+    .guardar-detalle{margin-top:10px}
 
     /* ---- Teléfono ---- */
     @media (max-width:680px){
@@ -78,6 +97,7 @@
       /* Las tablas se deslizan en lugar de cortarse */
       .card table{display:block;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch}
       .bar-row .name{width:90px}
+      .detalle-box{grid-template-columns:1fr;gap:16px;white-space:normal}
     }
     @media (max-width:420px){
       .cards{grid-template-columns:1fr}
@@ -124,7 +144,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js?v=1"></script>
-  <script src="js/db.js?v=6"></script>
-  <script src="js/admin.js?v=7"></script>
+  <script src="js/db.js?v=7"></script>
+  <script src="js/admin.js?v=8"></script>
 </body>
 </html>

@@ -1343,12 +1343,18 @@ function escapeAttr(s) {
 function renderGalleryFromDB(productos) {
   if (!galleryTrack || !productos || !productos.length) return;
   galleryTrack.innerHTML = productos.map((p) => {
+    PRODUCTOS_BY_ID[p.id] = p; // guardo el producto para el modal de detalle (imágenes + descripción)
     const cat = (p.categoria || '').toLowerCase();
     const tag = cat === 'damas' ? 'Damas' : 'Caballeros';
     const wa = p.wa_link || '#';
+    const nImgs = Array.isArray(p.imagenes) ? p.imagenes.length : 0;
     return '' +
       '<article class="gallery-card" data-collection="' + cat + '" data-product-id="' + escapeAttr(p.id) + '">' +
-        '<div class="gallery-card-img"><img src="' + escapeAttr(p.img_url) + '" alt="' + escapeAttr(p.nombre) + '" loading="lazy"></div>' +
+        '<div class="gallery-card-img ver-detalle" role="button" tabindex="0">' +
+          '<img src="' + escapeAttr(p.img_url) + '" alt="' + escapeAttr(p.nombre) + '" loading="lazy">' +
+          (nImgs > 1 ? '<span class="img-count">+' + (nImgs - 1) + '</span>' : '') +
+          '<span class="ver-mas">Ver detalle</span>' +
+        '</div>' +
         '<div class="gallery-card-info">' +
           '<span class="gallery-card-tag">' + tag + '</span>' +
           '<h3 class="gallery-card-name">' + escapeAttr(p.nombre) + '</h3>' +
@@ -1374,7 +1380,7 @@ function renderGalleryFromDB(productos) {
   updateDots();
 }
 
-// Delegación de clicks: agregar al carrito + medir "consultar"
+// Delegación de clicks: agregar al carrito + abrir detalle + medir "consultar"
 if (galleryTrack) {
   galleryTrack.addEventListener('click', (e) => {
     const addBtn = e.target.closest('.add-cart-btn');
@@ -1385,9 +1391,86 @@ if (galleryTrack) {
       return;
     }
     const cons = e.target.closest('.consultar-link');
-    if (cons && window.DB && DB.track) DB.track('click_whatsapp', { producto_id: cons.dataset.id });
+    if (cons) { if (window.DB && DB.track) DB.track('click_whatsapp', { producto_id: cons.dataset.id }); return; }
+    // click en la imagen o el nombre → abrir detalle del producto
+    const det = e.target.closest('.ver-detalle, .gallery-card-name');
+    if (det) {
+      const card = det.closest('.gallery-card');
+      if (card) openProductoModal(card.dataset.productId);
+    }
   });
 }
+
+/* =========================================================
+   DETALLE DE PRODUCTO — modal con galería deslizable
+   ========================================================= */
+const PRODUCTOS_BY_ID = {};
+const pmTrack = document.getElementById('pm-track');
+const pmDots  = document.getElementById('pm-dots');
+
+function pmSlides() { return pmTrack ? Array.from(pmTrack.children) : []; }
+function pmCurrent() {
+  const w = pmTrack && pmTrack.clientWidth ? pmTrack.clientWidth : 1;
+  return pmTrack ? Math.round(pmTrack.scrollLeft / w) : 0;
+}
+function pmGoTo(i) {
+  const s = pmSlides(); const idx = Math.max(0, Math.min(i, s.length - 1));
+  if (s[idx]) pmTrack.scrollTo({ left: idx * pmTrack.clientWidth, behavior: 'smooth' });
+}
+function pmUpdateDots() {
+  if (!pmDots) return;
+  const cur = pmCurrent();
+  Array.from(pmDots.children).forEach((d, i) => d.classList.toggle('active', i === cur));
+}
+
+function openProductoModal(id) {
+  const p = PRODUCTOS_BY_ID[id]; if (!p || !pmTrack) return;
+  const imgs = (Array.isArray(p.imagenes) && p.imagenes.length) ? p.imagenes : (p.img_url ? [p.img_url] : []);
+  pmTrack.innerHTML = imgs.length
+    ? imgs.map((u) => '<div class="pm-slide"><img src="' + escapeAttr(u) + '" alt="' + escapeAttr(p.nombre) + '"></div>').join('')
+    : '<div class="pm-slide pm-slide--empty">Sin imagen</div>';
+  const multi = imgs.length > 1;
+  pmDots.innerHTML = multi ? imgs.map((_, i) => '<button class="pm-dot' + (i === 0 ? ' active' : '') + '" data-i="' + i + '" type="button" aria-label="Imagen ' + (i + 1) + '"></button>').join('') : '';
+  pmTrack.scrollLeft = 0;
+  const prevBtn = document.getElementById('pm-prev'), nextBtn = document.getElementById('pm-next');
+  if (prevBtn) prevBtn.style.display = multi ? '' : 'none';
+  if (nextBtn) nextBtn.style.display = multi ? '' : 'none';
+
+  const cat = (p.categoria || '').toLowerCase();
+  document.getElementById('pm-tag').textContent = cat === 'damas' ? 'Damas' : 'Caballeros';
+  document.getElementById('pm-name').textContent = p.nombre || '';
+  document.getElementById('pm-price').textContent = formatPrice(p.precio);
+  const desc = document.getElementById('pm-desc');
+  desc.textContent = p.descripcion || '';
+  desc.style.display = p.descripcion ? '' : 'none';
+
+  const wa = p.wa_link || '#';
+  const addBtn = document.getElementById('pm-add');
+  addBtn.onclick = () => {
+    Cart.add(p.id, p.nombre, parseInt(p.precio, 10) || 0, wa, p.img_url || imgs[0] || '');
+    if (window.DB && DB.track) DB.track('add_carrito', { producto_id: p.id });
+    closeModal('producto-overlay');
+    openCart();
+  };
+  const waLink = document.getElementById('pm-wa');
+  waLink.href = wa; waLink.dataset.id = p.id;
+
+  if (window.DB && DB.track) DB.track('ver_producto', { producto_id: p.id });
+  openModal('producto-overlay');
+}
+
+// Navegación de la galería del modal
+if (pmTrack) {
+  const prevBtn = document.getElementById('pm-prev'), nextBtn = document.getElementById('pm-next');
+  if (prevBtn) prevBtn.addEventListener('click', () => pmGoTo(pmCurrent() - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => pmGoTo(pmCurrent() + 1));
+  pmTrack.addEventListener('scroll', pmUpdateDots, { passive: true });
+  if (pmDots) pmDots.addEventListener('click', (e) => { const d = e.target.closest('.pm-dot'); if (d) pmGoTo(parseInt(d.dataset.i, 10)); });
+}
+const pmClose = document.getElementById('producto-close');
+if (pmClose) pmClose.addEventListener('click', () => closeModal('producto-overlay'));
+const pmOverlay = document.getElementById('producto-overlay');
+if (pmOverlay) pmOverlay.addEventListener('click', (e) => { if (e.target === pmOverlay) closeModal('producto-overlay'); });
 
 // Cargar productos reales desde Supabase
 if (window.DB && DB.ok) {

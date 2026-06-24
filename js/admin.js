@@ -169,19 +169,34 @@
     const el = $("sec-productos");
     el.innerHTML = '<div class="loading">Cargando productos…</div>';
     PRODUCTOS = await DB.adminTodosLosProductos();
+
+    const imgsDe = (p) => Array.isArray(p.imagenes) ? p.imagenes : (p.img_url ? [p.img_url] : []);
+    const portada = (p) => p.img_url || imgsDe(p)[0] || "";
+    const galeriaThumbs = (imgs) => (!imgs || !imgs.length)
+      ? '<span class="g-empty">Sin fotos todavía — agregá abajo 👇</span>'
+      : imgs.map((u, i) => '<span class="gthumb' + (i === 0 ? ' es-portada' : '') + '"><img src="' + esc(u) + '"><button class="gthumb-x" data-i="' + i + '" title="Quitar">×</button>' + (i === 0 ? '<em>portada</em>' : '') + '</span>').join('');
+
     const filas = PRODUCTOS.map((p) =>
       '<tr data-id="' + esc(p.id) + '">' +
-      '<td><input class="cell" data-f="id" value="' + esc(p.id) + '" style="width:96px;font-family:monospace"></td>' +
-      '<td class="foto-cell">' + (p.img_url ? '<img src="' + esc(p.img_url) + '" alt="" style="width:38px;height:38px;object-fit:cover;border-radius:6px;display:block">' : '<span style="color:var(--muted)">sin foto</span>') +
-        '<label class="mini" style="cursor:pointer;margin-top:5px;display:inline-block">Subir<input type="file" accept="image/*" class="foto-input" style="display:none"></label></td>' +
-      '<td><input class="cell" data-f="nombre" value="' + esc(p.nombre) + '" style="width:160px"></td>' +
+      '<td><input class="cell" data-f="id" value="' + esc(p.id) + '" style="width:90px;font-family:monospace"></td>' +
+      '<td class="foto-cell">' + (portada(p) ? '<img class="foto-mini" src="' + esc(portada(p)) + '" alt="">' : '<span style="color:var(--muted);font-size:11px">sin foto</span>') +
+        '<button class="mini det-toggle" type="button">🖼 ' + imgsDe(p).length + ' · Detalle</button></td>' +
+      '<td><input class="cell" data-f="nombre" value="' + esc(p.nombre) + '" style="width:150px"></td>' +
       '<td><input class="cell" data-f="precio" type="number" value="' + Number(p.precio) + '" style="width:80px"></td>' +
       '<td><select class="cell" data-f="categoria"><option value="caballeros"' + (p.categoria === "caballeros" ? " selected" : "") + '>Caballeros</option><option value="damas"' + (p.categoria === "damas" ? " selected" : "") + '>Damas</option></select></td>' +
       '<td><input type="checkbox" data-f="activo"' + (p.activo ? " checked" : "") + '></td>' +
-      '<td class="row-actions"><button class="mini guardar">Guardar</button><button class="mini del eliminar">×</button></td></tr>'
+      '<td class="row-actions"><button class="mini guardar">Guardar</button><button class="mini del eliminar">×</button></td></tr>' +
+      '<tr class="detalle-row hidden" data-detalle="' + esc(p.id) + '"><td colspan="7"><div class="detalle-box">' +
+        '<div class="det-col det-galeria"><div class="det-lbl">Galería del producto <span>· la 1ª foto es la portada</span></div>' +
+          '<div class="galeria-admin">' + galeriaThumbs(imgsDe(p)) + '</div>' +
+          '<label class="mini up">＋ Agregar fotos<input type="file" accept="image/*" multiple class="galeria-input" style="display:none"></label></div>' +
+        '<div class="det-col det-desc"><div class="det-lbl">Descripción <span>· la ve el cliente en el detalle</span></div>' +
+          '<textarea class="cell desc-input" rows="5" placeholder="Material, medidas, detalles del modelo…">' + esc(p.descripcion || "") + '</textarea>' +
+          '<button class="mini guardar-detalle" type="button">Guardar descripción</button></div>' +
+      '</div></td></tr>'
     ).join("");
 
-    el.innerHTML = '<div class="card"><div class="card-h">Productos (' + PRODUCTOS.length + ') <span style="font-size:12px;color:var(--muted);font-family:\'DM Sans\',sans-serif;font-weight:400">· editá cualquier dato (código, precio, nombre, categoría) y tocá Guardar</span></div>' +
+    el.innerHTML = '<div class="card"><div class="card-h">Productos (' + PRODUCTOS.length + ') <span style="font-size:12px;color:var(--muted);font-family:\'DM Sans\',sans-serif;font-weight:400">· editá los datos y tocá Guardar · "Detalle" abre galería + descripción</span></div>' +
       '<div class="form-grid" id="nuevo-prod">' +
       '<input class="field" id="np-id" placeholder="Código (DON00XX) *" style="margin:0">' +
       '<input class="field" id="np-nombre" placeholder="Nombre *" style="margin:0">' +
@@ -222,23 +237,74 @@
       if (idx >= 0) PRODUCTOS[idx] = upd;
       b.textContent = "✓"; setTimeout(() => { b.textContent = "Guardar"; b.disabled = false; }, 1200);
     }));
-    // eliminar
+    // eliminar (saca también la fila de detalle hermana)
     el.querySelectorAll(".eliminar").forEach((b) => b.addEventListener("click", async () => {
       const tr = b.closest("tr"), id = tr.dataset.id;
       if (!confirm("¿Eliminar el producto " + id + "?")) return;
-      await DB.adminEliminarProducto(id); tr.remove();
+      await DB.adminEliminarProducto(id);
+      const det = tr.nextElementSibling;
+      if (det && det.classList.contains("detalle-row")) det.remove();
+      tr.remove();
     }));
-    // subir foto de un producto
-    el.querySelectorAll(".foto-input").forEach((inp) => inp.addEventListener("change", async (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const tr = inp.closest("tr"), id = tr.dataset.id, label = inp.closest("label");
-      label.firstChild.textContent = "Subiendo…";
-      const url = await DB.subirImagenProducto(file, id);
-      if (!url) { label.firstChild.textContent = "Error al subir"; return; }
-      const prod = PRODUCTOS.find((x) => x.id === id) || {};
-      await DB.adminUpsertProducto(Object.assign({}, prod, { img_url: url }));
-      renderProductos();
+
+    // re-pinta galería + portada + contador de un producto sin recargar todo
+    function refreshGaleria(id) {
+      const p = PRODUCTOS.find((x) => x.id === id); if (!p) return;
+      const imgs = Array.isArray(p.imagenes) ? p.imagenes : [];
+      const det = el.querySelector('.detalle-row[data-detalle="' + id + '"]');
+      const row = el.querySelector('tr[data-id="' + id + '"]');
+      if (det) det.querySelector(".galeria-admin").innerHTML = galeriaThumbs(imgs);
+      if (row) {
+        const fc = row.querySelector(".foto-cell"), port = p.img_url || imgs[0] || "";
+        let mini = fc.querySelector(".foto-mini");
+        if (port) { if (!mini) { mini = document.createElement("img"); mini.className = "foto-mini"; fc.prepend(mini); } mini.src = port; }
+        else if (mini) mini.remove();
+        const tg = fc.querySelector(".det-toggle"); if (tg) tg.textContent = "🖼 " + imgs.length + " · Detalle";
+      }
+    }
+
+    // abrir/cerrar el panel de detalle
+    el.querySelectorAll(".det-toggle").forEach((b) => b.addEventListener("click", () => {
+      const det = b.closest("tr").nextElementSibling;
+      if (det && det.classList.contains("detalle-row")) det.classList.toggle("hidden");
+    }));
+
+    // agregar varias fotos a la galería
+    el.querySelectorAll(".galeria-input").forEach((inp) => inp.addEventListener("change", async (e) => {
+      const files = Array.from(e.target.files || []); if (!files.length) return;
+      const id = inp.closest(".detalle-row").dataset.detalle;
+      const p = PRODUCTOS.find((x) => x.id === id); if (!p) return;
+      const txt = inp.closest("label").firstChild, prev = txt.textContent;
+      txt.textContent = "Subiendo…";
+      const urls = await DB.subirImagenesProducto(files, id);
+      if (!urls.length) { txt.textContent = "Error al subir"; setTimeout(() => txt.textContent = prev, 1500); return; }
+      p.imagenes = (Array.isArray(p.imagenes) ? p.imagenes : []).concat(urls);
+      p.img_url = p.imagenes[0];
+      await DB.adminUpsertProducto({ id, imagenes: p.imagenes, img_url: p.img_url });
+      refreshGaleria(id); txt.textContent = prev; inp.value = "";
+    }));
+
+    // quitar una foto (delegado en el contenedor, que sobrevive al repintado de thumbs)
+    el.querySelectorAll(".galeria-admin").forEach((cont) => cont.addEventListener("click", async (e) => {
+      const x = e.target.closest(".gthumb-x"); if (!x) return;
+      const id = cont.closest(".detalle-row").dataset.detalle;
+      const p = PRODUCTOS.find((y) => y.id === id); if (!p) return;
+      const imgs = Array.isArray(p.imagenes) ? p.imagenes.slice() : [];
+      imgs.splice(parseInt(x.dataset.i, 10), 1);
+      p.imagenes = imgs; p.img_url = imgs[0] || "";
+      await DB.adminUpsertProducto({ id, imagenes: imgs, img_url: p.img_url });
+      refreshGaleria(id);
+    }));
+
+    // guardar descripción
+    el.querySelectorAll(".guardar-detalle").forEach((b) => b.addEventListener("click", async () => {
+      const id = b.closest(".detalle-row").dataset.detalle;
+      const p = PRODUCTOS.find((x) => x.id === id); if (!p) return;
+      const desc = b.closest(".detalle-row").querySelector(".desc-input").value;
+      b.disabled = true; b.textContent = "…";
+      p.descripcion = desc;
+      await DB.adminUpsertProducto({ id, descripcion: desc });
+      b.textContent = "✓"; setTimeout(() => { b.textContent = "Guardar descripción"; b.disabled = false; }, 1200);
     }));
 
     // agregar nuevo

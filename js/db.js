@@ -147,15 +147,26 @@
       return await sb.from("productos").update({ id: nuevo }).eq("id", viejo);
     },
     // Sube una foto al bucket "productos" y devuelve la URL pública.
+    // path único (timestamp + aleatorio) para no pisar al subir varias a la vez.
     async subirImagenProducto(file, id) {
       try {
-        const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
-        const path = id + "-" + Date.now() + "." + ext;
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 5) || "jpg";
+        const rnd = Math.random().toString(36).slice(2, 7);
+        const path = id + "-" + Date.now() + "-" + rnd + "." + ext;
         const { error } = await sb.storage.from("productos").upload(path, file, { upsert: true, cacheControl: "3600" });
         if (error) { console.error("[DB] subirImagen", error); return null; }
         const { data } = sb.storage.from("productos").getPublicUrl(path);
         return (data && data.publicUrl) || null;
       } catch (e) { console.error("[DB] subirImagen", e); return null; }
+    },
+    // Sube varias fotos en orden y devuelve el array de URLs (las que fallan se omiten).
+    async subirImagenesProducto(files, id) {
+      const urls = [];
+      for (const f of files) {
+        const u = await this.subirImagenProducto(f, id);
+        if (u) urls.push(u);
+      }
+      return urls;
     },
     async adminEliminarProducto(id) {
       return await sb.from("productos").delete().eq("id", id);
