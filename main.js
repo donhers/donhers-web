@@ -923,10 +923,11 @@ function closeCart() {
 }
 
 /* ===========================
-   WEBHOOK — Google Sheets via n8n
-   Enviá datos de registro y pedidos a un webhook externo
+   WEBHOOK — aviso de pedido a Brandon
+   Función serverless en Vercel (api/notify-pedido.js) → email vía Resend.
+   Requiere RESEND_API_KEY en Vercel; si falta, no pasa nada (falla silencioso).
    =========================== */
-const WEBHOOK_URL = ''; // Pegar acá la URL del webhook de n8n cuando esté configurado
+const WEBHOOK_URL = '/api/notify-pedido'; // mismo deploy de Vercel
 
 async function sendToSheet(type, data) {
   if (!WEBHOOK_URL) return; // No hacer nada si no hay webhook configurado
