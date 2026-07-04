@@ -94,13 +94,13 @@ create policy "productos_admin_total" on productos
 
 -- CLIENTES: el público puede registrarse (insert); solo admin lee.
 create policy "clientes_insert_publico" on clientes
-  for insert to anon with check (true);
+  for insert to anon, authenticated with check (true);
 create policy "clientes_admin_lectura" on clientes
   for select to authenticated using (true);
 
 -- PEDIDOS: el público puede crear su pedido; solo admin lee/actualiza.
 create policy "pedidos_insert_publico" on pedidos
-  for insert to anon with check (true);
+  for insert to anon, authenticated with check (true);
 create policy "pedidos_admin_lectura" on pedidos
   for select to authenticated using (true);
 create policy "pedidos_admin_update" on pedidos
@@ -108,12 +108,12 @@ create policy "pedidos_admin_update" on pedidos
 
 -- ITEMS: el público los inserta junto con su pedido; solo admin lee.
 create policy "items_insert_publico" on pedido_items
-  for insert to anon with check (true);
+  for insert to anon, authenticated with check (true);
 create policy "items_admin_lectura" on pedido_items
   for select to authenticated using (true);
 
 -- EVENTOS: el público registra eventos (insert); solo admin lee.
 create policy "eventos_insert_publico" on eventos
-  for insert to anon with check (true);
+  for insert to anon, authenticated with check (true);
 create policy "eventos_admin_lectura" on eventos
   for select to authenticated using (true);
