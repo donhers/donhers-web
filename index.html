@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=14">
-  <link rel="stylesheet" href="styles-v2.css?v=14">
+  <link rel="stylesheet" href="styles-v2.css?v=15">
 </head>
 <body>
 
@@ -452,6 +452,20 @@
   </section>
 
   <!-- ========================
+       RESEÑAS DE CLIENTES
+       (oculta hasta que haya reseñas aprobadas; la llena main.js)
+       ======================== -->
+  <section class="resenas hidden" id="resenas" aria-label="Reseñas de clientes">
+    <div class="resenas-inner">
+      <p class="section-accent" data-animate>Lo que dicen nuestros clientes</p>
+      <h2 class="resenas-title" data-animate>Confianza que se lleva puesta</h2>
+      <div class="hero-gold-divider" aria-hidden="true" style="margin:0 auto 34px"></div>
+      <div class="resenas-grid" id="resenas-grid"></div>
+      <button class="resenas-cta" id="resena-abrir" type="button">Dejá tu reseña</button>
+    </div>
+  </section>
+
+  <!-- ========================
        FOOTER
        ======================== -->
   <footer class="footer" aria-label="Pie de página">
@@ -844,8 +858,44 @@
           <p class="pm-desc" id="pm-desc"></p>
           <button class="pm-cta btn-shimmer" id="pm-add" type="button">AGREGAR AL CARRITO</button>
           <a class="pm-consultar consultar-link" id="pm-wa" target="_blank" rel="noopener noreferrer">Consultar por WhatsApp</a>
+          <div class="pm-resenas hidden" id="pm-resenas">
+            <div class="pm-resenas-head" id="pm-resenas-head"></div>
+            <div class="pm-resenas-list" id="pm-resenas-list"></div>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ======================== MODAL DEJÁ TU RESEÑA ======================== -->
+  <div class="modal-overlay" id="resena-overlay" role="dialog" aria-modal="true" aria-label="Dejá tu reseña">
+    <div class="modal resena-modal">
+      <button class="modal-close" id="resena-close" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <form id="resena-form" novalidate>
+        <h3 class="resena-form-title">Dejá tu reseña</h3>
+        <p class="resena-form-sub">Contanos cómo fue tu experiencia con Donher's.</p>
+        <div class="resena-stars" id="resena-stars" role="radiogroup" aria-label="Puntaje">
+          <button type="button" class="rstar" data-v="1" aria-label="1 estrella">★</button>
+          <button type="button" class="rstar" data-v="2" aria-label="2 estrellas">★</button>
+          <button type="button" class="rstar" data-v="3" aria-label="3 estrellas">★</button>
+          <button type="button" class="rstar" data-v="4" aria-label="4 estrellas">★</button>
+          <button type="button" class="rstar" data-v="5" aria-label="5 estrellas">★</button>
+        </div>
+        <input class="resena-field" id="resena-nombre" type="text" maxlength="60" placeholder="Tu nombre *" required>
+        <textarea class="resena-field" id="resena-texto" rows="4" maxlength="600" placeholder="¿Cómo fue tu experiencia? (opcional)"></textarea>
+        <div class="resena-verif">
+          <p class="resena-verif-lbl">¿Compraste en la web? Verificá tu compra (opcional)</p>
+          <div class="resena-verif-row">
+            <input class="resena-field" id="resena-pedido" type="text" placeholder="N° de pedido">
+            <input class="resena-field" id="resena-email" type="email" placeholder="Email de la compra">
+          </div>
+        </div>
+        <p class="resena-msg" id="resena-msg" aria-live="polite"></p>
+        <button class="pm-cta btn-shimmer" id="resena-enviar" type="submit">ENVIAR RESEÑA</button>
+        <p class="resena-nota">Tu reseña se publica cuando la aprobamos. El email no se muestra nunca.</p>
+      </form>
     </div>
   </div>
 
@@ -855,8 +905,8 @@
   <!-- Backend Supabase (claves públicas, protegidas por RLS) -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/config.js?v=1"></script>
-  <script src="js/db.js?v=7"></script>
+  <script src="js/db.js?v=8"></script>
 
-  <script src="main.js?v=9"></script>
+  <script src="main.js?v=10"></script>
 </body>
 </html>

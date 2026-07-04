@@ -1031,3 +1031,57 @@
   .pm-info { padding: 24px 20px 28px; }
   .pm-name { font-size: 28px; }
 }
+
+/* ============================================================
+   RESEÑAS DE CLIENTES (v15)
+   ============================================================ */
+.resenas { background: var(--bg-section); padding: 90px 24px; }
+.resenas.hidden { display: none; }
+.resenas-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
+.resenas-title { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: clamp(30px, 4.5vw, 46px); color: var(--text-primary); margin: 8px 0 20px; }
+.resenas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: left; }
+.resena-card { background: var(--bg-card); border: 1px solid var(--gold-muted); border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 12px; }
+.resena-texto { font-size: 14.5px; line-height: 1.65; color: var(--text-secondary); font-style: italic; }
+.resena-firma { font-size: 13px; color: var(--text-primary); letter-spacing: 0.03em; margin-top: auto; }
+.resena-verificada { color: var(--gold-soft); font-size: 12px; white-space: nowrap; }
+.resenas-cta { margin-top: 34px; background: transparent; border: 1px solid var(--gold); color: var(--gold-soft); padding: 13px 32px; border-radius: 999px; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; font-family: inherit; transition: background .25s, color .25s; }
+.resenas-cta:hover { background: var(--gold); color: #1a1407; }
+
+.stars { display: inline-flex; gap: 2px; font-size: 16px; line-height: 1; }
+.stars .star { color: rgba(245, 239, 227, 0.18); }
+.stars .star.on { color: var(--gold-soft); }
+
+/* Bloque de reseñas dentro del modal de producto */
+.pm-resenas { border-top: 1px solid var(--gold-muted); margin-top: 22px; padding-top: 18px; }
+.pm-resenas.hidden { display: none; }
+.pm-resenas-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.pm-resenas-n { font-size: 13px; color: var(--text-secondary); }
+.pm-resena { padding: 10px 0; border-top: 1px dashed rgba(245, 239, 227, 0.08); }
+.pm-resena:first-of-type { border-top: none; }
+.pm-resena p { font-size: 13.5px; color: var(--text-secondary); font-style: italic; margin: 6px 0; line-height: 1.55; }
+.pm-resena-firma { font-size: 12px; color: var(--text-muted); }
+
+/* Modal del formulario */
+.resena-modal { max-width: 460px; padding: 34px 30px; }
+.resena-form-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.resena-form-sub { font-size: 13.5px; color: var(--text-secondary); margin-bottom: 18px; }
+.resena-stars { display: flex; gap: 6px; margin-bottom: 18px; }
+.rstar { background: none; border: none; font-size: 30px; line-height: 1; color: rgba(245, 239, 227, 0.18); cursor: pointer; padding: 2px; transition: color .15s, transform .15s; }
+.rstar:hover { transform: scale(1.15); }
+.rstar.on { color: var(--gold-soft); }
+.resena-field { width: 100%; background: var(--bg-card); border: 1px solid rgba(245, 239, 227, 0.12); border-radius: 8px; color: var(--text-primary); padding: 12px 14px; font-size: 14px; font-family: inherit; margin-bottom: 12px; }
+.resena-field:focus { outline: none; border-color: var(--gold); }
+textarea.resena-field { resize: vertical; }
+.resena-verif { border: 1px dashed var(--gold-muted); border-radius: 10px; padding: 14px 14px 4px; margin-bottom: 14px; }
+.resena-verif-lbl { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; letter-spacing: 0.04em; }
+.resena-verif-row { display: grid; grid-template-columns: 1fr 1.4fr; gap: 10px; }
+.resena-msg { font-size: 13px; min-height: 18px; margin-bottom: 10px; }
+.resena-msg.ok { color: #7ac98a; }
+.resena-msg.error { color: #e0673f; }
+.resena-nota { font-size: 11.5px; color: var(--text-muted); margin-top: 12px; text-align: center; line-height: 1.5; }
+
+@media (max-width: 860px) {
+  .resenas { padding: 64px 20px; }
+  .resenas-grid { grid-template-columns: 1fr; }
+  .resena-verif-row { grid-template-columns: 1fr; }
+}

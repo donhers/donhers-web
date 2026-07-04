@@ -63,7 +63,7 @@
   document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => {
     document.querySelectorAll(".tab").forEach((x) => x.classList.remove("active"));
     t.classList.add("active");
-    ["stats", "pedidos", "productos", "clientes"].forEach((s) => $("sec-" + s).classList.toggle("hidden", s !== t.dataset.sec));
+    ["stats", "pedidos", "productos", "clientes", "resenas"].forEach((s) => $("sec-" + s).classList.toggle("hidden", s !== t.dataset.sec));
     cargarSeccion(t.dataset.sec);
   }));
 
@@ -72,6 +72,7 @@
     else if (s === "pedidos") renderPedidos();
     else if (s === "productos") renderProductos();
     else if (s === "clientes") renderClientes();
+    else if (s === "resenas") renderResenas();
   }
 
   // ---------- COMISIÓN GENIDEIA (15%) ----------
@@ -326,6 +327,48 @@
       '<table><thead><tr><th>Fecha</th><th>Nombre</th><th>Email</th><th>Teléfono</th></tr></thead><tbody>' +
       cs.map((c) => '<tr><td>' + fecha(c.creado_en) + '</td><td>' + esc(c.nombre || "—") + '</td><td>' + esc(c.email || "") + '</td><td>' + esc(c.telefono || "—") + '</td></tr>').join("") +
       '</tbody></table></div>';
+  }
+
+  // ---------- RESEÑAS ----------
+  const estrellasTxt = (n) => "★".repeat(n) + "☆".repeat(5 - n);
+  async function renderResenas() {
+    const el = $("sec-resenas");
+    el.innerHTML = '<div class="loading">Cargando reseñas…</div>';
+    const rs = await DB.adminResenas();
+    if (!PRODUCTOS.length) PRODUCTOS = await DB.adminTodosLosProductos();
+    const nombreProd = (id) => { if (!id) return "—"; const p = PRODUCTOS.find((x) => x.id === id); return p ? p.nombre : id; };
+    if (!rs.length) { el.innerHTML = '<div class="card"><div class="empty">Todavía no llegaron reseñas. Cuando un cliente deje la suya en la web, aparece acá para que la apruebes.</div></div>'; return; }
+
+    const pendientes = rs.filter((r) => !r.aprobada).length;
+    el.innerHTML = '<div class="card"><div class="card-h">Reseñas (' + rs.length + ')' +
+      (pendientes ? ' <span style="font-size:12px;color:var(--gold-soft);font-family:\'DM Sans\',sans-serif;font-weight:400">· ' + pendientes + ' pendiente' + (pendientes === 1 ? "" : "s") + ' de aprobar</span>' : '') +
+      ' <span style="font-size:12px;color:var(--muted);font-family:\'DM Sans\',sans-serif;font-weight:400">· solo las aprobadas se muestran en la web</span></div>' +
+      '<table><thead><tr><th>Fecha</th><th>Cliente</th><th>Puntaje</th><th>Reseña</th><th>Producto</th><th>Verificada</th><th>Estado</th><th></th></tr></thead><tbody>' +
+      rs.map((r) =>
+        '<tr' + (!r.aprobada ? ' style="background:rgba(185,154,82,.05)"' : '') + '>' +
+        '<td>' + fecha(r.creado_en) + '</td>' +
+        '<td>' + esc(r.nombre) + (r.email ? '<br><span style="color:var(--muted);font-size:12px">' + esc(r.email) + '</span>' : '') + '</td>' +
+        '<td style="color:var(--gold-soft);white-space:nowrap">' + estrellasTxt(r.estrellas) + '</td>' +
+        '<td style="max-width:280px">' + esc(r.texto || "—") + '</td>' +
+        '<td>' + esc(nombreProd(r.producto_id)) + (r.pedido_id ? '<br><span style="color:var(--muted);font-size:12px">Pedido ' + esc(r.pedido_id) + '</span>' : '') + '</td>' +
+        '<td>' + (r.verificada ? '<span class="pill" style="color:var(--gold-soft)">✓ compra real</span>' : '—') + '</td>' +
+        '<td><span class="pill">' + (r.aprobada ? "Publicada" : "Pendiente") + '</span></td>' +
+        '<td class="row-actions" style="white-space:nowrap">' +
+          '<button class="mini res-aprobar" data-id="' + r.id + '" data-a="' + (r.aprobada ? 0 : 1) + '">' + (r.aprobada ? "Ocultar" : "Aprobar") + '</button>' +
+          '<button class="mini del res-borrar" data-id="' + r.id + '">×</button></td></tr>'
+      ).join("") + '</tbody></table></div>';
+
+    el.querySelectorAll(".res-aprobar").forEach((b) => b.addEventListener("click", async () => {
+      b.disabled = true;
+      await DB.adminAprobarResena(b.dataset.id, b.dataset.a === "1");
+      renderResenas();
+    }));
+    el.querySelectorAll(".res-borrar").forEach((b) => b.addEventListener("click", async () => {
+      if (!confirm("¿Eliminar esta reseña? No se puede deshacer.")) return;
+      b.disabled = true;
+      await DB.adminEliminarResena(b.dataset.id);
+      renderResenas();
+    }));
   }
 
   init();
