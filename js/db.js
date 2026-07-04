@@ -176,5 +176,45 @@
       if (error) { console.error("[DB] adminTodosLosProductos", error); return []; }
       return data || [];
     },
+
+    // ---------- RESEÑAS ----------
+    // Alta pública vía RPC (security definer): valida, marca "verificada" si
+    // pedido+email coinciden con una compra real, y entra SIEMPRE sin aprobar.
+    async crearResena(r) {
+      try {
+        const { data, error } = await sb.rpc("crear_resena", {
+          p_producto_id: r.producto_id || null,
+          p_pedido_id: r.pedido_id || null,
+          p_nombre: r.nombre,
+          p_email: r.email || null,
+          p_estrellas: r.estrellas,
+          p_texto: r.texto || null,
+        });
+        if (error) { console.error("[DB] crearResena", error); return { ok: false, error }; }
+        return data || { ok: true };
+      } catch (e) { console.error("[DB] crearResena", e); return { ok: false, error: e }; }
+    },
+    // Reseñas aprobadas (público). El email NUNCA se pide en el select.
+    async getResenas(productoId) {
+      let q = sb.from("resenas")
+        .select("id, producto_id, nombre, estrellas, texto, verificada, creado_en")
+        .order("creado_en", { ascending: false }).limit(60);
+      if (productoId) q = q.eq("producto_id", productoId);
+      const { data, error } = await q;
+      if (error) { console.error("[DB] getResenas", error); return []; }
+      return data || [];
+    },
+    // Panel: todas (pendientes + aprobadas), moderación.
+    async adminResenas() {
+      const { data, error } = await sb.from("resenas").select("*").order("creado_en", { ascending: false });
+      if (error) { console.error("[DB] adminResenas", error); return []; }
+      return data || [];
+    },
+    async adminAprobarResena(id, aprobada) {
+      return await sb.from("resenas").update({ aprobada: !!aprobada }).eq("id", id);
+    },
+    async adminEliminarResena(id) {
+      return await sb.from("resenas").delete().eq("id", id);
+    },
   };
 })();

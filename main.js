@@ -1456,6 +1456,8 @@ function openProductoModal(id) {
   const waLink = document.getElementById('pm-wa');
   waLink.href = wa; waLink.dataset.id = p.id;
 
+  renderResenasProducto(p.id);
+
   if (window.DB && DB.track) DB.track('ver_producto', { producto_id: p.id });
   openModal('producto-overlay');
 }
@@ -1473,10 +1475,126 @@ if (pmClose) pmClose.addEventListener('click', () => closeModal('producto-overla
 const pmOverlay = document.getElementById('producto-overlay');
 if (pmOverlay) pmOverlay.addEventListener('click', (e) => { if (e.target === pmOverlay) closeModal('producto-overlay'); });
 
+/* ===========================
+   RESEÑAS DE CLIENTES
+   =========================== */
+let RESENAS_APROBADAS = []; // cache para el bloque del modal de producto
+
+function starsHTML(n) {
+  let s = '';
+  for (let i = 1; i <= 5; i++) s += '<span class="star' + (i <= n ? ' on' : '') + '">★</span>';
+  return '<span class="stars" aria-label="' + n + ' de 5 estrellas">' + s + '</span>';
+}
+
+function resenaCardHTML(r) {
+  return '<article class="resena-card" data-animate>' +
+    starsHTML(r.estrellas) +
+    (r.texto ? '<p class="resena-texto">“' + escapeAttr(r.texto) + '”</p>' : '') +
+    '<div class="resena-firma">' + escapeAttr(r.nombre) +
+    (r.verificada ? ' <span class="resena-verificada">✓ Compra verificada</span>' : '') +
+    '</div></article>';
+}
+
+function renderResenasHome(resenas) {
+  const sec = document.getElementById('resenas');
+  const grid = document.getElementById('resenas-grid');
+  if (!sec || !grid) return;
+  if (!resenas.length) { sec.classList.add('hidden'); return; } // sin reseñas no hay sección
+  grid.innerHTML = resenas.slice(0, 6).map(resenaCardHTML).join('');
+  sec.classList.remove('hidden');
+  // los data-animate inyectados después del init necesitan la clase visible
+  grid.querySelectorAll('[data-animate]').forEach((el) => el.classList.add('in-view'));
+}
+
+function renderResenasProducto(productoId) {
+  const box = document.getElementById('pm-resenas');
+  const head = document.getElementById('pm-resenas-head');
+  const list = document.getElementById('pm-resenas-list');
+  if (!box || !head || !list) return;
+  const del = RESENAS_APROBADAS.filter((r) => r.producto_id === productoId);
+  if (!del.length) { box.classList.add('hidden'); return; }
+  const prom = del.reduce((s, r) => s + r.estrellas, 0) / del.length;
+  head.innerHTML = starsHTML(Math.round(prom)) + '<span class="pm-resenas-n">' + del.length + (del.length === 1 ? ' reseña' : ' reseñas') + '</span>';
+  list.innerHTML = del.slice(0, 3).map((r) =>
+    '<div class="pm-resena">' + starsHTML(r.estrellas) +
+    (r.texto ? '<p>“' + escapeAttr(r.texto) + '”</p>' : '') +
+    '<span class="pm-resena-firma">' + escapeAttr(r.nombre) + (r.verificada ? ' · ✓ verificada' : '') + '</span></div>'
+  ).join('');
+  box.classList.remove('hidden');
+}
+
+// --- Formulario "Dejá tu reseña" ---
+let resenaEstrellas = 0;
+const resenaOverlay = document.getElementById('resena-overlay');
+
+function abrirResenaModal(pedidoPrefill) {
+  if (!resenaOverlay) return;
+  if (pedidoPrefill) {
+    const inp = document.getElementById('resena-pedido');
+    if (inp) inp.value = pedidoPrefill;
+  }
+  openModal('resena-overlay');
+}
+
+(function initResenaForm() {
+  const form = document.getElementById('resena-form');
+  if (!form) return;
+  const msg = document.getElementById('resena-msg');
+  const stars = document.querySelectorAll('#resena-stars .rstar');
+
+  stars.forEach((b) => b.addEventListener('click', () => {
+    resenaEstrellas = parseInt(b.dataset.v, 10);
+    stars.forEach((x) => x.classList.toggle('on', parseInt(x.dataset.v, 10) <= resenaEstrellas));
+  }));
+
+  const abrirBtn = document.getElementById('resena-abrir');
+  if (abrirBtn) abrirBtn.addEventListener('click', () => abrirResenaModal());
+  const cerrarBtn = document.getElementById('resena-close');
+  if (cerrarBtn) cerrarBtn.addEventListener('click', () => closeModal('resena-overlay'));
+  if (resenaOverlay) resenaOverlay.addEventListener('click', (e) => { if (e.target === resenaOverlay) closeModal('resena-overlay'); });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const nombre = document.getElementById('resena-nombre').value.trim();
+    if (!resenaEstrellas) { msg.textContent = 'Elegí un puntaje con las estrellas.'; msg.className = 'resena-msg error'; return; }
+    if (!nombre) { msg.textContent = 'Poné tu nombre para publicar la reseña.'; msg.className = 'resena-msg error'; return; }
+    if (!window.DB || !DB.ok) { msg.textContent = 'No pudimos conectar. Probá de nuevo en un rato.'; msg.className = 'resena-msg error'; return; }
+
+    const btn = document.getElementById('resena-enviar');
+    btn.disabled = true; btn.textContent = 'ENVIANDO...';
+    const out = await DB.crearResena({
+      nombre,
+      estrellas: resenaEstrellas,
+      texto: document.getElementById('resena-texto').value.trim(),
+      pedido_id: document.getElementById('resena-pedido').value.trim(),
+      email: document.getElementById('resena-email').value.trim(),
+    });
+    btn.disabled = false; btn.textContent = 'ENVIAR RESEÑA';
+
+    if (out && out.ok) {
+      form.reset(); resenaEstrellas = 0; stars.forEach((x) => x.classList.remove('on'));
+      msg.textContent = out.verificada
+        ? '¡Gracias! Verificamos tu compra. Tu reseña se publica en cuanto la aprobemos.'
+        : '¡Gracias! Tu reseña se publica en cuanto la aprobemos.';
+      msg.className = 'resena-msg ok';
+    } else {
+      msg.textContent = 'No se pudo enviar. Revisá los datos y probá de nuevo.';
+      msg.className = 'resena-msg error';
+    }
+  });
+})();
+
 // Cargar productos reales desde Supabase
 if (window.DB && DB.ok) {
   DB.track('visita');
   DB.getProductos()
     .then((prods) => { if (prods && prods.length) renderGalleryFromDB(prods); })
     .catch((err) => console.warn('[galería] usando fallback estático:', err));
+  DB.getResenas()
+    .then((rs) => { RESENAS_APROBADAS = rs || []; renderResenasHome(RESENAS_APROBADAS); })
+    .catch(() => {});
+  // Link directo para reseñar (se lo manda Brandon al marcar "entregado"):
+  // donhers.com/?resena=1&pedido=DH-1234
+  const params = new URLSearchParams(location.search);
+  if (params.get('resena')) abrirResenaModal(params.get('pedido') || '');
 }
