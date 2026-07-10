@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=14">
-  <link rel="stylesheet" href="styles-v2.css?v=15">
+  <link rel="stylesheet" href="styles-v2.css?v=16">
 </head>
 <body>
 
@@ -791,6 +791,15 @@
           </div>
         </div>
 
+        <!-- Error real: el pedido no quedó registrado. Nunca decimos "listo" si no lo está. -->
+        <div id="checkout-error" class="checkout-error hidden" role="alert">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            <span id="checkout-error-msg">No pudimos registrar tu pedido.</span>
+            <a href="https://wa.me/59892337486" target="_blank" rel="noopener noreferrer" class="checkout-error-wa">Escribinos por WhatsApp →</a>
+          </div>
+        </div>
+
         <button type="button" class="btn-back-step" id="back-to-step1">← Volver</button>
       </div>
 
@@ -907,6 +916,6 @@
   <script src="js/config.js?v=1"></script>
   <script src="js/db.js?v=8"></script>
 
-  <script src="main.js?v=10"></script>
+  <script src="main.js?v=11"></script>
 </body>
 </html>
