@@ -773,16 +773,14 @@ const Checkout = {
       showToast('Tu carrito está vacío', 'error');
       return;
     }
-    if (!Auth.isLoggedIn()) {
-      openModal('login-overlay');
-      showToast('Ingresá para continuar con tu compra', 'error');
-      return;
-    }
+    // Se compra como INVITADO: nombre y email salen del form de envío (ambos required).
+    // Tener cuenta es opcional y solo sirve para seguir el pedido después.
     // Reset para nueva sesión de checkout
     this._orderId = null;
     this._paymentMethod = 'card';
     this.goToStep(1);
     this.renderSummary();
+    this._hideError();
 
     // Pre-fill datos de envío con datos del usuario
     const user = Auth.get();
@@ -797,7 +795,46 @@ const Checkout = {
     openModal('checkout-overlay');
   },
 
-  _confirmOrder(paymentMethod) {
+  // Muestra/oculta el cartel de error del paso 2 (pago).
+  _showError(msg) {
+    const el = document.getElementById('checkout-error');
+    if (!el) { showToast(msg, 'error'); return; }
+    const txt = document.getElementById('checkout-error-msg');
+    if (txt) txt.textContent = msg;
+    el.classList.remove('hidden');
+  },
+
+  _hideError() {
+    const el = document.getElementById('checkout-error');
+    if (el) el.classList.add('hidden');
+  },
+
+  // Guarda el pedido en Supabase. Reintenta una vez ante fallo transitorio.
+  // Un pedido duplicado (23505) significa que YA quedó guardado: es éxito.
+  async _guardarPedido(order, paymentMethod, user) {
+    const payload = {
+      id:             order.id,
+      cliente_email:  order.email,
+      cliente_nombre: (user && user.name) || (order.shipping && order.shipping.name) || null,
+      total:          order.total,
+      estado:         'pendiente_pago',
+      metodo_pago:    paymentMethod === 'transfer' ? 'transferencia' : 'mercadopago',
+      datos_envio:    order.shipping || null,
+      items:          order.items,
+    };
+
+    for (let intento = 1; intento <= 2; intento++) {
+      const res = await DB.crearPedido(payload);
+      if (res && res.ok) return true;
+      if (res && res.error && res.error.code === '23505') return true; // ya existía
+      if (intento === 1) await new Promise(r => setTimeout(r, 900));
+    }
+    return false;
+  },
+
+  // Devuelve true solo si el pedido quedó realmente registrado en la base.
+  // Un pedido que no está en la base no existe: no le mentimos al comprador.
+  async _confirmOrder(paymentMethod) {
     const user  = Auth.get();
     const email = user ? user.email : (this._shippingData && this._shippingData.email) || '';
     const order = {
@@ -811,23 +848,16 @@ const Checkout = {
       status:        'pendiente_pago'
     };
 
-    Orders.save(order);
+    this._hideError();
 
-    // Guardar el pedido en Supabase (si está disponible).
-    // El localStorage (Orders) ya quedó como respaldo: la compra nunca se pierde.
-    if (window.DB && DB.ok) {
-      DB.crearPedido({
-        id:             order.id,
-        cliente_email:  order.email,
-        cliente_nombre: (user && user.name) || (order.shipping && order.shipping.name) || null,
-        total:          order.total,
-        estado:         'pendiente_pago',
-        metodo_pago:    paymentMethod === 'transfer' ? 'transferencia' : 'mercadopago',
-        datos_envio:    order.shipping || null,
-        items:          order.items,
-      });
-      DB.track('checkout', { meta: { id: order.id, total: order.total, metodo: paymentMethod } });
+    if (!window.DB || !DB.ok || !(await this._guardarPedido(order, paymentMethod, user))) {
+      this._showError('No pudimos registrar tu pedido. No pagues todavía: escribinos por WhatsApp y lo cerramos con vos.');
+      return false;
     }
+
+    // Recién ahora existe el pedido: lo guardamos como respaldo local y lo trackeamos.
+    Orders.save(order);
+    DB.track('checkout', { meta: { id: order.id, total: order.total, metodo: paymentMethod } });
 
     sendToSheet('pedido', {
       id: order.id,
@@ -855,30 +885,28 @@ const Checkout = {
 
     Cart.clear();
     this.goToStep(3);
+    return true;
+  },
+
+  async _confirmarCon(btnId, metodo, labelOriginal) {
+    const btn = document.getElementById(btnId);
+    if (!btn || btn.disabled) return;
+    btn.disabled = true;
+    btn.textContent = 'CONFIRMANDO...';
+    try {
+      await this._confirmOrder(metodo);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = labelOriginal;
+    }
   },
 
   confirmMercadoPago() {
-    const btn = document.getElementById('btn-mp-confirm');
-    if (!btn) return;
-    btn.disabled = true;
-    btn.textContent = 'CONFIRMANDO...';
-    setTimeout(() => {
-      this._confirmOrder('mercadopago');
-      btn.disabled = false;
-      btn.textContent = 'Ya realicé el pago — confirmar pedido';
-    }, 600);
+    return this._confirmarCon('btn-mp-confirm', 'mercadopago', 'Ya realicé el pago — confirmar pedido');
   },
 
   processBankTransfer() {
-    const btn = document.getElementById('btn-bank-pay');
-    if (!btn) return;
-    btn.disabled = true;
-    btn.textContent = 'CONFIRMANDO...';
-    setTimeout(() => {
-      this._confirmOrder('transfer');
-      btn.disabled = false;
-      btn.textContent = 'CONFIRMAR PEDIDO';
-    }, 800);
+    return this._confirmarCon('btn-bank-pay', 'transfer', 'CONFIRMAR PEDIDO');
   }
 };
 

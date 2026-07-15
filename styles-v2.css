@@ -1085,3 +1085,31 @@ textarea.resena-field { resize: vertical; }
   .resenas-grid { grid-template-columns: 1fr; }
   .resena-verif-row { grid-template-columns: 1fr; }
 }
+
+/* ===========================
+   CHECKOUT — error de registro de pedido
+   Se muestra solo si el pedido NO pudo guardarse en la base.
+   =========================== */
+.checkout-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 16px 0 4px;
+  padding: 14px 16px;
+  border: 1px solid #a4413f;
+  border-radius: 8px;
+  background: rgba(164, 65, 63, 0.12);
+  color: #f0d5d4;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+.checkout-error.hidden { display: none; }
+.checkout-error-wa {
+  display: inline-block;
+  margin-top: 6px;
+  color: var(--gold-soft);
+  font-weight: 600;
+  text-decoration: none;
+}
+.checkout-error-wa:hover { text-decoration: underline; }
