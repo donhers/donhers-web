@@ -130,12 +130,19 @@
       if (error) { console.error("[DB] adminClientes", error); return []; }
       return data || [];
     },
-    async adminEventos(desdeISO) {
-      let q = sb.from("eventos").select("*").order("creado_en", { ascending: false }).limit(5000);
-      if (desdeISO) q = q.gte("creado_en", desdeISO);
-      const { data, error } = await q;
-      if (error) { console.error("[DB] adminEventos", error); return []; }
-      return data || [];
+    // Conteo agregado en la base (evita el tope de 1000 filas de la API
+    // al traer eventos crudos con .select('*') — ver agregar-conteo-eventos.sql).
+    async adminConteoEventos() {
+      const { data, error } = await sb.rpc("admin_conteo_eventos");
+      if (error) { console.error("[DB] adminConteoEventos", error); return {}; }
+      const porTipo = {};
+      (data || []).forEach((r) => { porTipo[r.tipo] = Number(r.cantidad); });
+      return porTipo;
+    },
+    async adminTopProductos(limite) {
+      const { data, error } = await sb.rpc("admin_top_productos", { p_limit: limite || 6 });
+      if (error) { console.error("[DB] adminTopProductos", error); return []; }
+      return (data || []).map((r) => [r.producto_id, Number(r.cantidad)]);
     },
     // CRUD de productos (panel)
     async adminUpsertProducto(p) {
