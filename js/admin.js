@@ -112,16 +112,14 @@
   async function renderStats() {
     const el = $("sec-stats");
     el.innerHTML = '<div class="loading">Cargando métricas…</div>';
-    const eventos = await DB.adminEventos();
+    const conteo = await DB.adminConteoEventos();
     const pedidos = await DB.adminPedidos();
     if (!PRODUCTOS.length) PRODUCTOS = await DB.adminTodosLosProductos();
     const nombre = (id) => { const p = PRODUCTOS.find((x) => x.id === id); return p ? p.nombre : id; };
-    const cont = (tipo) => eventos.filter((e) => e.tipo === tipo).length;
+    const cont = (tipo) => conteo[tipo] || 0;
 
     // top productos por vistas + agregados al carrito
-    const porProd = {};
-    eventos.forEach((e) => { if (e.producto_id && (e.tipo === "ver_producto" || e.tipo === "add_carrito")) porProd[e.producto_id] = (porProd[e.producto_id] || 0) + 1; });
-    const top = Object.entries(porProd).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const top = await DB.adminTopProductos(6);
     const max = top.length ? top[0][1] : 1;
 
     el.innerHTML =
