@@ -5,6 +5,6 @@
 //  NUNCA poner acá la clave "secret"/service_role.
 // ============================================================
 window.SUPABASE_CONFIG = {
-  url: "https://okjpbsntpahesalfcpox.supabase.co",
-  key: "sb_publishable_49pMldWLQE_YOKvplyIObQ_xptxrJmc",
+  url: "https://vbbxwgmpwmusekhnjlfb.supabase.co",
+  key: "sb_publishable_41pteWjq2Mx2fz-d5QS8xA_QAw10iyi",
 };
