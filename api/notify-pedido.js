@@ -6,8 +6,19 @@
 //  Mientras no esté la key, no rompe nada (responde ok:false).
 // ============================================================
 
-const DESTINO = "donhers.imp@gmail.com"; // a dónde le llega el aviso a Brandon
-const REMITENTE = "Donher's <onboarding@resend.dev>"; // sin dominio verificado; cambiar a pedidos@donhers.com cuando se verifique
+// A quién le llega el aviso y desde qué dirección sale.
+// Configurables por variable de entorno en Vercel, para poder cambiarlos
+// sin tocar el código:
+//   PEDIDOS_EMAIL_TO    uno o varios mails separados por coma
+//   PEDIDOS_EMAIL_FROM  remitente (necesita dominio verificado en Resend)
+//
+// OJO con el remitente por defecto: mientras se use onboarding@resend.dev,
+// Resend SOLO entrega a la dirección con la que se creó la cuenta. Para que
+// le llegue a Brandon hay que verificar donhers.com en Resend y poner acá
+// algo como "Donher's <pedidos@donhers.com>".
+const DESTINO = (process.env.PEDIDOS_EMAIL_TO || "donhers.imp@gmail.com")
+  .split(",").map((s) => s.trim()).filter(Boolean);
+const REMITENTE = process.env.PEDIDOS_EMAIL_FROM || "Donher's <onboarding@resend.dev>";
 
 const esc = (s) => String(s == null ? "" : s)
   .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -45,13 +56,22 @@ export default async function handler(req, res) {
       headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json" },
       body: JSON.stringify({
         from: REMITENTE,
-        to: [DESTINO],
+        to: DESTINO,
         subject: `🛒 Nuevo pedido ${d.id || ""} — ${money(d.total)}`,
         html,
       }),
     });
     const out = await r.json().catch(() => ({}));
-    return res.status(200).json({ ok: r.ok, status: r.status, id: out.id || null });
+    // Si Resend rechaza (dominio sin verificar, key inválida), devolvemos su
+    // mensaje: sin esto el aviso fallaba en silencio y no había cómo saber
+    // por qué no llegaba el mail.
+    if (!r.ok) console.error("[notify-pedido] Resend rechazó el envío:", r.status, out);
+    return res.status(200).json({
+      ok: r.ok,
+      status: r.status,
+      id: out.id || null,
+      error: r.ok ? null : (out.message || out.name || "error de Resend"),
+    });
   } catch (e) {
     // nunca romper el flujo de compra por el aviso
     return res.status(200).json({ ok: false, error: String(e && e.message || e) });
