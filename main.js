@@ -850,6 +850,15 @@ const Checkout = {
 
     this._hideError();
 
+    // Sin email no hay forma de avisarle al comprador ni de que siga su pedido.
+    // El form lo pide como obligatorio; este chequeo cubre el caso raro de
+    // llegar al paso 2 sin haber pasado por la validación del paso 1.
+    if (!email || email.indexOf('@') === -1) {
+      this._showError('Nos falta tu email para registrar el pedido. Volvé al paso de envío y completalo.');
+      this.goToStep(1);
+      return false;
+    }
+
     if (!window.DB || !DB.ok || !(await this._guardarPedido(order, paymentMethod, user))) {
       this._showError('No pudimos registrar tu pedido. No pagues todavía: escribinos por WhatsApp y lo cerramos con vos.');
       return false;
@@ -858,6 +867,15 @@ const Checkout = {
     // Recién ahora existe el pedido: lo guardamos como respaldo local y lo trackeamos.
     Orders.save(order);
     DB.track('checkout', { meta: { id: order.id, total: order.total, metodo: paymentMethod } });
+
+    // El comprador queda en la lista de clientes del panel. Se compra como
+    // invitado, así que sin esto Brandon no tendría a quién recontactar:
+    // los datos vivirían solo dentro del JSON de envío del pedido.
+    DB.crearCliente({
+      email,
+      nombre: (order.shipping && order.shipping.name) || (user && user.name) || null,
+      telefono: (order.shipping && order.shipping.phone) || null,
+    });
 
     sendToSheet('pedido', {
       id: order.id,
@@ -883,8 +901,12 @@ const Checkout = {
       successMsg.innerHTML = `Confirmamos el envío en cuanto verifiquemos ${metodo}. Envianos el comprobante por WhatsApp para agilizar el despacho.`;
     }
 
+    const totalPedido = order.total;
     Cart.clear();
     this.goToStep(3);
+    // URL de compra confirmada: /gracias/DH-1234. Es la que mide Google Ads
+    // como conversión, y además dispara el evento purchase si hay tag puesto.
+    if (window.Router) Router.confirmarCompra(this._orderId, { total: totalPedido });
     return true;
   },
 
@@ -918,6 +940,9 @@ function openModal(id) {
   if (!el) return;
   el.classList.add('active');
   document.body.style.overflow = 'hidden';
+  // Cada modal tiene su URL (ver js/router.js). El detalle de producto
+  // empuja la suya aparte, porque lleva el código del modelo.
+  if (window.Router && id !== 'producto-overlay') Router.irAModal(id);
 }
 
 function closeModal(id) {
@@ -927,6 +952,7 @@ function closeModal(id) {
   // Solo restaurar scroll si no hay otro modal activo
   const anyOpen = document.querySelector('.modal-overlay.active, .cart-sidebar.open');
   if (!anyOpen) document.body.style.overflow = '';
+  if (window.Router) Router.volverABase();
 }
 
 function openCart() {
@@ -937,6 +963,7 @@ function openCart() {
   backdrop.classList.add('active');
   document.body.style.overflow = 'hidden';
   if (waFloat) waFloat.style.display = 'none';
+  if (window.Router) Router.ir('/carrito', { titulo: 'Carrito' });
 }
 
 function closeCart() {
@@ -948,6 +975,7 @@ function closeCart() {
   if (waFloat) waFloat.style.display = '';
   const anyOpen = document.querySelector('.modal-overlay.active');
   if (!anyOpen) document.body.style.overflow = '';
+  if (window.Router) Router.volverABase();
 }
 
 /* ===========================
@@ -1461,8 +1489,10 @@ function pmUpdateDots() {
   Array.from(pmDots.children).forEach((d, i) => d.classList.toggle('active', i === cur));
 }
 
+// Devuelve true si pudo abrir el modelo. El router usa ese dato para
+// mandar a la tienda cuando el código de la URL no existe.
 function openProductoModal(id) {
-  const p = PRODUCTOS_BY_ID[id]; if (!p || !pmTrack) return;
+  const p = PRODUCTOS_BY_ID[id]; if (!p || !pmTrack) return false;
   const imgs = (Array.isArray(p.imagenes) && p.imagenes.length) ? p.imagenes : (p.img_url ? [p.img_url] : []);
   pmTrack.innerHTML = imgs.length
     ? imgs.map((u) => '<div class="pm-slide"><img src="' + escapeAttr(u) + '" alt="' + escapeAttr(p.nombre) + '" onerror="imgFallback(this)"></div>').join('')
@@ -1497,6 +1527,10 @@ function openProductoModal(id) {
 
   if (window.DB && DB.track) DB.track('ver_producto', { producto_id: p.id });
   openModal('producto-overlay');
+  // URL propia del modelo: /producto/DON0016-rectangular-azul
+  // Sirve para el anuncio de Ads y para que el cliente comparta el link.
+  if (window.Router) Router.ir(Router.rutaProducto(p), { titulo: p.nombre });
+  return true;
 }
 
 // Navegación de la galería del modal
@@ -1621,12 +1655,69 @@ function abrirResenaModal(pedidoPrefill) {
   });
 })();
 
+/* ============================================================
+   ROUTER — una URL por pantalla (ver js/router.js)
+   Se arranca DESPUÉS de cargar los productos: si alguien entra
+   directo a /producto/DON0016, el catálogo tiene que estar en
+   memoria para poder abrir el modelo.
+   ============================================================ */
+function iniciarRouter() {
+  if (!window.Router) return;
+  Router.iniciar({
+    abrirProducto: (id) => openProductoModal(id),
+    abrirModal: (id) => openModal(id),
+    abrirCarrito: () => openCart(),
+    abrirCheckout: () => {
+      // Sin carrito no hay checkout que mostrar (pasa al entrar por un link viejo).
+      if (!Cart.items.length) { irASeccion('#colecciones'); return; }
+      Checkout.open();
+    },
+    irATienda: () => irASeccion('#colecciones'),
+    irAInicio: () => irASeccion('#hero'),
+    cerrarTodo: () => {
+      document.querySelectorAll('.modal-overlay.active').forEach((m) => m.classList.remove('active'));
+      closeCart();
+      document.body.style.overflow = '';
+    },
+  });
+}
+
+function irASeccion(hash) {
+  const el = document.querySelector(hash);
+  if (!el) return;
+  // Al entrar directo por una URL (/tienda), la galería recién se dibujó y las
+  // fotos todavía están acomodando el alto: un scroll inmediato queda corto o
+  // lo pisa el navegador al restaurar posición. Reintentamos en el siguiente
+  // frame y otra vez a los 400ms, ya con el layout estable.
+  const ir = (suave) => el.scrollIntoView({ behavior: suave ? 'smooth' : 'auto' });
+  requestAnimationFrame(() => ir(false));
+  setTimeout(() => ir(true), 400);
+}
+
+// Links internos (#hero, #colecciones). Con <base href="/"> el navegador los
+// resolvería como /#hero y, estando en una ruta anidada, recargaría la página.
+// Los manejamos nosotros: scroll suave + la URL que corresponde a la sección.
+const URL_POR_SECCION = { '#colecciones': ['/tienda', 'Colección'], '#hero': ['/', ''] };
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+  const hash = a.getAttribute('href');
+  if (!hash || hash === '#') return;
+  const destino = document.querySelector(hash);
+  if (!destino) return;
+  e.preventDefault();
+  destino.scrollIntoView({ behavior: 'smooth' });
+  const ruta = URL_POR_SECCION[hash];
+  if (ruta && window.Router) Router.ir(ruta[0], { titulo: ruta[1] });
+});
+
 // Cargar productos reales desde Supabase
 if (window.DB && DB.ok) {
   DB.track('visita');
   DB.getProductos()
     .then((prods) => { if (prods && prods.length) renderGalleryFromDB(prods); })
-    .catch((err) => console.warn('[galería] usando fallback estático:', err));
+    .catch((err) => console.warn('[galería] usando fallback estático:', err))
+    .finally(iniciarRouter);
   DB.getResenas()
     .then((rs) => { RESENAS_APROBADAS = rs || []; renderResenasHome(RESENAS_APROBADAS); })
     .catch(() => {});
@@ -1634,4 +1725,8 @@ if (window.DB && DB.ok) {
   // donhers.com/?resena=1&pedido=DH-1234
   const params = new URLSearchParams(location.search);
   if (params.get('resena')) abrirResenaModal(params.get('pedido') || '');
+} else {
+  // Sin Supabase la web anda igual con la galería estática: el router
+  // también, así /tienda y /carrito siguen teniendo su URL.
+  iniciarRouter();
 }
