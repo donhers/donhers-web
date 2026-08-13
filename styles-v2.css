@@ -1113,3 +1113,12 @@ textarea.resena-field { resize: vertical; }
   text-decoration: none;
 }
 .checkout-error-wa:hover { text-decoration: underline; }
+
+/* Producto sin foto disponible: el monograma de la marca en vez de imagen rota.
+   Se centra y se atenúa para que se lea como placeholder, no como la foto real. */
+.img-sin-foto {
+  object-fit: contain !important;
+  padding: 22%;
+  opacity: .32;
+  background: #0d0d0d;
+}

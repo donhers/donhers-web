@@ -1369,6 +1369,15 @@ function escapeAttr(s) {
     .replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 }
 
+// Si la foto de un producto no carga, mostramos el monograma de la marca
+// en vez del ícono de imagen rota. onerror=null evita un bucle si el
+// propio logo fallara.
+function imgFallback(img) {
+  img.onerror = null;
+  img.src = 'images/Recursos/logo-donhers-gold-transparent-512.png';
+  img.classList.add('img-sin-foto');
+}
+
 function renderGalleryFromDB(productos) {
   if (!galleryTrack || !productos || !productos.length) return;
   galleryTrack.innerHTML = productos.map((p) => {
@@ -1380,7 +1389,7 @@ function renderGalleryFromDB(productos) {
     return '' +
       '<article class="gallery-card" data-collection="' + cat + '" data-product-id="' + escapeAttr(p.id) + '">' +
         '<div class="gallery-card-img ver-detalle" role="button" tabindex="0">' +
-          '<img src="' + escapeAttr(p.img_url) + '" alt="' + escapeAttr(p.nombre) + '" loading="lazy">' +
+          '<img src="' + escapeAttr(p.img_url) + '" alt="' + escapeAttr(p.nombre) + '" loading="lazy" onerror="imgFallback(this)">' +
           (nImgs > 1 ? '<span class="img-count">+' + (nImgs - 1) + '</span>' : '') +
           '<span class="ver-mas">Ver detalle</span>' +
         '</div>' +
@@ -1456,7 +1465,7 @@ function openProductoModal(id) {
   const p = PRODUCTOS_BY_ID[id]; if (!p || !pmTrack) return;
   const imgs = (Array.isArray(p.imagenes) && p.imagenes.length) ? p.imagenes : (p.img_url ? [p.img_url] : []);
   pmTrack.innerHTML = imgs.length
-    ? imgs.map((u) => '<div class="pm-slide"><img src="' + escapeAttr(u) + '" alt="' + escapeAttr(p.nombre) + '"></div>').join('')
+    ? imgs.map((u) => '<div class="pm-slide"><img src="' + escapeAttr(u) + '" alt="' + escapeAttr(p.nombre) + '" onerror="imgFallback(this)"></div>').join('')
     : '<div class="pm-slide pm-slide--empty">Sin imagen</div>';
   const multi = imgs.length > 1;
   pmDots.innerHTML = multi ? imgs.map((_, i) => '<button class="pm-dot' + (i === 0 ? ' active' : '') + '" data-i="' + i + '" type="button" aria-label="Imagen ' + (i + 1) + '"></button>').join('') : '';
