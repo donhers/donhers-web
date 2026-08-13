@@ -34,22 +34,39 @@ export default async function handler(req, res) {
     const d = (typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body) || {};
     if (d.type !== "pedido") return res.status(200).json({ ok: true, ignored: true });
 
-    const fila = (k, v) => v ? `<tr><td style="padding:4px 12px 4px 0;color:#888">${k}</td><td style="padding:4px 0"><strong>${esc(v)}</strong></td></tr>` : "";
-    const html = `
-      <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;color:#1a1a1a">
-        <h2 style="color:#B99A52;margin-bottom:4px">🛒 Nuevo pedido en Donher's</h2>
-        <p style="color:#666;margin-top:0">Entró un pedido. Verificá el pago y gestionalo en el panel.</p>
-        <table style="border-collapse:collapse;font-size:14px;margin:14px 0">
-          ${fila("Pedido", d.id)}
-          ${fila("Total", money(d.total))}
-          ${fila("Productos", d.items)}
-          ${fila("Cliente", d.email)}
-          ${fila("Pago", d.metodo_pago === "transfer" ? "Transferencia" : (d.metodo_pago || "—"))}
-          ${fila("Envío", d.envio)}
-          ${fila("Dirección", d.direccion)}
-        </table>
-        <a href="https://donhers.com/admin.html" style="display:inline-block;background:#B99A52;color:#1a1407;text-decoration:none;padding:11px 20px;border-radius:6px;font-weight:bold;font-size:13px">Abrir el panel →</a>
-      </div>`;
+    // El aviso se arma como notificación transaccional, no como promoción:
+    // Gmail lo mandaba a Spam con el diseño anterior (título dorado, emoji en
+    // el asunto y botón tipo newsletter eran señales de mailing masivo).
+    // Sobrio, con version en texto plano y sin emojis = bandeja de entrada.
+    const pago = d.metodo_pago === "transfer" ? "Transferencia" : (d.metodo_pago || "—");
+    const datos = [
+      ["Pedido", d.id],
+      ["Total", money(d.total)],
+      ["Productos", d.items],
+      ["Cliente", d.email],
+      ["Pago", pago],
+      ["Envío", d.envio],
+      ["Dirección", d.direccion],
+    ].filter(([, v]) => v);
+
+    const html =
+      `<div style="font-family:Arial,Helvetica,sans-serif;max-width:520px;color:#222;font-size:14px;line-height:1.5">` +
+      `<p>Entró un pedido nuevo en la tienda. Verificá el pago antes de despachar.</p>` +
+      `<table style="border-collapse:collapse;font-size:14px;margin:16px 0">` +
+      datos.map(([k, v]) =>
+        `<tr><td style="padding:4px 14px 4px 0;color:#666">${k}</td>` +
+        `<td style="padding:4px 0"><strong>${esc(v)}</strong></td></tr>`).join("") +
+      `</table>` +
+      `<p><a href="https://www.donhers.com/admin.html" style="color:#7a5f22">Abrir el panel de pedidos</a></p>` +
+      `<p style="color:#888;font-size:12px">Aviso automático de la tienda donhers.com</p>` +
+      `</div>`;
+
+    // Los mails que solo llevan HTML puntúan peor en los filtros de spam.
+    const texto =
+      "Entró un pedido nuevo en la tienda. Verificá el pago antes de despachar.\n\n" +
+      datos.map(([k, v]) => k + ": " + v).join("\n") +
+      "\n\nPanel de pedidos: https://www.donhers.com/admin.html\n" +
+      "Aviso automático de la tienda donhers.com\n";
 
     const r = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -57,8 +74,9 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         from: REMITENTE,
         to: DESTINO,
-        subject: `🛒 Nuevo pedido ${d.id || ""} — ${money(d.total)}`,
+        subject: `Pedido ${d.id || ""} — ${money(d.total)}`,
         html,
+        text: texto,
       }),
     });
     const out = await r.json().catch(() => ({}));
