@@ -104,10 +104,17 @@
       onChange(cb) { return sb.auth.onAuthStateChange((_e, session) => cb(session?.user || null)); },
     },
 
-    // Registrar un comprador en la tabla clientes (insert público por RLS).
+    // Registra al comprador en la tabla clientes. Va por RPC (security definer):
+    // si el mail ya existe completa lo que falte en vez de duplicar la fila
+    // (ver registrar-cliente.sql). Se llama al crear cuenta Y al comprar.
     async crearCliente(c) {
-      try { await sb.from("clientes").insert({ email: c.email, nombre: c.nombre || null, telefono: c.telefono || null }); }
-      catch (e) { /* no rompe el registro */ }
+      try {
+        await sb.rpc("registrar_cliente", {
+          p_email: c.email,
+          p_nombre: c.nombre || null,
+          p_telefono: c.telefono || null,
+        });
+      } catch (e) { /* no rompe el registro ni la compra */ }
     },
 
     // ¿El usuario logueado tiene acceso al panel? (solo emails de la tabla admins)
