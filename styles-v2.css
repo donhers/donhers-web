@@ -1224,3 +1224,98 @@ textarea.resena-field { resize: vertical; }
   .eleccion-grid { grid-template-columns: 1fr; gap: 12px; }
   .eleccion-card { height: 320px; }
 }
+
+/* ===========================
+   ANNOUNCE BAR + NAVLINKS
+   =========================== */
+.announce {
+  position: relative;
+  z-index: 101;
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  height: 34px;
+  align-items: center;
+  padding: 0 4%;
+  background: #060605;
+  border-bottom: 1px solid var(--border);
+  font-size: 10.5px;
+  letter-spacing: .06em;
+  color: var(--text-secondary);
+}
+.navbar { top: 34px !important; }
+@media (max-width: 700px) {
+  .announce span:nth-child(2) { display: none; }
+}
+
+.navlinks {
+  display: flex;
+  gap: 28px;
+  margin: 0 auto;
+}
+.navlink {
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  transition: color .2s;
+}
+.navlink:hover { color: var(--gold); }
+@media (max-width: 900px) {
+  .navlinks { display: none; }
+}
+
+/* ===========================
+   HERO: CTA outline + trust row
+   =========================== */
+.hero-cta-outline {
+  display: inline-flex;
+  align-items: center;
+  height: 50px;
+  padding: 0 26px;
+  border: 1px solid var(--border-gold);
+  border-radius: 2px;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  transition: border-color .2s, background .2s;
+}
+.hero-cta-outline:hover { border-color: var(--gold); background: var(--gold-muted); }
+
+.hero-note {
+  max-width: 42ch;
+  margin-top: 18px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.hero-trust {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(90px, 1fr));
+  gap: 16px;
+  max-width: 610px;
+  margin-top: 38px;
+}
+.hero-trust-item {
+  font-size: 10px;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.hero-trust-item span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--gold);
+  font-size: 20px;
+}
+@media (max-width: 700px) {
+  .hero-trust { grid-template-columns: 1fr 1fr; }
+}
+
+/* Hero más compacto: que "La elección" aparezca sin scrollear tanto */
+.hero { height: auto; min-height: 0; padding: 116px 0 40px; }
+@media (max-width: 700px) {
+  .hero { padding: 96px 0 30px; }
+}

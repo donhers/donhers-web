@@ -22,10 +22,21 @@
   <!-- ========================
        NAVBAR
        ======================== -->
+  <div class="announce" aria-hidden="true">
+    <span>▱ &nbsp; ENVÍOS A TODO URUGUAY · COORDINACIÓN RÁPIDA</span>
+    <span>◌ &nbsp; PAGO SEGURO · MERCADO PAGO O TRANSFERENCIA</span>
+  </div>
+
   <nav class="navbar" id="navbar" aria-label="Navegación principal">
     <a href="#hero" class="navbar-brand-link" aria-label="Donher´s — Inicio">
       <img src="images/Recursos/logo-donhers-gold-navbar.png" alt="Donher´s" class="navbar-logo">
     </a>
+    <div class="navlinks">
+      <a href="#colecciones" class="navlink">Colección</a>
+      <a href="#colecciones" class="navlink" onclick="document.querySelector('.filter-btn[data-filter=caballeros]')?.click()">Caballeros</a>
+      <a href="#colecciones" class="navlink" onclick="document.querySelector('.filter-btn[data-filter=damas]')?.click()">Damas</a>
+      <a href="#tradicion" class="navlink">La marca</a>
+    </div>
     <div class="navbar-right">
       <button class="navbar-icon-btn" id="user-toggle" aria-label="Mi cuenta">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -102,10 +113,15 @@
       <img src="images/Recursos/gold-divider.svg" class="hero-gold-divider-img hero-tagline--delayed" aria-hidden="true" alt="">
       <p class="hero-subtext hero-subtext--delayed" data-animate>Entrá, mirá los modelos y elegí el que mejor te representa.</p>
       <div class="hero-ctas">
-        <a href="#colecciones" class="hero-cta btn-shimmer hero-cta--delayed" data-animate>VER COLECCIÓN</a>
-        <a href="https://wa.me/59892337486?text=Hola%20Donher%27s!%20Quiero%20consultar%20sobre%20sus%20relojes."
-           class="hero-cta-wa hero-cta--delayed" data-animate
-           target="_blank" rel="noopener noreferrer">Consultar por WhatsApp →</a>
+        <a href="#colecciones" class="hero-cta btn-shimmer hero-cta--delayed" data-animate>VER COLECCIÓN →</a>
+        <a href="#eleccion" class="hero-cta-outline hero-cta--delayed" data-animate>ENCONTRÁ TU ESTILO</a>
+      </div>
+      <p class="hero-note hero-cta--delayed" data-animate>Explorá cada modelo en detalle, comparé sus terminaciones y compré cuando encuentres el tuyo.</p>
+      <div class="hero-trust">
+        <div class="hero-trust-item"><span>♢</span>Garantía internacional<br>2 años</div>
+        <div class="hero-trust-item"><span>▱</span>Envíos<br>a todo Uruguay</div>
+        <div class="hero-trust-item"><span>↻</span>Devoluciones<br>30 días</div>
+        <div class="hero-trust-item"><span>♙</span>Compra segura<br>y protegida</div>
       </div>
     </div>
 
