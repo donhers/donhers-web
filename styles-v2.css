@@ -22,13 +22,36 @@
 }
 
 /* ── Navbar ─────────────────────────────────────────────────── */
+/* Logo blanco protagonista: la tinta original es negra y se perdía
+   contra el navbar oscuro — se invierte a blanco para que integre. */
 .navbar-logo {
   width: clamp(96px, 9vw, 148px);
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 0 14px rgba(185,154,82,.18));
-  opacity: 0.92;
+  filter: brightness(0) invert(1) drop-shadow(0 0 14px rgba(185,154,82,.35));
+  opacity: 1;
 }
+
+/* ── Logo protagónico dentro del hero ──────────────────────────── */
+.hero-brand-lockup {
+  width: min(260px, 42vw);
+  height: 168px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  margin-bottom: 26px;
+}
+.hero-brand-lockup img {
+  width: 100%;
+  height: auto;
+  transform: scale(1.7);
+  filter: brightness(0) invert(1) drop-shadow(0 10px 30px rgba(255,255,255,.08));
+}
+@media (max-width: 700px) {
+  .hero-brand-lockup { width: 210px; height: 138px; margin-bottom: 18px; }
+}
+
+.hero-title em { font-style: italic; color: var(--gold); font-weight: 400; }
 
 /* ── Hero intro logo ────────────────────────────────────────── */
 .hero-intro-logo {
@@ -396,8 +419,8 @@
   left: -4%;
   top: 50%;
   transform: translateY(-52%);
-  width: clamp(18rem, 36vw, 46rem);
-  opacity: 0.055;
+  width: clamp(20rem, 40vw, 52rem);
+  opacity: 0.09;
   pointer-events: none;
   user-select: none;
 }
@@ -1121,4 +1144,83 @@ textarea.resena-field { resize: vertical; }
   padding: 22%;
   opacity: .32;
   background: #0d0d0d;
+}
+
+/* ===========================
+   LA ELECCIÓN — Sutil / Presencia / Audaz
+   =========================== */
+.eleccion {
+  padding: 64px 7% 90px;
+  background: var(--bg-deep);
+}
+.eleccion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.eleccion-card {
+  position: relative;
+  height: 480px;
+  border: 1px solid var(--border-gold, rgba(185,154,82,.22));
+  border-radius: 4px;
+  overflow: hidden;
+  background: #0a0a0a;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  font-family: inherit;
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.eleccion-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  box-shadow: 0 20px 44px rgba(0,0,0,.4);
+}
+.eleccion-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  filter: saturate(.75) contrast(1.08) brightness(.7);
+}
+.eleccion-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 25%, rgba(7,7,7,.75) 55%, #070707 92%);
+}
+.eleccion-card-content {
+  position: absolute;
+  z-index: 2;
+  left: 28px;
+  right: 24px;
+  bottom: 28px;
+}
+.eleccion-card-content h3 {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+.eleccion-card-content p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 18px;
+  max-width: 26ch;
+}
+.eleccion-card-cta {
+  font-size: 10.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+@media (max-width: 860px) {
+  .eleccion-grid { grid-template-columns: 1fr; gap: 12px; }
+  .eleccion-card { height: 320px; }
 }
