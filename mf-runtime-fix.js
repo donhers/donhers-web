@@ -1,0 +1,1 @@
+(()=>{const paint=()=>{try{const root=document.getElementById('app');if(root&&!root.children.length&&typeof render==='function')render()}catch(e){console.error('[MF] render inicial',e)}};paint();setTimeout(paint,300);setTimeout(paint,1200)})();
