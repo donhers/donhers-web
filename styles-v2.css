@@ -1439,10 +1439,16 @@ textarea.resena-field { resize: vertical; }
 .pm-breadcrumb span { margin: 0 6px; opacity: .5; }
 .pm-breadcrumb b { color: var(--text-secondary); font-weight: 500; }
 
-.pm-gallery { display: flex; gap: 14px; }
-.pm-thumbs { display: flex; flex-direction: column; gap: 10px; flex: 0 0 64px; }
+.pm-gallery { display: flex; gap: 14px; background: #0c0a07; aspect-ratio: auto; }
+.pm-thumbs {
+  display: flex; flex-direction: column; gap: 10px;
+  flex: 0 0 64px;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: 2px;
+}
 .pm-thumb {
-  width: 64px; height: 64px;
+  width: 64px; height: 64px; flex: 0 0 64px;
   border: 1px solid var(--border);
   border-radius: 4px;
   overflow: hidden;
@@ -1451,9 +1457,15 @@ textarea.resena-field { resize: vertical; }
   opacity: .55;
   transition: opacity .2s, border-color .2s;
 }
-.pm-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.pm-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .pm-thumb.active, .pm-thumb:hover { opacity: 1; border-color: var(--gold); }
-.pm-track-wrap { position: relative; flex: 1; min-width: 0; }
+/* flex:1 con min-width:0 no alcanza si el contenido interno no tiene un
+   ancho propio: .pm-track no tenía uno y se expandía al ancho natural
+   de las fotos, reventando el modal entero hacia la derecha. Al ponerlo
+   absolute+inset:0 dentro de un contenedor con aspect-ratio, su tamaño
+   queda fijado por el padre pase lo que pase adentro. */
+.pm-track-wrap { position: relative; flex: 1 1 0%; min-width: 0; aspect-ratio: 1 / 1; overflow: hidden; }
+.pm-track-wrap .pm-track { position: absolute; inset: 0; width: 100%; }
 
 .pm-eleccion-fit {
   margin: 14px 0;
