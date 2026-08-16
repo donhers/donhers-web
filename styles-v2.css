@@ -22,13 +22,36 @@
 }
 
 /* ── Navbar ─────────────────────────────────────────────────── */
+/* Logo blanco protagonista: la tinta original es negra y se perdía
+   contra el navbar oscuro — se invierte a blanco para que integre. */
 .navbar-logo {
   width: clamp(96px, 9vw, 148px);
   height: auto;
   object-fit: contain;
-  filter: drop-shadow(0 0 14px rgba(185,154,82,.18));
-  opacity: 0.92;
+  filter: brightness(0) invert(1) drop-shadow(0 0 14px rgba(185,154,82,.35));
+  opacity: 1;
 }
+
+/* ── Logo protagónico dentro del hero ──────────────────────────── */
+.hero-brand-lockup {
+  width: min(260px, 42vw);
+  height: 168px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  margin-bottom: 26px;
+}
+.hero-brand-lockup img {
+  width: 100%;
+  height: auto;
+  transform: scale(1.7);
+  filter: brightness(0) invert(1) drop-shadow(0 10px 30px rgba(255,255,255,.08));
+}
+@media (max-width: 700px) {
+  .hero-brand-lockup { width: 210px; height: 138px; margin-bottom: 18px; }
+}
+
+.hero-title em { font-style: italic; color: var(--gold); font-weight: 400; }
 
 /* ── Hero intro logo ────────────────────────────────────────── */
 .hero-intro-logo {
@@ -396,8 +419,8 @@
   left: -4%;
   top: 50%;
   transform: translateY(-52%);
-  width: clamp(18rem, 36vw, 46rem);
-  opacity: 0.055;
+  width: clamp(20rem, 40vw, 52rem);
+  opacity: 0.09;
   pointer-events: none;
   user-select: none;
 }
@@ -1121,4 +1144,285 @@ textarea.resena-field { resize: vertical; }
   padding: 22%;
   opacity: .32;
   background: #0d0d0d;
+}
+
+/* ===========================
+   LA ELECCIÓN — Sutil / Presencia / Audaz
+   =========================== */
+.eleccion {
+  padding: 64px 7% 90px;
+  background: var(--bg-deep);
+}
+.eleccion-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+.eleccion-card {
+  position: relative;
+  height: 480px;
+  border: 1px solid var(--border-gold, rgba(185,154,82,.22));
+  border-radius: 4px;
+  overflow: hidden;
+  background: #0a0a0a;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  font-family: inherit;
+  transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+}
+.eleccion-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  box-shadow: 0 20px 44px rgba(0,0,0,.4);
+}
+.eleccion-card img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  filter: saturate(.75) contrast(1.08) brightness(.7);
+}
+.eleccion-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(transparent 25%, rgba(7,7,7,.75) 55%, #070707 92%);
+}
+.eleccion-card-content {
+  position: absolute;
+  z-index: 2;
+  left: 28px;
+  right: 24px;
+  bottom: 28px;
+}
+.eleccion-card-content h3 {
+  font-family: var(--font-serif);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+.eleccion-card-content p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0 0 18px;
+  max-width: 26ch;
+}
+.eleccion-card-cta {
+  font-size: 10.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+@media (max-width: 860px) {
+  .eleccion-grid { grid-template-columns: 1fr; gap: 12px; }
+  .eleccion-card { height: 320px; }
+}
+
+/* ===========================
+   ANNOUNCE BAR + NAVBAR — valores exactos de la referencia Monumental
+   =========================== */
+.announce {
+  position: relative;
+  z-index: 101;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 58px;
+  border-bottom: 1px solid #2b261f;
+  background: #090909;
+  color: #b8b1aa;
+  font-size: 11px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+@media (max-width: 700px) {
+  .announce { gap: 18px; font-size: 8px; height: auto; min-height: 30px; padding: 7px 12px; }
+  .announce span:nth-child(2) { display: none; }
+}
+
+/* El navbar pasa de mostrarse recién al scrollear a estar siempre visible,
+   igual que la referencia (sticky, siempre arriba). */
+.navbar {
+  top: 32px !important;
+  height: 98px;
+  transform: none !important;
+  background: rgba(8, 8, 8, .97) !important;
+  backdrop-filter: blur(16px);
+  display: grid;
+  grid-template-columns: 220px 1fr 220px;
+  align-items: center;
+  padding: 0 6.1%;
+}
+.navbar-brand-link { grid-column: 1; }
+.navlinks { grid-column: 2; display: flex; justify-content: center; gap: 40px; }
+.navbar-right { grid-column: 3; justify-content: flex-end; }
+
+.navlink {
+  font-size: 12px;
+  letter-spacing: .085em;
+  text-transform: uppercase;
+  color: #d4cec6;
+  transition: color .2s;
+}
+.navlink:hover { color: var(--gold); }
+@media (max-width: 900px) {
+  .navbar { grid-template-columns: 1fr auto; height: 64px; padding: 0 18px; }
+  .navlinks { display: none; }
+}
+
+/* ===========================
+   HERO — grid "La elección" al lado del copy (home-hero de la referencia)
+   =========================== */
+.hero.home-hero {
+  height: auto;
+  min-height: 593px;
+  display: grid;
+  grid-template-columns: .84fr 1.16fr;
+  gap: 64px;
+  padding: 168px 6.1% 44px;
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .hero.home-hero { padding-top: 118px; }
+}
+.hero-content.home-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 640px;
+}
+.hero-content.home-copy .hero-title { font-size: clamp(38px, 4.4vw, 68px); line-height: 1.11; }
+.hero-content.home-copy .sub { font-size: 16px; line-height: 1.55; color: #eee7df; }
+
+.btn {
+  border: 1px solid var(--border-gold);
+  height: 48px;
+  padding: 0 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: .075em;
+  cursor: pointer;
+  transition: .2s ease;
+  background: #0d0d0d;
+  color: var(--text-primary);
+}
+.gold-btn {
+  background: linear-gradient(135deg, #c79c5c, #b78948);
+  border-color: #c79c5c;
+  color: #fff;
+}
+.gold-btn:hover { filter: brightness(1.08); }
+.outline-gold {
+  border-color: #8d6d3d;
+  color: #d7b178;
+  background: #0a0a0a;
+}
+.outline-gold:hover { background: var(--gold-muted); }
+.hero-ctas.hero-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+
+.product-first-note {
+  margin-top: 13px;
+  color: #aaa199;
+  font-size: 12px;
+  line-height: 1.5;
+  max-width: 510px;
+}
+
+.trust {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(90px, 1fr));
+  gap: 16px;
+  max-width: 610px;
+}
+.trust-item {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  color: #d2cbc4;
+  font-size: 10px;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+.trust-ico {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  display: grid;
+  place-items: center;
+  color: var(--gold);
+  font-size: 20px;
+}
+
+.style-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  align-self: center;
+  position: relative;
+  z-index: 2;
+}
+.style-card {
+  height: 498px;
+  position: relative;
+  border: 1px solid #4a4034;
+  background: #0a0a0a;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  border-radius: 3px;
+  transition: .25s ease;
+}
+.style-card:hover { border-color: #9e7742; transform: translateY(-3px); box-shadow: 0 14px 38px rgba(0,0,0,.42); }
+.style-card img {
+  width: 100%;
+  height: 69%;
+  object-fit: cover;
+  object-position: center top;
+  filter: saturate(.72) contrast(1.06) brightness(.78);
+  background: #0a0a0a;
+}
+.style-card::after {
+  content: "";
+  position: absolute;
+  inset: 27% 0 0;
+  background: linear-gradient(transparent 0%, rgba(7,7,7,.72) 28%, #080808 68%);
+}
+.style-card-content { position: absolute; z-index: 2; left: 34px; right: 28px; bottom: 32px; }
+.style-card h2 {
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 400;
+  margin: 0 0 12px;
+  color: var(--text-primary);
+}
+.style-card h2::after { content: ""; display: block; width: 30px; height: 2px; background: var(--gold); margin-top: 11px; }
+.style-card p { font-size: 13px; line-height: 1.5; color: #b9b0a7; min-height: 56px; margin: 0 0 20px; }
+.style-explore { color: var(--gold); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+
+/* Elementos del hero anterior que la referencia no usa */
+.watch-animation, .hero-seal-img, .hero-scroll-hint, .hero-intro { display: none !important; }
+
+@media (max-width: 1000px) {
+  .hero.home-hero { grid-template-columns: 1fr; }
+  .style-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 700px) {
+  .hero.home-hero { padding: 32px 5% 30px; gap: 28px; }
+  .style-grid { grid-template-columns: 1fr; }
+  .style-card { height: 320px; }
+  .trust { grid-template-columns: 1fr 1fr; }
 }

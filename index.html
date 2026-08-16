@@ -22,11 +22,25 @@
   <!-- ========================
        NAVBAR
        ======================== -->
+  <div class="announce" aria-hidden="true">
+    <span>▱ &nbsp; ENVÍOS A TODO URUGUAY · COORDINACIÓN RÁPIDA</span>
+    <span>◌ &nbsp; PAGO SEGURO · MERCADO PAGO O TRANSFERENCIA</span>
+  </div>
+
   <nav class="navbar" id="navbar" aria-label="Navegación principal">
     <a href="#hero" class="navbar-brand-link" aria-label="Donher´s — Inicio">
       <img src="images/Recursos/logo-donhers-gold-navbar.png" alt="Donher´s" class="navbar-logo">
     </a>
+    <div class="navlinks">
+      <a href="#colecciones" class="navlink">Colección</a>
+      <a href="#colecciones" class="navlink" onclick="document.querySelector('.filter-btn[data-filter=caballeros]')?.click()">Caballeros</a>
+      <a href="#colecciones" class="navlink" onclick="document.querySelector('.filter-btn[data-filter=damas]')?.click()">Damas</a>
+      <a href="#tradicion" class="navlink">La marca</a>
+    </div>
     <div class="navbar-right">
+      <a href="#colecciones" class="navbar-icon-btn" aria-label="Ver colección">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
+      </a>
       <button class="navbar-icon-btn" id="user-toggle" aria-label="Mi cuenta">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span class="user-name-nav" id="user-name-nav"></span>
@@ -62,7 +76,7 @@
   <!-- ========================
        HERO
        ======================== -->
-  <section class="hero" id="hero" aria-label="Portada">
+  <section class="hero home-hero" id="hero" aria-label="Portada">
 
     <!-- Background layers: watermarks -->
     <div class="hero-bg" aria-hidden="true">
@@ -76,42 +90,52 @@
       <img src="images/Recursos/logo-donhers-gold-transparent-512.png" alt="" class="hero-intro-logo">
     </div>
 
-    <!-- Watch animation: image layers -->
-    <div class="watch-animation" aria-hidden="true">
-      <img class="watch-layer watch-complete" src="images/Recursos/watch-complete-removebg-preview.png" alt="">
-      <img class="watch-layer layer-crystal" src="images/Recursos/watch-crystal-removebg-preview.png" alt="">
-      <img class="watch-layer layer-bezel" src="images/Recursos/watch-bezel-removebg-preview.png" alt="">
-      <img class="watch-layer layer-dial" src="images/Recursos/watch-dial-removebg-preview.png" alt="">
-      <img class="watch-layer layer-hands" src="images/Recursos/watch-hands-removebg-preview.png" alt="">
-      <img class="watch-layer layer-case" src="images/Recursos/watch-case-removebg-preview.png" alt="">
-      <img class="watch-layer layer-movement" src="images/Recursos/watch-movement-removebg-preview.png" alt="">
-      <img class="watch-layer layer-strap-top" src="images/Recursos/watch-strap-top-removebg-preview.png" alt="">
-      <img class="watch-layer layer-strap-bottom" src="images/Recursos/watch-strap-bottom-removebg-preview.png" alt="">
-      <span class="part-label label-crystal">Cristal de zafiro</span>
-      <span class="part-label label-bezel">Bisel pulido</span>
-      <span class="part-label label-dial">Esfera soleil</span>
-      <span class="part-label label-movement">Movimiento automático</span>
-      <span class="part-label label-case">Caja acero 316L</span>
-    </div>
-
     <!-- Content -->
-    <div class="hero-content">
+    <div class="hero-content home-copy">
+      <div class="hero-brand-lockup"><img src="images/Recursos/logo-donhers-gold-transparent-1024.png" alt="Donher's — Relojería Clásica"></div>
       <p class="hero-tagline hero-tagline--delayed" data-animate>Donher's · Relojería Clásica</p>
-      <h1 class="hero-title hero-tagline--delayed" data-animate>Más que un reloj,<br>una identidad.</h1>
-      <img src="images/Recursos/gold-divider.svg" class="hero-gold-divider-img hero-tagline--delayed" aria-hidden="true" alt="">
-      <p class="hero-subtext hero-subtext--delayed" data-animate>Relojes de acero para quienes eligen destacar.<br>Envío a todo el país.</p>
-      <div class="hero-ctas">
-        <a href="#colecciones" class="hero-cta btn-shimmer hero-cta--delayed" data-animate>VER COLECCIÓN</a>
-        <a href="https://wa.me/59892337486?text=Hola%20Donher%27s!%20Quiero%20consultar%20sobre%20sus%20relojes."
-           class="hero-cta-wa hero-cta--delayed" data-animate
-           target="_blank" rel="noopener noreferrer">Consultar por WhatsApp →</a>
+      <h1 class="hero-title hero-tagline--delayed" data-animate>El reloj no completa el look.<br><em>Lo define.</em></h1>
+      <p class="hero-subtext sub hero-subtext--delayed" data-animate>Entrá, mirá los modelos y elegí el que mejor te representa.</p>
+      <div class="hero-ctas hero-actions">
+        <a href="#colecciones" class="btn gold-btn hero-btn hero-cta--delayed" data-animate>VER COLECCIÓN <span>→</span></a>
+        <a href="#style-grid" class="btn outline-gold secondary-choice hero-cta--delayed" data-animate>ENCONTRÁ TU ESTILO</a>
+      </div>
+      <p class="product-first-note">Explorá cada modelo en detalle, comparé sus terminaciones y compré cuando encuentres el tuyo.</p>
+      <div class="trust">
+        <div class="trust-item"><span class="trust-ico">♢</span><span>Garantía internacional<br>2 años</span></div>
+        <div class="trust-item"><span class="trust-ico">▱</span><span>Envíos<br>a todo Uruguay</span></div>
+        <div class="trust-item"><span class="trust-ico">↻</span><span>Devoluciones<br>30 días</span></div>
+        <div class="trust-item"><span class="trust-ico">♙</span><span>Compra segura<br>y protegida</span></div>
       </div>
     </div>
 
-    <!-- Circular seal -->
-    <img src="images/Recursos/seal-relojeria-clasica.svg" class="hero-seal-img" aria-hidden="true" alt="">
-
-    <a href="#colecciones" class="hero-scroll-hint" aria-label="Ver colección">↓ Descubrí los modelos</a>
+    <!-- La elección: Sutil / Presencia / Audaz, al lado del copy -->
+    <div class="style-grid" id="style-grid" data-animate>
+      <button class="style-card" onclick="document.querySelector('.filter-btn[data-filter=damas]')?.click(); document.getElementById('colecciones').scrollIntoView({behavior:'smooth'})">
+        <img src="images/cab-clasico-original.png" alt="Estilo Sutil">
+        <div class="style-card-content">
+          <h2>Sutil</h2>
+          <p>Elegancia discreta que se revela en los detalles.</p>
+          <span class="style-explore"><span>VER RELOJES DE ESTE ESTILO</span><b>→</b></span>
+        </div>
+      </button>
+      <button class="style-card" onclick="document.querySelector('.filter-btn[data-filter=caballeros]')?.click(); document.getElementById('colecciones').scrollIntoView({behavior:'smooth'})">
+        <img src="images/cab-esfera-lisa-negro.png" alt="Estilo Presencia">
+        <div class="style-card-content">
+          <h2>Presencia</h2>
+          <p>Seguridad que se ve. Impacto que se recuerda.</p>
+          <span class="style-explore"><span>VER RELOJES DE ESTE ESTILO</span><b>→</b></span>
+        </div>
+      </button>
+      <button class="style-card" onclick="document.querySelector('.filter-btn[data-filter=caballeros]')?.click(); document.getElementById('colecciones').scrollIntoView({behavior:'smooth'})">
+        <img src="images/DON0016.png" alt="Estilo Audaz">
+        <div class="style-card-content">
+          <h2>Audaz</h2>
+          <p>Personalidad que marca el ritmo del camino.</p>
+          <span class="style-explore"><span>VER RELOJES DE ESTE ESTILO</span><b>→</b></span>
+        </div>
+      </button>
+    </div>
   </section>
 
   <!-- ========================
