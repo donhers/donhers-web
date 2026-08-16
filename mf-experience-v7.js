@@ -10,6 +10,7 @@
     return `<article class="card product-card-v7">
       <div class="card-img" data-product="${p.id}">
         ${p.img?`<img src="${p.img}" alt="${safe(p.name)}" loading="lazy" onerror="this.style.display='none'">`:`<div class="card-no-image">DH</div>`}
+        ${typeof ON_SALE!=='undefined'&&ON_SALE.has(p.id)?'<span class="off-badge">10% OFF</span>':''}
         <div class="card-topline"><span>${safe(p.cat)}</span><button class="heart" data-fav="${p.id}" aria-label="${saved?'Quitar de favoritos':'Guardar en favoritos'}">${saved?'♥':'♡'}</button></div>
         <div class="card-hover-action">ABRIR FICHA →</div>
       </div>
@@ -59,6 +60,7 @@
           <div class="eyebrow">${safe(p.cat)}</div>
           <h1>${safe(p.name)}</h1>
           <div class="product-ref-v7">REF. ${safe(p.id)}</div>
+          ${typeof ON_SALE!=='undefined'&&ON_SALE.has(p.id)?'<span class="off-badge off-badge--detail">10% OFF</span>':''}
           <div class="bigprice">${money(p.price)}</div>
           ${p.desc?`<p class="desc">${safe(p.desc)}</p>`:`<p class="desc muted-desc">Consultanos si querés confirmar medidas, material u otra característica específica de este modelo.</p>`}
           ${state.style?`<div class="match match-v7"><small>SEGÚN TU ELECCIÓN</small><strong>${styleLabel()}</strong><span>Este modelo forma parte de la selección orientativa.</span></div>`:''}
