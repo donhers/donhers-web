@@ -1,0 +1,1 @@
+(()=>{for(const [k,fallback] of [['dh-fav','[]'],['dh-cart','{}']]){try{JSON.parse(localStorage.getItem(k)||fallback)}catch{localStorage.setItem(k,fallback)}}})();
