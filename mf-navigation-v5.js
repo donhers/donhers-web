@@ -1,11 +1,36 @@
-// Navegación comercial v5: cada acceso tiene una función distinta.
+// Navegación comercial v6: navegación diferenciada + hero con marca real y productos reales.
 (()=>{
   const originalBind=bind;
+  const HERO_LOGO='/images/Recursos/logo-donhers-gold-transparent-1024.png';
   state.serviceMode=state.serviceMode||'help';
 
   shell=function(body,active=''){
     const effective=state.service?(state.serviceMode==='tracking'?'tracking':'service'):active;
     return `<div><div class="announce"><span>▱ ENVÍOS A TODO URUGUAY · COORDINACIÓN RÁPIDA</span><span>◌ PAGO SEGURO · MERCADO PAGO O TRANSFERENCIA</span></div><header class="nav"><button class="brand" data-go="home" aria-label="Volver al inicio"><img src="${LOGO}" alt="Donher’s"></button><nav class="navlinks"><button class="navlink ${effective==='catalog'?'active':''}" data-go="catalog">Relojes</button><button class="navlink ${effective==='collections'?'active':''}" data-go="collections">Colecciones</button><button class="navlink ${effective==='tracking'?'active':''}" data-go="tracking">Seguimiento</button><button class="navlink ${effective==='service'?'active':''}" data-go="service">Servicio</button></nav><div class="actions"><button class="ico" data-go="search" aria-label="Buscar reloj">${icon('search')}</button><button class="ico" data-favs aria-label="Favoritos">${icon('heart')}${state.fav.length?`<span class="count">${state.fav.length}</span>`:''}</button><button class="ico" data-cart aria-label="Carrito">${icon('bag')}${qty()?`<span class="count">${qty()}</span>`:''}</button><button class="ico menu" data-menu aria-label="Abrir menú">${icon('menu')}</button></div></header>${body}${drawers()}${checkout()}</div>`;
+  };
+
+  function heroProducts(){
+    const pool=products.filter(p=>p&&p.img);
+    const used=new Set();
+    const pick=(tests)=>{
+      for(const re of tests){const hit=pool.find(p=>!used.has(p.id)&&re.test((p.name+' '+p.cat+' '+p.desc).toLowerCase()));if(hit){used.add(hit.id);return hit}}
+      const fallback=pool.find(p=>!used.has(p.id));if(fallback)used.add(fallback.id);return fallback||null;
+    };
+    return {
+      sutil:pick([/cl[aá]sico/,/brazalete/,/plateado/,/blanco/]),
+      presencia:pick([/brazalete/,/plateado/,/dorado/,/elegante/,/damas/]),
+      audaz:pick([/deportivo/,/casio/,/rectangular/,/cron[oó]grafo/,/azul/])
+    };
+  }
+
+  home=function(){
+    const hp=heroProducts();
+    const cards=Object.entries(STYLE).map(([k,v])=>{
+      const p=hp[k];
+      const visual=p?.img?`<img src="${p.img}" alt="${v.label} · ${safe(p.name)}" loading="eager" onerror="this.remove()">`:`<div class="style-real-placeholder"><span>DH</span></div>`;
+      return `<button class="style" data-style="${k}" aria-label="Ver relojes de estilo ${v.label}">${visual}<div class="style-copy"><h2>${v.label}</h2><p>${v.text}</p>${p?`<span class="style-real-model">${safe(p.name)}</span>`:''}<small>VER RELOJES →</small></div></button>`;
+    }).join('');
+    return shell(`<main><section class="hero hero-v6"><div class="hero-copy"><div class="hero-brand-lock"><div class="hero-logo"><img src="${HERO_LOGO}" alt="Donher’s Relojería Clásica"></div></div><h1>El reloj no<br>completa el look.<span>Lo define.</span></h1><p class="hero-sub">Entrá, mirá los modelos y elegí el que mejor te representa.</p><div class="hero-actions"><button class="btn gold" data-go="catalog">VER RELOJES →</button><button class="btn" data-choice>ENCONTRÁ TU ESTILO</button></div><div class="trust"><div><b>Productos originales</b>Selección real de Donher’s</div><div><b>Envíos</b>A todo Uruguay</div><div><b>Pago</b>Mercado Pago o transferencia</div><div><b>Compra protegida</b>Pedido registrado y seguimiento</div></div></div><div class="styles">${cards}</div></section><section class="paper"><div><div class="eyebrow">CATÁLOGO DONHER’S</div><h2>Todos los relojes, en un solo lugar.</h2></div></section></main>`);
   };
 
   function collectionGroups(){
@@ -50,6 +75,7 @@
   bind=function(){
     originalBind();
     document.querySelectorAll('[data-collection]').forEach(x=>x.onclick=()=>{state.cat=x.dataset.collection;state.style='';state.search='';state.view='catalog';state.service=false;render();window.scrollTo({top:0,behavior:'smooth'});url()});
+    document.querySelectorAll('[data-style]').forEach(x=>x.onclick=()=>{state.style=x.dataset.style;persist();state.service=false;state.view='catalog';state.cat='all';state.search='';render();window.scrollTo({top:0,behavior:'smooth'});url()});
   };
 
   const p=location.pathname;
