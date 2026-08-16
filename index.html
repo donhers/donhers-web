@@ -41,6 +41,10 @@
       <a href="#colecciones" class="navbar-icon-btn" aria-label="Ver colección">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-4-4"></path></svg>
       </a>
+      <button class="navbar-icon-btn" id="fav-toggle" aria-label="Ver favoritos">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        <span class="cart-badge" id="fav-badge" aria-hidden="true"></span>
+      </button>
       <button class="navbar-icon-btn" id="user-toggle" aria-label="Mi cuenta">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         <span class="user-name-nav" id="user-name-nav"></span>
@@ -111,7 +115,7 @@
 
     <!-- La elección: Sutil / Presencia / Audaz, al lado del copy -->
     <div class="style-grid" id="style-grid" data-animate>
-      <button class="style-card" onclick="document.querySelector('.filter-btn[data-filter=damas]')?.click(); document.getElementById('colecciones').scrollIntoView({behavior:'smooth'})">
+      <button class="style-card" onclick="localStorage.setItem('dh_eleccion','Sutil'); document.querySelector('.filter-btn[data-filter=damas]')?.click(); document.getElementById('colecciones').scrollIntoView({behavior:'smooth'})">
         <img src="images/cab-clasico-original.png" alt="Estilo Sutil">
         <div class="style-card-content">
           <h2>Sutil</h2>
@@ -119,7 +123,7 @@
           <span class="style-explore"><span>VER RELOJES DE ESTE ESTILO</span><b>→</b></span>
         </div>
       </button>
-      <button class="style-card" onclick="document.querySelector('.filter-btn[data-filter=caballeros]')?.click(); document.getElementById('colecciones').scrollIntoView({behavior:'smooth'})">
+      <button class="style-card" onclick="localStorage.setItem('dh_eleccion','Presencia'); document.querySelector('.filter-btn[data-filter=caballeros]')?.click(); document.getElementById('colecciones').scrollIntoView({behavior:'smooth'})">
         <img src="images/cab-esfera-lisa-negro.png" alt="Estilo Presencia">
         <div class="style-card-content">
           <h2>Presencia</h2>
@@ -127,7 +131,7 @@
           <span class="style-explore"><span>VER RELOJES DE ESTE ESTILO</span><b>→</b></span>
         </div>
       </button>
-      <button class="style-card" onclick="document.querySelector('.filter-btn[data-filter=caballeros]')?.click(); document.getElementById('colecciones').scrollIntoView({behavior:'smooth'})">
+      <button class="style-card" onclick="localStorage.setItem('dh_eleccion','Audaz'); document.querySelector('.filter-btn[data-filter=caballeros]')?.click(); document.getElementById('colecciones').scrollIntoView({behavior:'smooth'})">
         <img src="images/DON0016.png" alt="Estilo Audaz">
         <div class="style-card-content">
           <h2>Audaz</h2>
@@ -601,6 +605,24 @@
     </div>
   </aside>
 
+  <!-- ======================== FAVORITOS SIDEBAR ======================== -->
+  <div class="cart-backdrop" id="fav-backdrop" aria-hidden="true"></div>
+  <aside class="cart-sidebar" id="fav-sidebar" aria-label="Tus favoritos">
+    <div class="cart-header">
+      <h2 class="cart-title">Tus favoritos</h2>
+      <button class="cart-close-btn" id="fav-close" aria-label="Cerrar favoritos">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="cart-body">
+      <div class="cart-empty" id="fav-empty">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" style="color:var(--text-muted);margin-bottom:16px"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+        <p class="cart-empty-text">Todavía no guardaste relojes</p>
+      </div>
+      <ul class="fav-items-list" id="fav-body"></ul>
+    </div>
+  </aside>
+
   <!-- ======================== LOGIN MODAL ======================== -->
   <div class="modal-overlay" id="login-overlay" role="dialog" aria-modal="true" aria-label="Iniciar sesión">
     <div class="modal login-modal">
@@ -881,20 +903,52 @@
       <button class="modal-close" id="producto-close" aria-label="Cerrar">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
+      <nav class="pm-breadcrumb" id="pm-breadcrumb" aria-label="Ruta"></nav>
       <div class="pm-grid">
         <div class="pm-gallery">
-          <div class="pm-track" id="pm-track"></div>
-          <button class="pm-arrow pm-prev" id="pm-prev" aria-label="Anterior" type="button">‹</button>
-          <button class="pm-arrow pm-next" id="pm-next" aria-label="Siguiente" type="button">›</button>
-          <div class="pm-dots" id="pm-dots"></div>
+          <div class="pm-thumbs" id="pm-thumbs"></div>
+          <div class="pm-track-wrap">
+            <div class="pm-track" id="pm-track"></div>
+            <button class="pm-arrow pm-prev" id="pm-prev" aria-label="Anterior" type="button">‹</button>
+            <button class="pm-arrow pm-next" id="pm-next" aria-label="Siguiente" type="button">›</button>
+            <div class="pm-dots" id="pm-dots"></div>
+          </div>
         </div>
         <div class="pm-info">
           <span class="pm-tag" id="pm-tag"></span>
           <h3 class="pm-name" id="pm-name"></h3>
           <p class="pm-price" id="pm-price"></p>
           <p class="pm-desc" id="pm-desc"></p>
+
+          <div class="pm-eleccion-fit hidden" id="pm-eleccion-fit">
+            <strong>Encaja con tu elección: <span id="pm-eleccion-fit-tier"></span></strong>
+            <p>Este modelo conserva la intención que elegiste. Podés volver a tus recomendaciones cuando quieras.</p>
+          </div>
+
           <button class="pm-cta btn-shimmer" id="pm-add" type="button">AGREGAR AL CARRITO</button>
-          <a class="pm-consultar consultar-link" id="pm-wa" target="_blank" rel="noopener noreferrer">Consultar por WhatsApp</a>
+          <div class="pm-info-links">
+            <button class="pm-fav-toggle" id="pm-fav-toggle" type="button">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+              <span id="pm-fav-label">Agregar a favoritos</span>
+            </button>
+            <span class="pm-info-sep">|</span>
+            <a class="pm-consultar consultar-link" id="pm-wa" target="_blank" rel="noopener noreferrer">Consultar por WhatsApp</a>
+          </div>
+
+          <ul class="pm-specs">
+            <li><span class="pm-spec-ico">◈</span>Movimiento de cuarzo suizo</li>
+            <li><span class="pm-spec-ico">◈</span>Cristal mineral resistente a rayones</li>
+            <li><span class="pm-spec-ico">◈</span>Resistencia al agua</li>
+            <li><span class="pm-spec-ico">◈</span>Garantía Donher's incluida</li>
+          </ul>
+
+          <div class="pm-trustbar">
+            <div><b>Pago seguro</b><span>Pasarelas certificadas</span></div>
+            <div><b>Garantía Donher's</b><span>Respaldo directo</span></div>
+            <div><b>Cambios y devoluciones</b><span>Hasta 30 días</span></div>
+            <div><b>Atención personalizada</b><span>Por WhatsApp</span></div>
+          </div>
+
           <div class="pm-resenas hidden" id="pm-resenas">
             <div class="pm-resenas-head" id="pm-resenas-head"></div>
             <div class="pm-resenas-list" id="pm-resenas-list"></div>

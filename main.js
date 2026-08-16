@@ -1484,9 +1484,10 @@ function pmGoTo(i) {
   if (s[idx]) pmTrack.scrollTo({ left: idx * pmTrack.clientWidth, behavior: 'smooth' });
 }
 function pmUpdateDots() {
-  if (!pmDots) return;
   const cur = pmCurrent();
-  Array.from(pmDots.children).forEach((d, i) => d.classList.toggle('active', i === cur));
+  if (pmDots) Array.from(pmDots.children).forEach((d, i) => d.classList.toggle('active', i === cur));
+  const pmThumbs = document.getElementById('pm-thumbs');
+  if (pmThumbs) Array.from(pmThumbs.children).forEach((t, i) => t.classList.toggle('active', i === cur));
 }
 
 // Devuelve true si pudo abrir el modelo. El router usa ese dato para
@@ -1504,13 +1505,41 @@ function openProductoModal(id) {
   if (prevBtn) prevBtn.style.display = multi ? '' : 'none';
   if (nextBtn) nextBtn.style.display = multi ? '' : 'none';
 
+  const pmThumbs = document.getElementById('pm-thumbs');
+  if (pmThumbs) {
+    pmThumbs.innerHTML = multi ? imgs.map((u, i) =>
+      '<button class="pm-thumb' + (i === 0 ? ' active' : '') + '" data-i="' + i + '" type="button" aria-label="Ver imagen ' + (i + 1) + '">' +
+      '<img src="' + escapeAttr(u) + '" alt="" onerror="imgFallback(this)"></button>'
+    ).join('') : '';
+    pmThumbs.style.display = multi ? '' : 'none';
+  }
+
   const cat = (p.categoria || '').toLowerCase();
-  document.getElementById('pm-tag').textContent = cat === 'damas' ? 'Damas' : 'Caballeros';
+  const catLabel = cat === 'damas' ? 'Damas' : 'Caballeros';
+  document.getElementById('pm-tag').textContent = catLabel;
   document.getElementById('pm-name').textContent = p.nombre || '';
   document.getElementById('pm-price').textContent = formatPrice(p.precio);
   const desc = document.getElementById('pm-desc');
   desc.textContent = p.descripcion || '';
   desc.style.display = p.descripcion ? '' : 'none';
+
+  const pmBreadcrumb = document.getElementById('pm-breadcrumb');
+  if (pmBreadcrumb) {
+    pmBreadcrumb.innerHTML = 'Inicio <span>/</span> Colección <span>/</span> ' + escapeAttr(catLabel) + ' <span>/</span> <b>' + escapeAttr(p.nombre || '') + '</b>';
+  }
+
+  const eleccion = localStorage.getItem('dh_eleccion');
+  const fitBox = document.getElementById('pm-eleccion-fit');
+  if (fitBox) {
+    if (eleccion) {
+      document.getElementById('pm-eleccion-fit-tier').textContent = eleccion;
+      fitBox.classList.remove('hidden');
+    } else {
+      fitBox.classList.add('hidden');
+    }
+  }
+
+  updatePmFavButton(p.id);
 
   const wa = p.wa_link || '#';
   const addBtn = document.getElementById('pm-add');
@@ -1540,11 +1569,101 @@ if (pmTrack) {
   if (nextBtn) nextBtn.addEventListener('click', () => pmGoTo(pmCurrent() + 1));
   pmTrack.addEventListener('scroll', pmUpdateDots, { passive: true });
   if (pmDots) pmDots.addEventListener('click', (e) => { const d = e.target.closest('.pm-dot'); if (d) pmGoTo(parseInt(d.dataset.i, 10)); });
+  const pmThumbs = document.getElementById('pm-thumbs');
+  if (pmThumbs) pmThumbs.addEventListener('click', (e) => { const t = e.target.closest('.pm-thumb'); if (t) pmGoTo(parseInt(t.dataset.i, 10)); });
 }
 const pmClose = document.getElementById('producto-close');
 if (pmClose) pmClose.addEventListener('click', () => closeModal('producto-overlay'));
 const pmOverlay = document.getElementById('producto-overlay');
 if (pmOverlay) pmOverlay.addEventListener('click', (e) => { if (e.target === pmOverlay) closeModal('producto-overlay'); });
+
+/* ===========================
+   FAVORITOS — guardados en localStorage, sin cuenta necesaria
+   =========================== */
+function getFavs() {
+  try { return JSON.parse(localStorage.getItem('dh_favoritos') || '[]'); } catch (e) { return []; }
+}
+function isFav(id) { return getFavs().indexOf(id) !== -1; }
+function setFavs(arr) {
+  localStorage.setItem('dh_favoritos', JSON.stringify(arr));
+  updateFavBadge();
+  renderFavoritos();
+}
+function toggleFav(id) {
+  const f = getFavs();
+  const i = f.indexOf(id);
+  if (i === -1) f.push(id); else f.splice(i, 1);
+  setFavs(f);
+  updatePmFavButton(id);
+  return isFav(id);
+}
+function updateFavBadge() {
+  const n = getFavs().length;
+  const b = document.getElementById('fav-badge');
+  if (b) { b.textContent = n || ''; b.style.display = n ? '' : 'none'; }
+}
+function updatePmFavButton(id) {
+  const btn = document.getElementById('pm-fav-toggle');
+  const label = document.getElementById('pm-fav-label');
+  if (!btn) return;
+  const fav = isFav(id);
+  btn.classList.toggle('active', fav);
+  if (label) label.textContent = fav ? 'Guardado en favoritos' : 'Agregar a favoritos';
+  btn.onclick = () => toggleFav(id);
+}
+function renderFavoritos() {
+  const body = document.getElementById('fav-body');
+  const empty = document.getElementById('fav-empty');
+  if (!body) return;
+  const favs = getFavs().map((id) => PRODUCTOS_BY_ID[id]).filter(Boolean);
+  if (!favs.length) {
+    body.innerHTML = '';
+    if (empty) empty.classList.remove('hidden');
+    return;
+  }
+  if (empty) empty.classList.add('hidden');
+  body.innerHTML = favs.map((p) =>
+    '<li class="fav-item">' +
+      '<img src="' + escapeAttr(p.img_url) + '" alt="' + escapeAttr(p.nombre) + '" onerror="imgFallback(this)">' +
+      '<div class="fav-item-info">' +
+        '<b>' + escapeAttr(p.nombre) + '</b>' +
+        '<span>' + formatPrice(p.precio) + '</span>' +
+        '<button class="fav-item-view" data-id="' + escapeAttr(p.id) + '" type="button">Ver ficha</button>' +
+      '</div>' +
+      '<button class="fav-item-remove" data-id="' + escapeAttr(p.id) + '" type="button" aria-label="Quitar de favoritos">✕</button>' +
+    '</li>'
+  ).join('');
+}
+function openFavs() {
+  renderFavoritos();
+  const sidebar = document.getElementById('fav-sidebar');
+  const backdrop = document.getElementById('fav-backdrop');
+  if (sidebar) sidebar.classList.add('open');
+  if (backdrop) backdrop.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeFavs() {
+  const sidebar = document.getElementById('fav-sidebar');
+  const backdrop = document.getElementById('fav-backdrop');
+  if (sidebar) sidebar.classList.remove('open');
+  if (backdrop) backdrop.classList.remove('active');
+  const anyOpen = document.querySelector('.modal-overlay.active, .cart-sidebar.open');
+  if (!anyOpen) document.body.style.overflow = '';
+}
+const favToggleBtn = document.getElementById('fav-toggle');
+if (favToggleBtn) favToggleBtn.addEventListener('click', openFavs);
+const favCloseBtn = document.getElementById('fav-close');
+if (favCloseBtn) favCloseBtn.addEventListener('click', closeFavs);
+const favBackdropEl = document.getElementById('fav-backdrop');
+if (favBackdropEl) favBackdropEl.addEventListener('click', closeFavs);
+const favBodyEl = document.getElementById('fav-body');
+if (favBodyEl) favBodyEl.addEventListener('click', (e) => {
+  const removeBtn = e.target.closest('.fav-item-remove');
+  if (removeBtn) { toggleFav(removeBtn.dataset.id); return; }
+  const viewBtn = e.target.closest('.fav-item-view');
+  if (viewBtn) { closeFavs(); openProductoModal(viewBtn.dataset.id); }
+});
+updateFavBadge();
 
 /* ===========================
    RESEÑAS DE CLIENTES
