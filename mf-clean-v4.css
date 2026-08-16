@@ -70,3 +70,7 @@
 /* Badge de descuento */
 .off-badge{position:absolute;top:44px;left:12px;z-index:3;background:#d1273d;color:#fff;font-size:10px;font-weight:700;letter-spacing:.06em;padding:5px 9px;border-radius:3px;text-transform:uppercase;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.35)}
 .off-badge--detail{display:inline-block;position:static;margin:8px 0 0}
+
+/* Precio con descuento aplicado */
+.price-old{opacity:.5;font-size:.8em;font-weight:400;text-decoration:line-through;margin-right:6px}
+.price-sale{color:#d1273d;font-weight:700}
