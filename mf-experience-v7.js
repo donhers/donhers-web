@@ -17,7 +17,7 @@
       <div class="card-body">
         <div class="card-ref">${safe(p.id)}</div>
         <h3 data-product="${p.id}">${safe(p.name)}</h3>
-        <div class="card-bottom"><div class="price">${money(p.price)}</div><button class="card-add" data-add="${p.id}">+ AGREGAR</button></div>
+        <div class="card-bottom"><div class="price">${priceHTML(p)}</div><button class="card-add" data-add="${p.id}">+ AGREGAR</button></div>
       </div>
     </article>`;
   };
@@ -61,7 +61,7 @@
           <h1>${safe(p.name)}</h1>
           <div class="product-ref-v7">REF. ${safe(p.id)}</div>
           ${typeof ON_SALE!=='undefined'&&ON_SALE.has(p.id)?'<span class="off-badge off-badge--detail">10% OFF</span>':''}
-          <div class="bigprice">${money(p.price)}</div>
+          <div class="bigprice">${priceHTML(p)}</div>
           ${p.desc?`<p class="desc">${safe(p.desc)}</p>`:`<p class="desc muted-desc">Consultanos si querés confirmar medidas, material u otra característica específica de este modelo.</p>`}
           ${state.style?`<div class="match match-v7"><small>SEGÚN TU ELECCIÓN</small><strong>${styleLabel()}</strong><span>Este modelo forma parte de la selección orientativa.</span></div>`:''}
           <div class="purchase-box-v7">
@@ -80,7 +80,7 @@
     const list=items();
     return `<div class="overlay" data-close-cart></div><aside class="drawer cart-v7">
       <div class="drawer-head cart-head-v7"><div><small>DONHER’S</small><h2>Tu carrito</h2><span>${qty()} ${qty()===1?'reloj':'relojes'}</span></div><button class="x" data-close-cart>×</button></div>
-      ${list.length?`<div class="cart-list-v7">${list.map(({p,q})=>`<div class="cart-item cart-item-v7">${p.img?`<button class="cart-image-v7" data-product="${p.id}"><img src="${p.img}" alt="${safe(p.name)}"></button>`:''}<div class="cart-copy-v7"><small>${safe(p.cat)}</small><h3>${safe(p.name)}</h3><div class="p">${money(p.price)}</div><div class="qty"><button data-q="${p.id}" data-d="-1">−</button><span>${q}</span><button data-q="${p.id}" data-d="1">+</button></div></div><button class="cart-remove-v7" data-remove="${p.id}">QUITAR</button></div>`).join('')}</div>
+      ${list.length?`<div class="cart-list-v7">${list.map(({p,q})=>`<div class="cart-item cart-item-v7">${p.img?`<button class="cart-image-v7" data-product="${p.id}"><img src="${p.img}" alt="${safe(p.name)}"></button>`:''}<div class="cart-copy-v7"><small>${safe(p.cat)}</small><h3>${safe(p.name)}</h3><div class="p">${priceHTML(p)}</div><div class="qty"><button data-q="${p.id}" data-d="-1">−</button><span>${q}</span><button data-q="${p.id}" data-d="1">+</button></div></div><button class="cart-remove-v7" data-remove="${p.id}">QUITAR</button></div>`).join('')}</div>
         <div class="cart-footer-v7"><div class="cart-total"><span>Total productos</span><strong>${money(total())}</strong></div><p>El costo de envío se coordina según destino.</p><button class="btn gold full" data-checkout>CONTINUAR COMPRA →</button><button class="textbtn" data-close-cart>SEGUIR MIRANDO</button></div>`:`<div class="empty cart-empty-v7"><div class="empty-mark">DH</div><h2>Tu carrito está vacío</h2><p>Explorá los relojes y agregá el modelo que quieras comprar.</p><button class="btn gold" data-go="catalog">VER RELOJES</button></div>`}
     </aside>`;
   };
@@ -88,7 +88,7 @@
   drawFav=function(){
     if(!state.favOpen)return'';
     const a=state.fav.map(product).filter(Boolean);
-    return `<div class="overlay" data-close-fav></div><aside class="drawer fav-v7"><div class="drawer-head"><div><small>DONHER’S</small><h2>Guardados</h2></div><button class="x" data-close-fav>×</button></div>${a.length?`<div class="cart-list-v7">${a.map(p=>`<div class="cart-item cart-item-v7">${p.img?`<button class="cart-image-v7" data-product="${p.id}"><img src="${p.img}" alt="${safe(p.name)}"></button>`:''}<div class="cart-copy-v7"><small>${safe(p.cat)}</small><h3>${safe(p.name)}</h3><div class="p">${money(p.price)}</div><button class="textbtn" data-product="${p.id}">ABRIR FICHA →</button></div><button class="cart-remove-v7" data-fav="${p.id}">QUITAR</button></div>`).join('')}</div>`:`<div class="empty cart-empty-v7"><div class="empty-mark">♡</div><h2>No guardaste relojes todavía</h2><button class="btn" data-go="catalog">VER CATÁLOGO</button></div>`}</aside>`;
+    return `<div class="overlay" data-close-fav></div><aside class="drawer fav-v7"><div class="drawer-head"><div><small>DONHER’S</small><h2>Guardados</h2></div><button class="x" data-close-fav>×</button></div>${a.length?`<div class="cart-list-v7">${a.map(p=>`<div class="cart-item cart-item-v7">${p.img?`<button class="cart-image-v7" data-product="${p.id}"><img src="${p.img}" alt="${safe(p.name)}"></button>`:''}<div class="cart-copy-v7"><small>${safe(p.cat)}</small><h3>${safe(p.name)}</h3><div class="p">${priceHTML(p)}</div><button class="textbtn" data-product="${p.id}">ABRIR FICHA →</button></div><button class="cart-remove-v7" data-fav="${p.id}">QUITAR</button></div>`).join('')}</div>`:`<div class="empty cart-empty-v7"><div class="empty-mark">♡</div><h2>No guardaste relojes todavía</h2><button class="btn" data-go="catalog">VER CATÁLOGO</button></div>`}</aside>`;
   };
 
   checkout=function(){
@@ -98,7 +98,7 @@
     const names=['Datos','Entrega','Pago','Revisión','Listo'];
     return `<section class="checkout checkout-v7">
       <header class="checkout-top checkout-top-v7"><img src="${LOGO}" alt="Donher’s"><div class="checkout-progress-v7">${names.map((x,i)=>`<div class="${i+1===state.step?'active':''} ${i+1<state.step?'done':''}"><span>${i+1<state.step?'✓':i+1}</span><b>${x}</b></div>`).join('')}</div><button class="x" data-close-checkout>×</button></header>
-      <div class="checkout-body checkout-body-v7">${state.step===5?confirmView():`<div class="checkout-title checkout-title-v7"><div class="eyebrow">PASO ${state.step} DE 4</div><h1>${['Tus datos','¿Cómo lo recibís?','¿Cómo pagás?','Revisá antes de confirmar'][state.step-1]}</h1><p>${['Usamos estos datos para registrar el pedido y contactarte.','Elegí la forma de entrega que te quede más cómoda.','Seleccioná el método con el que querés continuar.','Todavía no se cobra nada hasta que confirmes el pedido.'][state.step-1]}</p></div><div class="checkout-grid checkout-grid-v7"><div class="formbox formbox-v7">${stepForm()}</div><aside class="summary summary-v7"><div class="eyebrow">TU COMPRA</div><h3>${qty()} ${qty()===1?'reloj':'relojes'}</h3>${items().map(({p,q})=>`<div class="checkout-item-v7">${p.img?`<img src="${p.img}" alt="${safe(p.name)}">`:''}<div><b>${safe(p.name)}</b><span>${q} × ${money(p.price)}</span></div><strong>${money(p.price*q)}</strong></div>`).join('')}<div class="sumrow total"><span>Total productos</span><strong>${money(total())}</strong></div><small>Envío a coordinar según destino.</small></aside></div><div class="checkout-actions checkout-actions-v7">${state.step>1?'<button class="btn" data-prev>← ATRÁS</button>':'<span></span>'}<button class="btn gold" ${state.step===4?'data-confirm':'data-next'}>${state.step===4?'CONFIRMAR PEDIDO':'CONTINUAR →'}</button></div>`}</div>
+      <div class="checkout-body checkout-body-v7">${state.step===5?confirmView():`<div class="checkout-title checkout-title-v7"><div class="eyebrow">PASO ${state.step} DE 4</div><h1>${['Tus datos','¿Cómo lo recibís?','¿Cómo pagás?','Revisá antes de confirmar'][state.step-1]}</h1><p>${['Usamos estos datos para registrar el pedido y contactarte.','Elegí la forma de entrega que te quede más cómoda.','Seleccioná el método con el que querés continuar.','Todavía no se cobra nada hasta que confirmes el pedido.'][state.step-1]}</p></div><div class="checkout-grid checkout-grid-v7"><div class="formbox formbox-v7">${stepForm()}</div><aside class="summary summary-v7"><div class="eyebrow">TU COMPRA</div><h3>${qty()} ${qty()===1?'reloj':'relojes'}</h3>${items().map(({p,q})=>`<div class="checkout-item-v7">${p.img?`<img src="${p.img}" alt="${safe(p.name)}">`:''}<div><b>${safe(p.name)}</b><span>${q} × ${money(salePrice(p))}</span></div><strong>${money(salePrice(p)*q)}</strong></div>`).join('')}<div class="sumrow total"><span>Total productos</span><strong>${money(total())}</strong></div><small>Envío a coordinar según destino.</small></aside></div><div class="checkout-actions checkout-actions-v7">${state.step>1?'<button class="btn" data-prev>← ATRÁS</button>':'<span></span>'}<button class="btn gold" ${state.step===4?'data-confirm':'data-next'}>${state.step===4?'CONFIRMAR PEDIDO':'CONTINUAR →'}</button></div>`}</div>
     </section>`;
   };
 
